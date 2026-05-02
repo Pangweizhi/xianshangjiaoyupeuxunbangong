@@ -49,6 +49,9 @@ export interface CourseChapterItem {
   chapterSort?: number;
   chapterSummary?: string;
   chapterStatus?: string;
+  reviewRemark?: string;
+  kechengName?: string;
+  jiaoshiName?: string;
 }
 
 export interface CourseResourceItem {
@@ -61,6 +64,10 @@ export interface CourseResourceItem {
   coverUrl?: string;
   durationSeconds?: number;
   resourceStatus?: string;
+  reviewRemark?: string;
+  kechengName?: string;
+  chapterName?: string;
+  jiaoshiName?: string;
 }
 
 export interface CourseEnrollItem {
@@ -89,6 +96,82 @@ export interface CreditRecordItem {
   kechengName?: string;
 }
 
+export interface ExamItem {
+  id: number;
+  kechengId: number;
+  chapterId?: number;
+  jiaoshiId?: number;
+  examName: string;
+  examSummary?: string;
+  durationMinutes?: number;
+  totalScore?: number;
+  passScore?: number;
+  startTime?: string;
+  endTime?: string;
+  examStatus?: string;
+  allowRetake?: number;
+  maxAttemptCount?: number;
+  allowResume?: number;
+  publishTime?: string;
+  kechengName?: string;
+  chapterName?: string;
+  jiaoshiName?: string;
+}
+
+export interface ExamQuestionItem {
+  id: number;
+  examId: number;
+  questionType?: string;
+  questionTitle: string;
+  optionJson?: string;
+  correctAnswer?: string;
+  questionScore?: number;
+  sortNo?: number;
+  analysisText?: string;
+  examName?: string;
+  kechengName?: string;
+}
+
+export interface ExamRecordItem {
+  id: number;
+  examId: number;
+  kechengId?: number;
+  yonghuId?: number;
+  answerSnapshot?: string;
+  questionSnapshot?: string;
+  autoScore?: number;
+  manualScore?: number;
+  finalScore?: number;
+  passStatus?: string;
+  recordStatus?: string;
+  startTime?: string;
+  submitTime?: string;
+  checkTime?: string;
+  checkRemark?: string;
+  attemptNo?: number;
+  examName?: string;
+  kechengName?: string;
+  yonghuName?: string;
+  jiaoshiName?: string;
+}
+
+export interface StudyProgressItem {
+  id: number;
+  kechengId: number;
+  chapterId: number;
+  resourceId: number;
+  yonghuId: number;
+  studySeconds?: number;
+  progressPercent?: number;
+  isCompleted?: number;
+  lastStudyTime?: string;
+  kechengName?: string;
+  chapterName?: string;
+  resourceName?: string;
+  resourceType?: string;
+  yonghuName?: string;
+}
+
 export interface NoticeItem {
   id: number;
   newsName: string;
@@ -106,7 +189,15 @@ export interface HomeworkItem {
   zuoyeValue?: string;
   zuoyeTypes?: number;
   zuoyeFile?: string;
+  jiaoshiId?: number;
+  kechengId?: number;
+  chapterId?: number;
+  deadlineTime?: string;
+  scoreTotal?: number;
+  publishStatus?: string;
   jiaoshiName?: string;
+  kechengName?: string;
+  chapterName?: string;
   zuoyeContent?: string;
   insertTime?: string;
 }

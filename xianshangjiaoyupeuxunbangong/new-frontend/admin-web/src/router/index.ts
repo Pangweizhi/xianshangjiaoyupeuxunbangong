@@ -3,6 +3,13 @@ import AdminLayout from "@/layouts/AdminLayout.vue";
 import LoginView from "@/views/LoginView.vue";
 import DashboardView from "@/views/DashboardView.vue";
 import CourseManageView from "@/views/CourseManageView.vue";
+import CourseChapterManageView from "@/views/CourseChapterManageView.vue";
+import CourseResourceManageView from "@/views/CourseResourceManageView.vue";
+import CourseEnrollManageView from "@/views/CourseEnrollManageView.vue";
+import StudyProgressManageView from "@/views/StudyProgressManageView.vue";
+import ExamManageView from "@/views/ExamManageView.vue";
+import ExamQuestionManageView from "@/views/ExamQuestionManageView.vue";
+import ExamRecordManageView from "@/views/ExamRecordManageView.vue";
 import NoticeManageView from "@/views/NoticeManageView.vue";
 import StudentsManageView from "@/views/StudentsManageView.vue";
 import TeachersManageView from "@/views/TeachersManageView.vue";
@@ -27,6 +34,13 @@ const router = createRouter({
         { path: "", redirect: "/dashboard" },
         { path: "dashboard", name: "dashboard", component: DashboardView },
         { path: "courses", name: "courses", component: CourseManageView },
+        { path: "chapters", name: "chapters", component: CourseChapterManageView },
+        { path: "resources", name: "resources", component: CourseResourceManageView },
+        { path: "enrolls", name: "enrolls", component: CourseEnrollManageView },
+        { path: "progress", name: "progress", component: StudyProgressManageView },
+        { path: "exams", name: "exams", component: ExamManageView },
+        { path: "exam-questions", name: "exam-questions", component: ExamQuestionManageView },
+        { path: "exam-records", name: "exam-records", component: ExamRecordManageView },
         { path: "notices", name: "notices", component: NoticeManageView },
         { path: "students", name: "students", component: StudentsManageView },
         { path: "teachers", name: "teachers", component: TeachersManageView },

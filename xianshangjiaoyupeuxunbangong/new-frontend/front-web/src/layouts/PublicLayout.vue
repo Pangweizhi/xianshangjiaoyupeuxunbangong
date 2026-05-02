@@ -1,7 +1,7 @@
 <template>
   <div class="shell">
     <div class="topline">
-      <span>课程、公告、作业、论坛与备课资源统一呈现</span>
+      <span>课程、作业、考试、论坛与备课资源统一呈现</span>
       <RouterLink class="topline__link" to="/courses">查看课程中心</RouterLink>
     </div>
 
@@ -11,8 +11,10 @@
         <RouterLink to="/">首页</RouterLink>
         <RouterLink to="/courses">课程</RouterLink>
         <RouterLink to="/my-courses">我的课程</RouterLink>
-        <RouterLink to="/notices">公告</RouterLink>
         <RouterLink to="/homeworks">作业</RouterLink>
+        <RouterLink to="/exams">考试</RouterLink>
+        <RouterLink to="/my-scores">我的成绩</RouterLink>
+        <RouterLink to="/notices">公告</RouterLink>
         <RouterLink to="/forum">论坛</RouterLink>
         <RouterLink to="/materials">备课</RouterLink>
         <RouterLink to="/meetings">会议</RouterLink>

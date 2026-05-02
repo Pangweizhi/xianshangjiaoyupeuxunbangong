@@ -5,6 +5,9 @@ import type {
   CourseResourceItem,
   CreditRecordItem,
   ApiResponse,
+  ExamItem,
+  ExamQuestionItem,
+  ExamRecordItem,
   ForumItem,
   HomeworkItem,
   HomeworkSubmissionItem,
@@ -73,6 +76,48 @@ export async function fetchMyCreditPage(params?: Record<string, unknown>) {
     params: { page: 1, limit: 20, sort: "id", order: "desc", ...params }
   });
   return unwrap<PagePayload<CreditRecordItem>>(data);
+}
+
+export async function fetchExamPage(params?: Record<string, unknown>) {
+  const http = useHttp();
+  const { data } = await http.get("/exam/list", {
+    params: { page: 1, limit: 8, sort: "id", order: "desc", ...params }
+  });
+  return unwrap<PagePayload<ExamItem>>(data);
+}
+
+export async function fetchExamDetail(id: number | string) {
+  const http = useHttp();
+  const { data } = await http.get(`/exam/detail/${id}`);
+  return unwrap<ExamItem>(data);
+}
+
+export async function fetchExamQuestionPage(params?: Record<string, unknown>) {
+  const http = useHttp();
+  const { data } = await http.get("/examQuestion/list", {
+    params: { page: 1, limit: 100, sort: "sort_no", order: "asc", ...params }
+  });
+  return unwrap<PagePayload<ExamQuestionItem>>(data);
+}
+
+export async function startExam(payload: Record<string, unknown>) {
+  const http = useHttp();
+  const { data } = await http.post("/examRecord/start", payload);
+  return data as ApiResponse<ExamRecordItem>;
+}
+
+export async function submitExam(payload: Record<string, unknown>) {
+  const http = useHttp();
+  const { data } = await http.post("/examRecord/submit", payload);
+  return data as ApiResponse<ExamRecordItem>;
+}
+
+export async function fetchMyExamRecordPage(params?: Record<string, unknown>) {
+  const http = useHttp();
+  const { data } = await http.get("/examRecord/myPage", {
+    params: { page: 1, limit: 20, sort: "id", order: "desc", ...params }
+  });
+  return unwrap<PagePayload<ExamRecordItem>>(data);
 }
 
 export async function fetchNoticePage(params?: Record<string, unknown>) {

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.ExamQuestionDao">
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.exam_id as examId
+        ,a.question_type as questionType
+        ,a.question_title as questionTitle
+        ,a.option_json as optionJson
+        ,a.correct_answer as correctAnswer
+        ,a.question_score as questionScore
+        ,a.sort_no as sortNo
+        ,a.analysis_text as analysisText
+        ,a.is_deleted as isDeleted
+        ,a.create_time as createTime
+    </sql>
+
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.ExamQuestionView">
+        select
+        <include refid="Base_Column_List"/>
+        ,e.exam_name as examName
+        ,k.kecheng_name as kechengName
+        from exam_question a
+        left join exam e on a.exam_id = e.id
+        left join kecheng k on e.kecheng_id = k.id
+        <where>
+            <if test="params.examId != null and params.examId != ''">
+                and a.exam_id = #{params.examId}
+            </if>
+            <if test="params.questionType != null and params.questionType != '' and params.questionType != 'null'">
+                and a.question_type = #{params.questionType}
+            </if>
+            <if test="params.questionTitle != null and params.questionTitle != '' and params.questionTitle != 'null'">
+                and a.question_title like concat('%',#{params.questionTitle},'%')
+            </if>
+            <if test="params.jiaoshiId != null and params.jiaoshiId != ''">
+                and e.jiaoshi_id = #{params.jiaoshiId}
+            </if>
+            <if test="params.isDeleted != null and params.isDeleted != ''">
+                and a.is_deleted = #{params.isDeleted}
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+</mapper>

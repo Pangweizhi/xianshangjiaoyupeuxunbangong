@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.ExamRecordDao">
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.exam_id as examId
+        ,a.kecheng_id as kechengId
+        ,a.yonghu_id as yonghuId
+        ,a.answer_snapshot as answerSnapshot
+        ,a.question_snapshot as questionSnapshot
+        ,a.auto_score as autoScore
+        ,a.manual_score as manualScore
+        ,a.final_score as finalScore
+        ,a.pass_status as passStatus
+        ,a.record_status as recordStatus
+        ,a.start_time as startTime
+        ,a.submit_time as submitTime
+        ,a.check_time as checkTime
+        ,a.check_remark as checkRemark
+        ,a.attempt_no as attemptNo
+        ,a.create_time as createTime
+    </sql>
+
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.ExamRecordView">
+        select
+        <include refid="Base_Column_List"/>
+        ,e.exam_name as examName
+        ,k.kecheng_name as kechengName
+        ,y.yonghu_name as yonghuName
+        ,j.jiaoshi_name as jiaoshiName
+        from exam_record a
+        left join exam e on a.exam_id = e.id
+        left join kecheng k on a.kecheng_id = k.id
+        left join yonghu y on a.yonghu_id = y.id
+        left join jiaoshi j on e.jiaoshi_id = j.id
+        <where>
+            <if test="params.examId != null and params.examId != ''">
+                and a.exam_id = #{params.examId}
+            </if>
+            <if test="params.kechengId != null and params.kechengId != ''">
+                and a.kecheng_id = #{params.kechengId}
+            </if>
+            <if test="params.yonghuId != null and params.yonghuId != ''">
+                and a.yonghu_id = #{params.yonghuId}
+            </if>
+            <if test="params.recordStatus != null and params.recordStatus != '' and params.recordStatus != 'null'">
+                and a.record_status = #{params.recordStatus}
+            </if>
+            <if test="params.passStatus != null and params.passStatus != '' and params.passStatus != 'null'">
+                and a.pass_status = #{params.passStatus}
+            </if>
+            <if test="params.jiaoshiId != null and params.jiaoshiId != ''">
+                and e.jiaoshi_id = #{params.jiaoshiId}
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+</mapper>

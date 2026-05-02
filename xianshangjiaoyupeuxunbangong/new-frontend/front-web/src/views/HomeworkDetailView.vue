@@ -7,10 +7,17 @@
         <div class="detail-card__body">
           <div class="stack-inline">
             <span class="tag">{{ detail.zuoyeValue || "作业" }}</span>
-            <span class="meta">{{ detail.jiaoshiName || "教师待补充" }}</span>
+            <span class="meta">{{ detail.kechengName || "未关联课程" }}</span>
+            <span class="meta">{{ detail.chapterName || "未指定章节" }}</span>
           </div>
           <h1>{{ detail.zuoyeName }}</h1>
           <p>{{ stripHtml(detail.zuoyeContent) }}</p>
+          <div class="status-list">
+            <span>授课教师：{{ detail.jiaoshiName || "待补充" }}</span>
+            <span>截止时间：{{ detail.deadlineTime || "未设置" }}</span>
+            <span>总分：{{ detail.scoreTotal ?? 100 }}</span>
+            <span>{{ expired ? "当前已截止" : "当前可提交" }}</span>
+          </div>
           <a
             v-if="detail.zuoyeFile"
             class="primary-button"
@@ -26,19 +33,21 @@
         <p class="eyebrow">作业提交</p>
         <h2>上传附件并补充说明</h2>
         <p class="hero__lead">
-          提交后可在下方查看最近一次提交记录，包括状态、评分和教师评语。
+          提交后可在下方查看最近一次提交记录，包括状态、评分、批改时间和教师评语。
         </p>
+        <p v-if="expired" class="field-error">该作业已超过截止时间，系统将拒绝新的提交。</p>
         <p v-if="!session.isLoggedIn" class="field-error">请先登录后再提交作业。</p>
-        <input type="file" class="field field--file" @change="handleFileChange" />
+        <input type="file" class="field field--file" :disabled="expired" @change="handleFileChange" />
         <p v-if="selectedFile" class="field-help">已选择文件：{{ selectedFile.name }}</p>
         <textarea
           v-model="submissionContent"
           class="field field--textarea"
           placeholder="补充本次提交说明"
+          :disabled="expired"
         ></textarea>
         <button
           class="primary-button primary-button--full"
-          :disabled="!selectedFile || uploading"
+          :disabled="!selectedFile || uploading || expired"
           @click="submitHomework"
         >
           {{ uploading ? "提交中..." : "上传并提交" }}
@@ -70,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { RouterLink, useRoute } from "vue-router";
 import {
   DEFAULT_BASE_URL,
@@ -96,6 +105,11 @@ const submissionMessage = ref("");
 const submissionMessageType = ref<"success" | "error">("success");
 const submissionContent = ref("");
 const submissionRecord = ref<HomeworkSubmissionItem | null>(null);
+
+const expired = computed(() => {
+  if (!detail.value?.deadlineTime) return false;
+  return new Date(detail.value.deadlineTime).getTime() < Date.now();
+});
 
 function toAsset(path?: string) {
   return (
@@ -130,6 +144,11 @@ async function loadSubmission() {
 }
 
 async function submitHomework() {
+  if (expired.value) {
+    submissionMessageType.value = "error";
+    submissionMessage.value = "该作业已截止，不能继续提交。";
+    return;
+  }
   if (!selectedFile.value) {
     submissionMessageType.value = "error";
     submissionMessage.value = "请先选择要提交的附件。";

@@ -1,26 +1,37 @@
 <template>
   <section class="admin-panel" v-loading="loading">
     <div class="panel-header panel-header--spread">
-      <h2>课程管理</h2>
+      <h2>{{ isTeacher ? "课程管理" : "课程审核" }}</h2>
       <div class="toolbar toolbar--wrap">
         <el-input v-model="keyword" placeholder="搜索课程标题" clearable />
+        <el-select v-model="statusFilter" placeholder="审核状态" clearable>
+          <el-option label="待审核" value="pending_review" />
+          <el-option label="已通过" value="approved" />
+          <el-option label="已驳回" value="rejected" />
+        </el-select>
         <el-button type="primary" @click="handleSearch">查询</el-button>
         <el-button @click="resetFilters">重置筛选</el-button>
-        <el-button type="success" @click="openCreate">新增课程</el-button>
+        <el-button v-if="isTeacher" type="success" @click="openCreate">新增课程</el-button>
       </div>
     </div>
 
     <el-table :data="courses" stripe empty-text="暂无课程数据">
       <el-table-column prop="kechengName" label="课程标题" min-width="220" />
       <el-table-column prop="kechengValue" label="课程类型" min-width="120" />
+      <el-table-column prop="creditScore" label="学分" min-width="90" />
       <el-table-column prop="kechengShichang" label="时长" min-width="100" />
       <el-table-column prop="banjiValue" label="班级" min-width="120" />
       <el-table-column prop="jiaoshiName" label="教师" min-width="120" />
+      <el-table-column prop="courseStatus" label="审核状态" min-width="120" />
+      <el-table-column prop="reviewRemark" label="审核备注" min-width="180" show-overflow-tooltip />
       <el-table-column prop="kechengTime" label="开始时间" min-width="180" />
-      <el-table-column label="操作" width="180" fixed="right">
+      <el-table-column label="操作" min-width="260" fixed="right">
         <template #default="{ row }">
-          <el-button link type="primary" @click="openEdit(row.id)">编辑</el-button>
-          <el-button link type="danger" @click="removeItem(row.id)">删除</el-button>
+          <el-button v-if="isTeacher" link type="primary" @click="openEdit(row.id)">编辑</el-button>
+          <el-button v-if="isTeacher" link type="danger" @click="removeItem(row.id)">删除</el-button>
+          <el-button v-if="isTeacher && row.courseStatus === 'rejected'" link type="warning" @click="submitReview(row.id)">重新提审</el-button>
+          <el-button v-if="!isTeacher" link type="success" @click="openReview(row, 'approved')">通过</el-button>
+          <el-button v-if="!isTeacher" link type="danger" @click="openReview(row, 'rejected')">驳回</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -52,12 +63,15 @@
       <el-form-item label="课程时长" prop="kechengShichang">
         <el-input-number v-model="form.kechengShichang" :min="1" :max="999" />
       </el-form-item>
+      <el-form-item label="课程学分" prop="creditScore">
+        <el-input-number v-model="form.creditScore" :min="0" :max="99" />
+      </el-form-item>
       <el-form-item label="班级" prop="banjiTypes">
         <el-select v-model="form.banjiTypes" placeholder="请选择">
           <el-option v-for="item in banjiOptions" :key="item.codeIndex" :label="item.indexName" :value="item.codeIndex" />
         </el-select>
       </el-form-item>
-      <el-form-item label="教师" prop="jiaoshiId">
+      <el-form-item v-if="!isTeacher" label="教师" prop="jiaoshiId">
         <el-select v-model="form.jiaoshiId" placeholder="请选择">
           <el-option v-for="item in teacherOptions" :key="item.id" :label="item.jiaoshiName" :value="item.id" />
         </el-select>
@@ -79,18 +93,35 @@
       <el-button type="primary" :loading="saving" @click="submitForm">提交</el-button>
     </template>
   </el-dialog>
+
+  <el-dialog v-model="reviewVisible" :title="reviewForm.courseStatus === 'approved' ? '通过课程' : '驳回课程'" width="620px">
+    <el-form :model="reviewForm" label-width="100px">
+      <el-form-item label="审核备注">
+        <el-input v-model="reviewForm.reviewRemark" type="textarea" :rows="4" placeholder="填写审核意见" />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <el-button @click="reviewVisible = false">取消</el-button>
+      <el-button type="primary" @click="submitReviewAction">确定</el-button>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
 import { DEFAULT_BASE_URL, createAssetUrl, type CourseItem } from "@shared/index";
 import { fetchAdminCourses } from "@/api/dashboard";
-import { deleteEntities, fetchDictionaryOptions, fetchEntityDetail, fetchTeachersForSelect, saveEntity, uploadAdminFile } from "@/api/manage";
+import { deleteEntities, fetchDictionaryOptions, fetchEntityDetail, fetchTeachersForSelect, postModuleAction, saveEntity, uploadAdminFile } from "@/api/manage";
+import { useAdminSessionStore } from "@/stores/session";
 
+const store = useAdminSessionStore();
+const isTeacher = computed(() => store.session?.tableName === "jiaoshi");
 const keyword = ref("");
+const statusFilter = ref("");
 const courses = ref<CourseItem[]>([]);
 const dialogVisible = ref(false);
+const reviewVisible = ref(false);
 const saving = ref(false);
 const loading = ref(false);
 const formRef = ref<FormInstance>();
@@ -98,8 +129,9 @@ const teacherOptions = ref<Array<{ id: number; jiaoshiName: string }>>([]);
 const courseTypeOptions = ref<Array<{ codeIndex: number; indexName: string }>>([]);
 const banjiOptions = ref<Array<{ codeIndex: number; indexName: string }>>([]);
 const pagination = reactive({ page: 1, limit: 10, total: 0 });
+const reviewForm = reactive({ id: undefined as number | undefined, courseStatus: "approved", reviewRemark: "" });
 
-const createForm = () => ({ id: undefined as number | undefined, kechengName: "", kechengPhoto: "", kechengTypes: undefined as number | undefined, kechengShichang: undefined as number | undefined, kechengTime: "", banjiTypes: undefined as number | undefined, jiaoshiId: undefined as number | undefined, kechengContent: "", kechengDelete: 1 });
+const createForm = () => ({ id: undefined as number | undefined, kechengName: "", kechengPhoto: "", kechengTypes: undefined as number | undefined, kechengShichang: undefined as number | undefined, creditScore: 0, kechengTime: "", banjiTypes: undefined as number | undefined, jiaoshiId: undefined as number | undefined, kechengContent: "", kechengDelete: 1 });
 const form = reactive(createForm());
 
 const rules: FormRules = {
@@ -117,7 +149,7 @@ function assetUrl(path?: string) { return createAssetUrl(DEFAULT_BASE_URL, path)
 async function loadCourses() {
   loading.value = true;
   try {
-    const page = await fetchAdminCourses({ page: pagination.page, limit: pagination.limit, kechengName: keyword.value || undefined });
+    const page = await fetchAdminCourses({ page: pagination.page, limit: pagination.limit, kechengName: keyword.value || undefined, courseStatus: statusFilter.value || undefined });
     courses.value = page.list;
     pagination.total = page.totalCount;
   } finally {
@@ -125,7 +157,7 @@ async function loadCourses() {
   }
 }
 function handleSearch() { pagination.page = 1; loadCourses(); }
-function resetFilters() { keyword.value = ""; pagination.page = 1; loadCourses(); }
+function resetFilters() { keyword.value = ""; statusFilter.value = ""; pagination.page = 1; loadCourses(); }
 function handleSizeChange() { pagination.page = 1; loadCourses(); }
 function resetForm() { Object.assign(form, createForm()); }
 async function prepareOptions() {
@@ -147,6 +179,35 @@ async function submitForm() {
   try { await saveEntity("kecheng", form as unknown as Record<string, unknown>); ElMessage.success("课程已保存"); dialogVisible.value = false; await loadCourses(); } catch (error) { ElMessage.error(error instanceof Error ? error.message : "保存失败"); } finally { saving.value = false; }
 }
 async function removeItem(id: number) { await deleteEntities("kecheng", [id]); ElMessage.success("课程已删除"); await loadCourses(); }
+
+function openReview(row: CourseItem, status: "approved" | "rejected") {
+  reviewForm.id = row.id;
+  reviewForm.courseStatus = status;
+  reviewForm.reviewRemark = row.reviewRemark || "";
+  reviewVisible.value = true;
+}
+
+async function submitReviewAction() {
+  if (!reviewForm.id) return;
+  try {
+    await postModuleAction("kecheng", "review", reviewForm as unknown as Record<string, unknown>);
+    ElMessage.success("审核结果已提交");
+    reviewVisible.value = false;
+    await loadCourses();
+  } catch (error) {
+    ElMessage.error(error instanceof Error ? error.message : "审核失败");
+  }
+}
+
+async function submitReview(id: number) {
+  try {
+    await postModuleAction("kecheng", "submitReview", { id });
+    ElMessage.success("已重新提交审核");
+    await loadCourses();
+  } catch (error) {
+    ElMessage.error(error instanceof Error ? error.message : "提交失败");
+  }
+}
 
 prepareOptions();
 loadCourses();

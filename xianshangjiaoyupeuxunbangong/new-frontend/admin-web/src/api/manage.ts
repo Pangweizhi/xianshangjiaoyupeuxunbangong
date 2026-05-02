@@ -22,6 +22,12 @@ export async function deleteEntities(module: string, ids: Array<number | string>
   return data;
 }
 
+export async function postModuleAction(module: string, action: string, payload: Record<string, unknown>) {
+  const http = useAdminHttp();
+  const { data } = await http.post(`/${module}/${action}`, payload);
+  return data;
+}
+
 export async function fetchDictionaryOptions(dicCode: string) {
   const http = useAdminHttp();
   const { data } = await http.get("/dictionary/page", {
@@ -42,6 +48,30 @@ export async function fetchTeachersForSelect() {
     params: { page: 1, limit: 200, sort: "id", order: "desc" }
   });
   return data.data.list as Array<{ id: number; jiaoshiName: string }>;
+}
+
+export async function fetchStudentsForSelect() {
+  const http = useAdminHttp();
+  const { data } = await http.get("/yonghu/page", {
+    params: { page: 1, limit: 200, sort: "id", order: "desc" }
+  });
+  return data.data.list as Array<{ id: number; yonghuName: string }>;
+}
+
+export async function fetchCoursesForSelect() {
+  const http = useAdminHttp();
+  const { data } = await http.get("/kecheng/page", {
+    params: { page: 1, limit: 200, sort: "id", order: "desc" }
+  });
+  return data.data.list as Array<{ id: number; kechengName: string }>;
+}
+
+export async function fetchCourseChaptersForSelect(kechengId?: number | string) {
+  const http = useAdminHttp();
+  const { data } = await http.get("/courseChapter/page", {
+    params: { page: 1, limit: 200, sort: "id", order: "desc", kechengId: kechengId || undefined }
+  });
+  return data.data.list as Array<{ id: number; chapterName: string; kechengId: number }>;
 }
 
 export async function uploadAdminFile(file: File) {

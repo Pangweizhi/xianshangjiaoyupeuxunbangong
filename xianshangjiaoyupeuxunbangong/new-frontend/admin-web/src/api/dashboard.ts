@@ -1,7 +1,14 @@
 import type {
   ConfigItem,
   CourseItem,
+  CourseChapterItem,
+  CourseEnrollItem,
+  CourseResourceItem,
+  CreditRecordItem,
   DictionaryItem,
+  ExamItem,
+  ExamQuestionItem,
+  ExamRecordItem,
   ForumItem,
   HomeworkItem,
   HomeworkSubmissionItem,
@@ -9,6 +16,7 @@ import type {
   MeetingItem,
   NoticeItem,
   PagePayload,
+  StudyProgressItem,
   StudentItem,
   TeacherItem
 } from "@shared/index";
@@ -112,4 +120,68 @@ export async function fetchHomeworkSubmissionPage(params?: Record<string, unknow
     params: { page: 1, limit: 10, sort: "id", order: "desc", ...params }
   });
   return unwrap<PagePayload<HomeworkSubmissionItem>>(data);
+}
+
+export async function fetchCourseChapterPage(params?: Record<string, unknown>) {
+  const http = useAdminHttp();
+  const { data } = await http.get("/courseChapter/page", {
+    params: { page: 1, limit: 10, sort: "id", order: "desc", ...params }
+  });
+  return unwrap<PagePayload<CourseChapterItem>>(data);
+}
+
+export async function fetchCourseResourcePage(params?: Record<string, unknown>) {
+  const http = useAdminHttp();
+  const { data } = await http.get("/courseResource/page", {
+    params: { page: 1, limit: 10, sort: "id", order: "desc", ...params }
+  });
+  return unwrap<PagePayload<CourseResourceItem>>(data);
+}
+
+export async function fetchCourseEnrollPage(params?: Record<string, unknown>) {
+  const http = useAdminHttp();
+  const { data } = await http.get("/courseEnroll/page", {
+    params: { page: 1, limit: 10, sort: "id", order: "desc", ...params }
+  });
+  return unwrap<PagePayload<CourseEnrollItem>>(data);
+}
+
+export async function fetchStudyProgressPage(params?: Record<string, unknown>) {
+  const http = useAdminHttp();
+  const { data } = await http.get("/studyProgress/page", {
+    params: { page: 1, limit: 10, sort: "id", order: "desc", ...params }
+  });
+  return unwrap<PagePayload<StudyProgressItem>>(data);
+}
+
+export async function fetchCreditRecordPage(params?: Record<string, unknown>) {
+  const http = useAdminHttp();
+  const { data } = await http.get("/courseCreditRecord/page", {
+    params: { page: 1, limit: 10, sort: "id", order: "desc", ...params }
+  });
+  return unwrap<PagePayload<CreditRecordItem>>(data);
+}
+
+export async function fetchExamPage(params?: Record<string, unknown>) {
+  const http = useAdminHttp();
+  const { data } = await http.get("/exam/page", {
+    params: { page: 1, limit: 10, sort: "id", order: "desc", ...params }
+  });
+  return unwrap<PagePayload<ExamItem>>(data);
+}
+
+export async function fetchExamQuestionPage(params?: Record<string, unknown>) {
+  const http = useAdminHttp();
+  const { data } = await http.get("/examQuestion/page", {
+    params: { page: 1, limit: 10, sort: "sort_no", order: "asc", ...params }
+  });
+  return unwrap<PagePayload<ExamQuestionItem>>(data);
+}
+
+export async function fetchExamRecordPage(params?: Record<string, unknown>) {
+  const http = useAdminHttp();
+  const { data } = await http.get("/examRecord/page", {
+    params: { page: 1, limit: 10, sort: "id", order: "desc", ...params }
+  });
+  return unwrap<PagePayload<ExamRecordItem>>(data);
 }

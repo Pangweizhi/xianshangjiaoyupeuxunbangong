@@ -6,6 +6,9 @@ import CoursesView from "@/views/CoursesView.vue";
 import CourseDetailView from "@/views/CourseDetailView.vue";
 import NoticesView from "@/views/NoticesView.vue";
 import HomeworksView from "@/views/HomeworksView.vue";
+import ExamsView from "@/views/ExamsView.vue";
+import ExamDetailView from "@/views/ExamDetailView.vue";
+import MyScoresView from "@/views/MyScoresView.vue";
 import ForumView from "@/views/ForumView.vue";
 import MaterialsView from "@/views/MaterialsView.vue";
 import MeetingsView from "@/views/MeetingsView.vue";
@@ -31,6 +34,9 @@ const router = createRouter({
         { path: "notices", name: "notices", component: NoticesView },
         { path: "homeworks", name: "homeworks", component: HomeworksView },
         { path: "homeworks/:id", name: "homework-detail", component: HomeworkDetailView },
+        { path: "exams", name: "exams", component: ExamsView },
+        { path: "exams/:id", name: "exam-detail", component: ExamDetailView, meta: { requiresAuth: true } },
+        { path: "my-scores", name: "my-scores", component: MyScoresView, meta: { requiresAuth: true } },
         { path: "forum", name: "forum", component: ForumView },
         { path: "forum/:id", name: "forum-detail", component: ForumDetailView },
         { path: "materials", name: "materials", component: MaterialsView },

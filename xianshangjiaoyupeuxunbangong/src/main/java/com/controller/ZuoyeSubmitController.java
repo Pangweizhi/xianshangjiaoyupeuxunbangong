@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.entity.ZuoyeSubmitEntity;
 import com.entity.ZuoyeEntity;
 import com.entity.view.ZuoyeSubmitView;
+import com.service.CourseSettlementService;
 import com.service.ZuoyeService;
 import com.service.ZuoyeSubmitService;
 import com.utils.CommonUtil;
@@ -23,13 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
-/**
- * 作业提交
- * 后端接口
- */
 @RestController
 @Controller
 @RequestMapping("/zuoyeSubmit")
@@ -40,10 +36,9 @@ public class ZuoyeSubmitController {
     private ZuoyeSubmitService zuoyeSubmitService;
     @Autowired
     private ZuoyeService zuoyeService;
+    @Autowired
+    private CourseSettlementService courseSettlementService;
 
-    /**
-     * 后端列表
-     */
     @RequestMapping("/page")
     public R page(@RequestParam Map<String, Object> params, HttpServletRequest request) {
         logger.debug("page方法:,,Controller:{},,params:{}", this.getClass().getName(), JSONObject.toJSONString(params));
@@ -60,11 +55,8 @@ public class ZuoyeSubmitController {
         return R.ok().put("data", page);
     }
 
-    /**
-     * 后端详情
-     */
     @RequestMapping("/info/{id}")
-    public R info(@PathVariable("id") Long id, HttpServletRequest request) {
+    public R info(@PathVariable("id") Long id) {
         logger.debug("info方法:,,Controller:{},,id:{}", this.getClass().getName(), id);
         ZuoyeSubmitEntity zuoyeSubmit = zuoyeSubmitService.selectById(id);
         if (zuoyeSubmit != null) {
@@ -75,9 +67,6 @@ public class ZuoyeSubmitController {
         return R.error(511, "查不到数据");
     }
 
-    /**
-     * 后端保存
-     */
     @RequestMapping("/save")
     public R save(@RequestBody ZuoyeSubmitEntity zuoyeSubmit, HttpServletRequest request) {
         logger.debug("save方法:,,Controller:{},,zuoyeSubmit:{}", this.getClass().getName(), zuoyeSubmit.toString());
@@ -114,11 +103,8 @@ public class ZuoyeSubmitController {
         return R.error(511, "请勿重复提交相同附件");
     }
 
-    /**
-     * 后端修改
-     */
     @RequestMapping("/update")
-    public R update(@RequestBody ZuoyeSubmitEntity zuoyeSubmit, HttpServletRequest request) {
+    public R update(@RequestBody ZuoyeSubmitEntity zuoyeSubmit) {
         logger.debug("update方法:,,Controller:{},,zuoyeSubmit:{}", this.getClass().getName(), zuoyeSubmit.toString());
         if ("".equals(zuoyeSubmit.getSubmitFile()) || "null".equals(zuoyeSubmit.getSubmitFile())) {
             zuoyeSubmit.setSubmitFile(null);
@@ -133,14 +119,17 @@ public class ZuoyeSubmitController {
             zuoyeSubmit.setCheckTime(new Date());
         }
         zuoyeSubmitService.updateById(zuoyeSubmit);
+        if (zuoyeSubmit.getSubmitScore() != null) {
+            ZuoyeEntity homework = zuoyeService.selectById(zuoyeSubmit.getZuoyeId());
+            if (homework != null) {
+                courseSettlementService.refreshCourseCompletion(homework.getKechengId(), zuoyeSubmit.getYonghuId());
+            }
+        }
         return R.ok();
     }
 
-    /**
-     * 删除
-     */
     @RequestMapping("/delete")
-    public R delete(@RequestBody Integer[] ids, HttpServletRequest request) {
+    public R delete(@RequestBody Integer[] ids) {
         logger.debug("delete:,,Controller:{},,ids:{}", this.getClass().getName(), Arrays.toString(ids));
         ArrayList<ZuoyeSubmitEntity> list = new ArrayList<>();
         for (Integer id : ids) {
@@ -155,29 +144,20 @@ public class ZuoyeSubmitController {
         return R.ok();
     }
 
-    /**
-     * 前端列表
-     */
     @IgnoreAuth
     @RequestMapping("/list")
-    public R list(@RequestParam Map<String, Object> params, HttpServletRequest request) {
+    public R list(@RequestParam Map<String, Object> params) {
         logger.debug("list方法:,,Controller:{},,params:{}", this.getClass().getName(), JSONObject.toJSONString(params));
         CommonUtil.checkMap(params);
         PageUtils page = zuoyeSubmitService.queryPage(params);
         return R.ok().put("data", page);
     }
 
-    /**
-     * 前端详情
-     */
     @RequestMapping("/detail/{id}")
-    public R detail(@PathVariable("id") Long id, HttpServletRequest request) {
-        return info(id, request);
+    public R detail(@PathVariable("id") Long id) {
+        return info(id);
     }
 
-    /**
-     * 前端保存
-     */
     @RequestMapping("/add")
     public R add(@RequestBody ZuoyeSubmitEntity zuoyeSubmit, HttpServletRequest request) {
         return save(zuoyeSubmit, request);

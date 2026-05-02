@@ -6,14 +6,20 @@
         <span>教学管理中心</span>
       </div>
       <RouterLink to="/dashboard">仪表盘</RouterLink>
-      <RouterLink v-if="store.session?.tableName === 'jiaoshi'" to="/submissions">提交记录</RouterLink>
       <RouterLink to="/courses">课程管理</RouterLink>
-      <RouterLink v-if="!isTeacher" to="/notices">公告管理</RouterLink>
+      <RouterLink to="/chapters">章节管理</RouterLink>
+      <RouterLink to="/resources">资源管理</RouterLink>
+      <RouterLink to="/enrolls">选课管理</RouterLink>
+      <RouterLink to="/progress">学习进度</RouterLink>
       <RouterLink to="/homeworks">作业管理</RouterLink>
+      <RouterLink to="/exams">考试管理</RouterLink>
+      <RouterLink to="/exam-questions">题库管理</RouterLink>
+      <RouterLink to="/exam-records">阅卷管理</RouterLink>
+      <RouterLink to="/submissions">提交记录</RouterLink>
+      <RouterLink v-if="!isTeacher" to="/notices">公告管理</RouterLink>
       <RouterLink to="/forums">论坛管理</RouterLink>
       <RouterLink to="/materials">备课管理</RouterLink>
       <RouterLink to="/meetings">会议管理</RouterLink>
-      <RouterLink v-if="!isTeacher" to="/submissions">提交记录</RouterLink>
       <RouterLink v-if="!isTeacher" to="/students">学生管理</RouterLink>
       <RouterLink v-if="!isTeacher" to="/teachers">教师管理</RouterLink>
       <RouterLink v-if="!isTeacher" to="/dictionary">字典管理</RouterLink>
@@ -48,26 +54,40 @@ const title = computed(() => {
   switch (route.name) {
     case "courses":
       return "课程管理";
+    case "chapters":
+      return "章节管理";
+    case "resources":
+      return "资源管理";
+    case "enrolls":
+      return "选课管理";
+    case "progress":
+      return "学习进度";
+    case "homeworks":
+      return "作业管理";
+    case "exams":
+      return "考试管理";
+    case "exam-questions":
+      return "题库管理";
+    case "exam-records":
+      return "阅卷管理";
+    case "submissions":
+      return "提交记录";
     case "notices":
       return "公告管理";
     case "students":
       return "学生管理";
     case "teachers":
       return "教师管理";
-    case "homeworks":
-      return "作业管理";
+    case "dictionary":
+      return "字典管理";
+    case "config":
+      return "系统配置";
     case "forums":
       return "论坛管理";
     case "materials":
       return "备课管理";
     case "meetings":
       return "会议管理";
-    case "submissions":
-      return "提交记录";
-    case "dictionary":
-      return "字典管理";
-    case "config":
-      return "系统配置";
     default:
       return "仪表盘";
   }

@@ -27,6 +27,10 @@ public class CourseSettlementServiceImpl implements CourseSettlementService {
     @Autowired
     private ZuoyeSubmitService zuoyeSubmitService;
     @Autowired
+    private ExamService examService;
+    @Autowired
+    private ExamRecordService examRecordService;
+    @Autowired
     private CourseCreditRecordService courseCreditRecordService;
     @Autowired
     private KechengService kechengService;
@@ -69,7 +73,8 @@ public class CourseSettlementServiceImpl implements CourseSettlementService {
         enroll.setProgressPercent(progressPercent);
 
         boolean homeworkPassed = isHomeworkPassed(kechengId, yonghuId);
-        if (progressPercent >= 90D && homeworkPassed) {
+        boolean examPassed = isExamPassed(kechengId, yonghuId);
+        if (progressPercent >= 90D && homeworkPassed && examPassed) {
             enroll.setEnrollStatus("已结课");
             enroll.setFinishTime(new Date());
             grantCredit(kechengId, yonghuId, progressPercent);
@@ -106,6 +111,28 @@ public class CourseSettlementServiceImpl implements CourseSettlementService {
         return true;
     }
 
+    private boolean isExamPassed(Integer kechengId, Integer yonghuId) {
+        List<ExamEntity> exams = examService.selectList(new EntityWrapper<ExamEntity>()
+            .eq("kecheng_id", kechengId)
+            .eq("is_deleted", 1)
+            .eq("exam_status", "published"));
+        if (exams == null || exams.isEmpty()) {
+            return true;
+        }
+        for (ExamEntity exam : exams) {
+            ExamRecordEntity record = examRecordService.selectOne(new EntityWrapper<ExamRecordEntity>()
+                .eq("exam_id", exam.getId())
+                .eq("yonghu_id", yonghuId)
+                .orderBy("final_score", false)
+                .last("limit 1"));
+            double passLine = exam.getPassScore() == null ? 60D : exam.getPassScore();
+            if (record == null || record.getFinalScore() == null || record.getFinalScore() < passLine) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private void grantCredit(Integer kechengId, Integer yonghuId, double progressPercent) {
         KechengEntity course = kechengService.selectById(kechengId);
         if (course == null || course.getCreditScore() == null || course.getCreditScore() <= 0) {
@@ -124,7 +151,7 @@ public class CourseSettlementServiceImpl implements CourseSettlementService {
         record.setGrantStatus("已发放");
         record.setGrantTime(new Date());
         record.setGrantRemark("系统自动发放");
-        record.setSourceRuleSnapshot("progress>=" + progressPercent + ",homework>=60");
+        record.setSourceRuleSnapshot("progress>=" + progressPercent + ",homework>=60,exam>=60");
         if (record.getId() == null) {
             courseCreditRecordService.insert(record);
         } else {

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.ExamDao">
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.kecheng_id as kechengId
+        ,a.chapter_id as chapterId
+        ,a.jiaoshi_id as jiaoshiId
+        ,a.exam_name as examName
+        ,a.exam_summary as examSummary
+        ,a.duration_minutes as durationMinutes
+        ,a.total_score as totalScore
+        ,a.pass_score as passScore
+        ,a.start_time as startTime
+        ,a.end_time as endTime
+        ,a.exam_status as examStatus
+        ,a.allow_retake as allowRetake
+        ,a.max_attempt_count as maxAttemptCount
+        ,a.allow_resume as allowResume
+        ,a.publish_time as publishTime
+        ,a.is_deleted as isDeleted
+        ,a.create_time as createTime
+    </sql>
+
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.ExamView">
+        select
+        <include refid="Base_Column_List"/>
+        ,k.kecheng_name as kechengName
+        ,c.chapter_name as chapterName
+        ,j.jiaoshi_name as jiaoshiName
+        from exam a
+        left join kecheng k on a.kecheng_id = k.id
+        left join course_chapter c on a.chapter_id = c.id
+        left join jiaoshi j on a.jiaoshi_id = j.id
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" collection="params.ids" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="params.kechengId != null and params.kechengId != ''">
+                and a.kecheng_id = #{params.kechengId}
+            </if>
+            <if test="params.chapterId != null and params.chapterId != ''">
+                and a.chapter_id = #{params.chapterId}
+            </if>
+            <if test="params.examName != null and params.examName != '' and params.examName != 'null'">
+                and a.exam_name like concat('%',#{params.examName},'%')
+            </if>
+            <if test="params.examStatus != null and params.examStatus != '' and params.examStatus != 'null'">
+                and a.exam_status = #{params.examStatus}
+            </if>
+            <if test="params.jiaoshiId != null and params.jiaoshiId != ''">
+                and a.jiaoshi_id = #{params.jiaoshiId}
+            </if>
+            <if test="params.isDeleted != null and params.isDeleted != ''">
+                and a.is_deleted = #{params.isDeleted}
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+</mapper>
