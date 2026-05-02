@@ -1,0 +1,59 @@
+import { createRouter, createWebHistory } from "vue-router";
+import PublicLayout from "@/layouts/PublicLayout.vue";
+import HomeView from "@/views/HomeView.vue";
+import LoginView from "@/views/LoginView.vue";
+import CoursesView from "@/views/CoursesView.vue";
+import NoticesView from "@/views/NoticesView.vue";
+import HomeworksView from "@/views/HomeworksView.vue";
+import ForumView from "@/views/ForumView.vue";
+import MaterialsView from "@/views/MaterialsView.vue";
+import MeetingsView from "@/views/MeetingsView.vue";
+import HomeworkDetailView from "@/views/HomeworkDetailView.vue";
+import ForumDetailView from "@/views/ForumDetailView.vue";
+import MaterialDetailView from "@/views/MaterialDetailView.vue";
+import MeetingDetailView from "@/views/MeetingDetailView.vue";
+import CenterView from "@/views/CenterView.vue";
+import { useSessionStore } from "@/stores/session";
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    {
+      path: "/",
+      component: PublicLayout,
+      children: [
+        { path: "", name: "home", component: HomeView },
+        { path: "courses", name: "courses", component: CoursesView },
+        { path: "notices", name: "notices", component: NoticesView },
+        { path: "homeworks", name: "homeworks", component: HomeworksView },
+        { path: "homeworks/:id", name: "homework-detail", component: HomeworkDetailView },
+        { path: "forum", name: "forum", component: ForumView },
+        { path: "forum/:id", name: "forum-detail", component: ForumDetailView },
+        { path: "materials", name: "materials", component: MaterialsView },
+        { path: "materials/:id", name: "material-detail", component: MaterialDetailView },
+        { path: "meetings", name: "meetings", component: MeetingsView },
+        { path: "meetings/:id", name: "meeting-detail", component: MeetingDetailView },
+        {
+          path: "center",
+          name: "center",
+          component: CenterView,
+          meta: { requiresAuth: true }
+        }
+      ]
+    },
+    { path: "/login", name: "login", component: LoginView }
+  ]
+});
+
+router.beforeEach((to) => {
+  const session = useSessionStore();
+  if (to.meta.requiresAuth && !session.isLoggedIn) {
+    return { name: "login", query: { redirect: to.fullPath } };
+  }
+  if (to.name === "login" && session.isLoggedIn) {
+    return { name: "center" };
+  }
+  return true;
+});
+
+export default router;

@@ -1,0 +1,4 @@
+packages:
+  - "front-web"
+  - "admin-web"
+  - "shared"
