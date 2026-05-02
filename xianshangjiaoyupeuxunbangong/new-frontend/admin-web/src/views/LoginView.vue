@@ -1,8 +1,8 @@
 <template>
   <div class="admin-login">
     <form class="admin-login__panel" @submit.prevent="submit">
-      <p class="admin-kicker">后台重写入口</p>
-      <h1>用更稳定的工程结构承接管理员与教师后台。</h1>
+      <p class="admin-kicker">后台登录</p>
+      <h1>进入教学管理工作台</h1>
       <el-select v-model="tableName" size="large">
         <el-option label="管理员后台" value="users" />
         <el-option label="教师工作台" value="jiaoshi" />
@@ -27,7 +27,7 @@
         native-type="submit"
         :loading="store.pending"
       >
-        进入新版后台
+        进入后台
       </el-button>
     </form>
   </div>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.CourseEnrollDao">
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.kecheng_id as kechengId
+        ,a.yonghu_id as yonghuId
+        ,a.enroll_status as enrollStatus
+        ,a.progress_percent as progressPercent
+        ,a.enroll_time as enrollTime
+        ,a.finish_time as finishTime
+        ,a.is_deleted as isDeleted
+        ,a.create_time as createTime
+    </sql>
+
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.CourseEnrollView">
+        select
+        <include refid="Base_Column_List"/>
+        ,k.kecheng_name as kechengName
+        ,k.kecheng_photo as kechengPhoto
+        ,k.course_status as courseStatus
+        ,k.credit_score as creditScore
+        ,j.jiaoshi_name as jiaoshiName
+        ,y.yonghu_name as yonghuName
+        from course_enroll a
+        left join kecheng k on a.kecheng_id = k.id
+        left join jiaoshi j on k.jiaoshi_id = j.id
+        left join yonghu y on a.yonghu_id = y.id
+        <where>
+            <if test="params.kechengId != null and params.kechengId != ''">
+                and a.kecheng_id = #{params.kechengId}
+            </if>
+            <if test="params.yonghuId != null and params.yonghuId != ''">
+                and a.yonghu_id = #{params.yonghuId}
+            </if>
+            <if test="params.jiaoshiId != null and params.jiaoshiId != ''">
+                and k.jiaoshi_id = #{params.jiaoshiId}
+            </if>
+            <if test="params.enrollStatus != null and params.enrollStatus != '' and params.enrollStatus != 'null'">
+                and a.enroll_status = #{params.enrollStatus}
+            </if>
+            <if test="params.isDeleted != null and params.isDeleted != ''">
+                and a.is_deleted = #{params.isDeleted}
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+</mapper>
+

@@ -73,7 +73,7 @@ public class KechengController {
         if(false)
             return R.error(511,"永不会进入");
         else if("学生".equals(role))
-            params.put("yonghuId",request.getSession().getAttribute("userId"));
+            params.put("courseStatus","approved");
         else if("教师".equals(role))
             params.put("jiaoshiId",request.getSession().getAttribute("userId"));
         params.put("kechengDeleteStart",1);params.put("kechengDeleteEnd",1);
@@ -141,6 +141,13 @@ public class KechengController {
         logger.info("sql语句:"+queryWrapper.getSqlSegment());
         KechengEntity kechengEntity = kechengService.selectOne(queryWrapper);
         if(kechengEntity==null){
+            kecheng.setCourseStatus("pending_review");
+            kecheng.setReviewRemark(null);
+            kecheng.setReviewTime(null);
+            kecheng.setReviewAdminId(null);
+            if(kecheng.getCreditScore() == null){
+                kecheng.setCreditScore(0);
+            }
             kecheng.setKechengDelete(1);
             kecheng.setCreateTime(new Date());
             kechengService.insert(kecheng);
@@ -163,6 +170,12 @@ public class KechengController {
 //            return R.error(511,"永远不会进入");
 //        else if("教师".equals(role))
 //            kecheng.setJiaoshiId(Integer.valueOf(String.valueOf(request.getSession().getAttribute("userId"))));
+        if("教师".equals(role)){
+            kecheng.setCourseStatus("pending_review");
+            kecheng.setReviewRemark(null);
+            kecheng.setReviewTime(null);
+            kecheng.setReviewAdminId(null);
+        }
         //根据字段查询是否有相同数据
         Wrapper<KechengEntity> queryWrapper = new EntityWrapper<KechengEntity>()
             .notIn("id",kecheng.getId())
@@ -282,6 +295,7 @@ public class KechengController {
     public R list(@RequestParam Map<String, Object> params, HttpServletRequest request){
         logger.debug("list方法:,,Controller:{},,params:{}",this.getClass().getName(),JSONObject.toJSONString(params));
 
+        params.put("courseStatus","approved");
         CommonUtil.checkMap(params);
         PageUtils page = kechengService.queryPage(params);
 
@@ -339,6 +353,13 @@ public class KechengController {
         logger.info("sql语句:"+queryWrapper.getSqlSegment());
         KechengEntity kechengEntity = kechengService.selectOne(queryWrapper);
         if(kechengEntity==null){
+            kecheng.setCourseStatus("pending_review");
+            kecheng.setReviewRemark(null);
+            kecheng.setReviewTime(null);
+            kecheng.setReviewAdminId(null);
+            if(kecheng.getCreditScore() == null){
+                kecheng.setCreditScore(0);
+            }
             kecheng.setKechengDelete(1);
             kecheng.setCreateTime(new Date());
         kechengService.insert(kecheng);
@@ -347,6 +368,36 @@ public class KechengController {
         }else {
             return R.error(511,"表中有相同数据");
         }
+    }
+
+    @RequestMapping("/submitReview")
+    public R submitReview(@RequestBody Map<String,Object> params){
+        Integer id = Integer.valueOf(String.valueOf(params.get("id")));
+        KechengEntity entity = kechengService.selectById(id);
+        if(entity == null){
+            return R.error(511,"查不到数据");
+        }
+        entity.setCourseStatus("pending_review");
+        entity.setReviewRemark(null);
+        entity.setReviewTime(null);
+        entity.setReviewAdminId(null);
+        kechengService.updateById(entity);
+        return R.ok();
+    }
+
+    @RequestMapping("/review")
+    public R review(@RequestBody KechengEntity kecheng, HttpServletRequest request){
+        KechengEntity entity = kechengService.selectById(kecheng.getId());
+        if(entity == null){
+            return R.error(511,"查不到数据");
+        }
+        entity.setCourseStatus(kecheng.getCourseStatus());
+        entity.setReviewRemark(kecheng.getReviewRemark());
+        entity.setReviewTime(new Date());
+        Object userId = request.getSession().getAttribute("userId");
+        entity.setReviewAdminId(userId == null ? null : Long.valueOf(String.valueOf(userId)));
+        kechengService.updateById(entity);
+        return R.ok();
     }
 
 }

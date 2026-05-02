@@ -1,9 +1,10 @@
 <template>
   <section class="section section--tight">
-    <div class="section__header">
+    <div class="section__header section__header--stack">
       <div>
         <p class="eyebrow">作业中心</p>
-        <h1>把原有作业列表从表格页重构为任务看板式内容流</h1>
+        <h1>按任务卡片查看作业要求与附件</h1>
+        <p class="section__summary">列表突出任务名称、发布教师、发布时间与附件状态，减少传统表格式阅读负担。</p>
       </div>
     </div>
 
@@ -37,7 +38,7 @@ import { fetchHomeworkPage } from "@/api/content";
 const homeworks = ref<HomeworkItem[]>([]);
 
 function toAsset(path?: string) {
-  return createAssetUrl(DEFAULT_BASE_URL, path) || "https://dummyimage.com/600x400/e8ddd2/2b312d&text=Homework";
+  return createAssetUrl(DEFAULT_BASE_URL, path) || "https://dummyimage.com/600x400/f3d8c5/1c2430&text=Homework";
 }
 
 function stripHtml(value?: string) {

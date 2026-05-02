@@ -1,9 +1,10 @@
 <template>
   <section class="section section--tight">
-    <div class="section__header">
+    <div class="section__header section__header--stack">
       <div>
         <p class="eyebrow">会议通知</p>
-        <h1>会议通知用简洁的时间轴式公告视图承载</h1>
+        <h1>按时间线查看会议与教学安排</h1>
+        <p class="section__summary">列表突出通知标题、发布时间与正文摘要，方便快速确认近期安排。</p>
       </div>
     </div>
 

@@ -24,9 +24,9 @@
 
       <aside class="action-panel">
         <p class="eyebrow">作业提交</p>
-        <h2>提交后直接进入批改流</h2>
+        <h2>上传附件并补充说明</h2>
         <p class="hero__lead">
-          当前版本会把提交记录写入 `zuoye_submit`，并展示最近一次批改状态、评分和评语。
+          提交后可在下方查看最近一次提交记录，包括状态、评分和教师评语。
         </p>
         <p v-if="!session.isLoggedIn" class="field-error">请先登录后再提交作业。</p>
         <input type="file" class="field field--file" @change="handleFileChange" />
@@ -41,7 +41,7 @@
           :disabled="!selectedFile || uploading"
           @click="submitHomework"
         >
-          {{ uploading ? "提交中..." : "上传并记录本次提交" }}
+          {{ uploading ? "提交中..." : "上传并提交" }}
         </button>
         <p v-if="submissionMessage" :class="submissionMessageType === 'error' ? 'field-error' : 'field-help'">
           {{ submissionMessage }}
@@ -100,7 +100,7 @@ const submissionRecord = ref<HomeworkSubmissionItem | null>(null);
 function toAsset(path?: string) {
   return (
     createAssetUrl(DEFAULT_BASE_URL, path) ||
-    "https://dummyimage.com/800x480/e8ddd2/2b312d&text=Homework"
+    "https://dummyimage.com/800x480/f3d8c5/1c2430&text=Homework"
   );
 }
 
@@ -153,7 +153,7 @@ async function submitHomework() {
       throw new Error(result.msg || "提交失败");
     }
     submissionMessageType.value = "success";
-    submissionMessage.value = "附件已上传，提交记录已进入批改流。";
+    submissionMessage.value = "提交成功。";
     selectedFile.value = null;
     submissionContent.value = "";
     await loadSubmission();

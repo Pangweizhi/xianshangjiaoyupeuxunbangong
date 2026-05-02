@@ -1,9 +1,10 @@
 <template>
   <section class="section section--tight">
-    <div class="section__header">
+    <div class="section__header section__header--stack">
       <div>
         <p class="eyebrow">交流论坛</p>
-        <h1>论坛模块改成内容优先的讨论流，而不是旧式功能页堆叠</h1>
+        <h1>围绕课程与任务组织讨论话题</h1>
+        <p class="section__summary">帖子列表优先展示标题、作者、状态和摘要，方便快速进入问题讨论与回复。</p>
       </div>
     </div>
 

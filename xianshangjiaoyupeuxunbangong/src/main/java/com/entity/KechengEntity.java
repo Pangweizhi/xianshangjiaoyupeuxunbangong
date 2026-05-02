@@ -117,6 +117,43 @@ public class KechengEntity<T> implements Serializable {
 
     private Integer jiaoshiId;
 
+    /**
+     * 课程审核状态
+     */
+    @ColumnInfo(comment="课程审核状态",type="varchar(50)")
+    @TableField(value = "course_status")
+    private String courseStatus;
+
+    /**
+     * 课程学分
+     */
+    @ColumnInfo(comment="课程学分",type="int(11)")
+    @TableField(value = "credit_score")
+    private Integer creditScore;
+
+    /**
+     * 审核备注
+     */
+    @ColumnInfo(comment="审核备注",type="varchar(255)")
+    @TableField(value = "review_remark")
+    private String reviewRemark;
+
+    /**
+     * 审核时间
+     */
+    @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat
+    @ColumnInfo(comment="审核时间",type="timestamp")
+    @TableField(value = "review_time")
+    private Date reviewTime;
+
+    /**
+     * 审核管理员
+     */
+    @ColumnInfo(comment="审核管理员",type="bigint(20)")
+    @TableField(value = "review_admin_id")
+    private Long reviewAdminId;
+
 
     /**
      * 逻辑删除
@@ -252,6 +289,66 @@ public class KechengEntity<T> implements Serializable {
         this.jiaoshiId = jiaoshiId;
     }
     /**
+	 * 获取：课程审核状态
+	 */
+    public String getCourseStatus() {
+        return courseStatus;
+    }
+    /**
+	 * 设置：课程审核状态
+	 */
+    public void setCourseStatus(String courseStatus) {
+        this.courseStatus = courseStatus;
+    }
+    /**
+	 * 获取：课程学分
+	 */
+    public Integer getCreditScore() {
+        return creditScore;
+    }
+    /**
+	 * 设置：课程学分
+	 */
+    public void setCreditScore(Integer creditScore) {
+        this.creditScore = creditScore;
+    }
+    /**
+	 * 获取：审核备注
+	 */
+    public String getReviewRemark() {
+        return reviewRemark;
+    }
+    /**
+	 * 设置：审核备注
+	 */
+    public void setReviewRemark(String reviewRemark) {
+        this.reviewRemark = reviewRemark;
+    }
+    /**
+	 * 获取：审核时间
+	 */
+    public Date getReviewTime() {
+        return reviewTime;
+    }
+    /**
+	 * 设置：审核时间
+	 */
+    public void setReviewTime(Date reviewTime) {
+        this.reviewTime = reviewTime;
+    }
+    /**
+	 * 获取：审核管理员
+	 */
+    public Long getReviewAdminId() {
+        return reviewAdminId;
+    }
+    /**
+	 * 设置：审核管理员
+	 */
+    public void setReviewAdminId(Long reviewAdminId) {
+        this.reviewAdminId = reviewAdminId;
+    }
+    /**
 	 * 获取：逻辑删除
 	 */
     public Integer getKechengDelete() {
@@ -302,6 +399,11 @@ public class KechengEntity<T> implements Serializable {
             ", kechengTime=" + DateUtil.convertString(kechengTime,"yyyy-MM-dd") +
             ", banjiTypes=" + banjiTypes +
             ", jiaoshiId=" + jiaoshiId +
+            ", courseStatus=" + courseStatus +
+            ", creditScore=" + creditScore +
+            ", reviewRemark=" + reviewRemark +
+            ", reviewTime=" + DateUtil.convertString(reviewTime,"yyyy-MM-dd") +
+            ", reviewAdminId=" + reviewAdminId +
             ", kechengDelete=" + kechengDelete +
             ", kechengContent=" + kechengContent +
             ", createTime=" + DateUtil.convertString(createTime,"yyyy-MM-dd") +

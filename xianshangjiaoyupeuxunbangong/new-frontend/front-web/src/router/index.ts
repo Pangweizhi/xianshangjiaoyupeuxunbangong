@@ -3,6 +3,7 @@ import PublicLayout from "@/layouts/PublicLayout.vue";
 import HomeView from "@/views/HomeView.vue";
 import LoginView from "@/views/LoginView.vue";
 import CoursesView from "@/views/CoursesView.vue";
+import CourseDetailView from "@/views/CourseDetailView.vue";
 import NoticesView from "@/views/NoticesView.vue";
 import HomeworksView from "@/views/HomeworksView.vue";
 import ForumView from "@/views/ForumView.vue";
@@ -13,6 +14,7 @@ import ForumDetailView from "@/views/ForumDetailView.vue";
 import MaterialDetailView from "@/views/MaterialDetailView.vue";
 import MeetingDetailView from "@/views/MeetingDetailView.vue";
 import CenterView from "@/views/CenterView.vue";
+import MyCoursesView from "@/views/MyCoursesView.vue";
 import { useSessionStore } from "@/stores/session";
 
 const router = createRouter({
@@ -24,6 +26,8 @@ const router = createRouter({
       children: [
         { path: "", name: "home", component: HomeView },
         { path: "courses", name: "courses", component: CoursesView },
+        { path: "courses/:id", name: "course-detail", component: CourseDetailView },
+        { path: "my-courses", name: "my-courses", component: MyCoursesView, meta: { requiresAuth: true } },
         { path: "notices", name: "notices", component: NoticesView },
         { path: "homeworks", name: "homeworks", component: HomeworksView },
         { path: "homeworks/:id", name: "homework-detail", component: HomeworkDetailView },

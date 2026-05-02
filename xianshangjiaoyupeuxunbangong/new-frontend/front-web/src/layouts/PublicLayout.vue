@@ -1,10 +1,16 @@
 <template>
   <div class="shell">
+    <div class="topline">
+      <span>课程、公告、作业、论坛与备课资源统一呈现</span>
+      <RouterLink class="topline__link" to="/courses">查看课程中心</RouterLink>
+    </div>
+
     <header class="topbar">
       <BrandMark />
       <nav class="topbar__nav">
         <RouterLink to="/">首页</RouterLink>
         <RouterLink to="/courses">课程</RouterLink>
+        <RouterLink to="/my-courses">我的课程</RouterLink>
         <RouterLink to="/notices">公告</RouterLink>
         <RouterLink to="/homeworks">作业</RouterLink>
         <RouterLink to="/forum">论坛</RouterLink>
@@ -15,12 +21,13 @@
       <div class="topbar__actions">
         <template v-if="session.isLoggedIn">
           <span class="tag">{{ session.displayRole }}</span>
-          <button class="ghost-button" @click="session.logout">退出</button>
+          <button class="ghost-button" @click="session.logout">退出登录</button>
         </template>
-        <RouterLink v-else class="ghost-button" to="/login">登录</RouterLink>
+        <RouterLink v-else class="primary-button primary-button--compact" to="/login">登录</RouterLink>
       </div>
     </header>
-    <main>
+
+    <main class="main-shell">
       <RouterView />
     </main>
   </div>

@@ -139,6 +139,12 @@ public class ZuoyeController {
         logger.info("sql语句:"+queryWrapper.getSqlSegment());
         ZuoyeEntity zuoyeEntity = zuoyeService.selectOne(queryWrapper);
         if(zuoyeEntity==null){
+            if(zuoye.getPublishStatus() == null){
+                zuoye.setPublishStatus("published");
+            }
+            if(zuoye.getScoreTotal() == null){
+                zuoye.setScoreTotal(100);
+            }
             zuoye.setZuoyeDelete(1);
             zuoye.setInsertTime(new Date());
             zuoye.setCreateTime(new Date());
@@ -282,6 +288,7 @@ public class ZuoyeController {
         logger.debug("list方法:,,Controller:{},,params:{}",this.getClass().getName(),JSONObject.toJSONString(params));
 
         CommonUtil.checkMap(params);
+        params.put("publishStatus","published");
         PageUtils page = zuoyeService.queryPage(params);
 
         //字典表数据转换
@@ -336,6 +343,12 @@ public class ZuoyeController {
         logger.info("sql语句:"+queryWrapper.getSqlSegment());
         ZuoyeEntity zuoyeEntity = zuoyeService.selectOne(queryWrapper);
         if(zuoyeEntity==null){
+            if(zuoye.getPublishStatus() == null){
+                zuoye.setPublishStatus("published");
+            }
+            if(zuoye.getScoreTotal() == null){
+                zuoye.setScoreTotal(100);
+            }
             zuoye.setZuoyeDelete(1);
             zuoye.setInsertTime(new Date());
             zuoye.setCreateTime(new Date());

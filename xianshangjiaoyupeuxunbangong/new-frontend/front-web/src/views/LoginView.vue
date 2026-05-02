@@ -1,10 +1,11 @@
 <template>
   <section class="login-screen">
+    <div class="login-backdrop"></div>
     <form class="login-panel" @submit.prevent="submit">
-      <p class="eyebrow">统一登录入口</p>
-      <h1>用一套登录流承接学生、教师和管理员。</h1>
+      <p class="eyebrow">统一登录</p>
+      <h1>选择身份后进入对应学习空间</h1>
       <p class="login-panel__hint">
-        后端继续使用 `/users`、`/jiaoshi`、`/yonghu` 三套登录接口，新前端只重做交互与状态管理。
+        支持学生、教师和管理员三类身份登录，登录后可直接进入个人中心与业务页面。
       </p>
 
       <label class="field-group">
@@ -31,10 +32,10 @@
         />
       </label>
 
-      <p class="field-help">登录成功后会自动按原系统角色加载对应会话。</p>
+      <p class="field-help">登录成功后将自动跳转到个人中心。</p>
       <p v-if="errorMessage" class="error-text">{{ errorMessage }}</p>
       <button class="primary-button primary-button--full" :disabled="session.pending">
-        {{ session.pending ? "登录中..." : "进入新版前端" }}
+        {{ session.pending ? "登录中..." : "进入系统" }}
       </button>
     </form>
   </section>

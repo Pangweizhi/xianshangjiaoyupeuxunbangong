@@ -5,7 +5,9 @@ import com.annotation.IgnoreAuth;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.entity.ZuoyeSubmitEntity;
+import com.entity.ZuoyeEntity;
 import com.entity.view.ZuoyeSubmitView;
+import com.service.ZuoyeService;
 import com.service.ZuoyeSubmitService;
 import com.utils.CommonUtil;
 import com.utils.PageUtils;
@@ -36,6 +38,8 @@ public class ZuoyeSubmitController {
 
     @Autowired
     private ZuoyeSubmitService zuoyeSubmitService;
+    @Autowired
+    private ZuoyeService zuoyeService;
 
     /**
      * 后端列表
@@ -89,6 +93,13 @@ public class ZuoyeSubmitController {
             .eq("submit_delete", 1);
 
         ZuoyeSubmitEntity entity = zuoyeSubmitService.selectOne(queryWrapper);
+        ZuoyeEntity homework = zuoyeService.selectById(zuoyeSubmit.getZuoyeId());
+        if (homework == null) {
+            return R.error(511, "作业不存在");
+        }
+        if (homework.getDeadlineTime() != null && homework.getDeadlineTime().before(new Date())) {
+            return R.error(511, "已超过作业截止时间");
+        }
         if (entity == null) {
             zuoyeSubmit.setSubmitStatus("待批改");
             zuoyeSubmit.setSubmitScore(null);

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.StudyProgressDao">
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.kecheng_id as kechengId
+        ,a.chapter_id as chapterId
+        ,a.resource_id as resourceId
+        ,a.yonghu_id as yonghuId
+        ,a.study_seconds as studySeconds
+        ,a.progress_percent as progressPercent
+        ,a.is_completed as isCompleted
+        ,a.last_study_time as lastStudyTime
+        ,a.create_time as createTime
+    </sql>
+
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.StudyProgressView">
+        select
+        <include refid="Base_Column_List"/>
+        ,k.kecheng_name as kechengName
+        ,c.chapter_name as chapterName
+        ,r.resource_name as resourceName
+        ,r.resource_type as resourceType
+        ,y.yonghu_name as yonghuName
+        from study_progress a
+        left join kecheng k on a.kecheng_id = k.id
+        left join course_chapter c on a.chapter_id = c.id
+        left join course_resource r on a.resource_id = r.id
+        left join yonghu y on a.yonghu_id = y.id
+        <where>
+            <if test="params.kechengId != null and params.kechengId != ''">
+                and a.kecheng_id = #{params.kechengId}
+            </if>
+            <if test="params.chapterId != null and params.chapterId != ''">
+                and a.chapter_id = #{params.chapterId}
+            </if>
+            <if test="params.resourceId != null and params.resourceId != ''">
+                and a.resource_id = #{params.resourceId}
+            </if>
+            <if test="params.yonghuId != null and params.yonghuId != ''">
+                and a.yonghu_id = #{params.yonghuId}
+            </if>
+            <if test="params.jiaoshiId != null and params.jiaoshiId != ''">
+                and k.jiaoshi_id = #{params.jiaoshiId}
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+</mapper>
+

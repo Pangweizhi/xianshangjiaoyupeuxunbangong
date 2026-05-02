@@ -12,7 +12,8 @@
       </article>
 
       <aside class="action-panel">
-        <p class="eyebrow">发帖与回帖</p>
+        <p class="eyebrow">发表回复</p>
+        <h2>补充观点或继续交流</h2>
         <input v-model="replyTitle" class="field" placeholder="回复标题" />
         <textarea v-model="replyContent" class="field field--textarea" placeholder="输入回复内容"></textarea>
         <button class="primary-button primary-button--full" :disabled="submitting" @click="submitReply">
@@ -23,10 +24,10 @@
     </div>
 
     <div class="section">
-      <div class="section__header">
+      <div class="section__header section__header--stack">
         <div>
-          <p class="eyebrow">回帖列表</p>
-          <h2>以父帖 ID 组织当前讨论</h2>
+          <p class="eyebrow">回复列表</p>
+          <h2>当前讨论的全部回复</h2>
         </div>
       </div>
       <div class="notice-list">

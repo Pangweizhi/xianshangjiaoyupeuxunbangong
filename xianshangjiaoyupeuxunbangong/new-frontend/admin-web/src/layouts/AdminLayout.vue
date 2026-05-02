@@ -3,7 +3,7 @@
     <aside class="admin-aside">
       <div class="admin-brand">
         <strong>Control Room</strong>
-        <span>重写后台管理端</span>
+        <span>教学管理中心</span>
       </div>
       <RouterLink to="/dashboard">仪表盘</RouterLink>
       <RouterLink v-if="store.session?.tableName === 'jiaoshi'" to="/submissions">提交记录</RouterLink>
@@ -24,7 +24,7 @@
       <header class="admin-header">
         <div>
           <h1>{{ title }}</h1>
-          <p>{{ store.displayRole }} · 基于原 Spring Boot 接口重写</p>
+          <p>{{ store.displayRole }}</p>
         </div>
         <el-button plain @click="store.logout">退出登录</el-button>
       </header>

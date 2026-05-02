@@ -1,9 +1,10 @@
 <template>
   <section class="section section--tight">
-    <div class="section__header">
+    <div class="section__header section__header--stack">
       <div>
         <p class="eyebrow">备课资源</p>
-        <h1>备课信息以资料卡片展示，适配教师和学生的轻量阅读场景</h1>
+        <h1>集中查看教学资料与配套附件</h1>
+        <p class="section__summary">封面、教师、时间与附件状态保持同层展示，兼顾浏览效率与内容识别。</p>
       </div>
     </div>
 
@@ -37,7 +38,7 @@ import { fetchMaterialPage } from "@/api/content";
 const materials = ref<LessonMaterialItem[]>([]);
 
 function toAsset(path?: string) {
-  return createAssetUrl(DEFAULT_BASE_URL, path) || "https://dummyimage.com/600x400/dfebe6/203f39&text=Lesson";
+  return createAssetUrl(DEFAULT_BASE_URL, path) || "https://dummyimage.com/600x400/e6efe4/21393b&text=Lesson";
 }
 
 function stripHtml(value?: string) {

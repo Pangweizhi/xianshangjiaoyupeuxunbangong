@@ -37,6 +37,56 @@ export interface CourseItem {
   banjiValue?: string;
   jiaoshiName?: string;
   kechengContent?: string;
+  courseStatus?: string;
+  creditScore?: number;
+  reviewRemark?: string;
+}
+
+export interface CourseChapterItem {
+  id: number;
+  kechengId: number;
+  chapterName: string;
+  chapterSort?: number;
+  chapterSummary?: string;
+  chapterStatus?: string;
+}
+
+export interface CourseResourceItem {
+  id: number;
+  kechengId: number;
+  chapterId: number;
+  resourceName: string;
+  resourceType?: string;
+  resourceUrl?: string;
+  coverUrl?: string;
+  durationSeconds?: number;
+  resourceStatus?: string;
+}
+
+export interface CourseEnrollItem {
+  id: number;
+  kechengId: number;
+  yonghuId: number;
+  enrollStatus?: string;
+  progressPercent?: number;
+  enrollTime?: string;
+  finishTime?: string;
+  kechengName?: string;
+  kechengPhoto?: string;
+  jiaoshiName?: string;
+  courseStatus?: string;
+  creditScore?: number;
+}
+
+export interface CreditRecordItem {
+  id: number;
+  kechengId: number;
+  yonghuId: number;
+  creditScore?: number;
+  grantStatus?: string;
+  grantTime?: string;
+  grantRemark?: string;
+  kechengName?: string;
 }
 
 export interface NoticeItem {

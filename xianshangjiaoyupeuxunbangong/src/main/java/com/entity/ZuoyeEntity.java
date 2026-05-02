@@ -97,6 +97,43 @@ public class ZuoyeEntity<T> implements Serializable {
 
     private Integer jiaoshiId;
 
+    /**
+     * 课程
+     */
+    @ColumnInfo(comment="课程",type="int(11)")
+    @TableField(value = "kecheng_id")
+    private Integer kechengId;
+
+    /**
+     * 章节
+     */
+    @ColumnInfo(comment="章节",type="int(11)")
+    @TableField(value = "chapter_id")
+    private Integer chapterId;
+
+    /**
+     * 截止时间
+     */
+    @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat
+    @ColumnInfo(comment="截止时间",type="timestamp")
+    @TableField(value = "deadline_time")
+    private Date deadlineTime;
+
+    /**
+     * 总分
+     */
+    @ColumnInfo(comment="总分",type="int(11)")
+    @TableField(value = "score_total")
+    private Integer scoreTotal;
+
+    /**
+     * 发布状态
+     */
+    @ColumnInfo(comment="发布状态",type="varchar(50)")
+    @TableField(value = "publish_status")
+    private String publishStatus;
+
 
     /**
      * 作业详情
@@ -217,6 +254,66 @@ public class ZuoyeEntity<T> implements Serializable {
         this.jiaoshiId = jiaoshiId;
     }
     /**
+	 * 获取：课程
+	 */
+    public Integer getKechengId() {
+        return kechengId;
+    }
+    /**
+	 * 设置：课程
+	 */
+    public void setKechengId(Integer kechengId) {
+        this.kechengId = kechengId;
+    }
+    /**
+	 * 获取：章节
+	 */
+    public Integer getChapterId() {
+        return chapterId;
+    }
+    /**
+	 * 设置：章节
+	 */
+    public void setChapterId(Integer chapterId) {
+        this.chapterId = chapterId;
+    }
+    /**
+	 * 获取：截止时间
+	 */
+    public Date getDeadlineTime() {
+        return deadlineTime;
+    }
+    /**
+	 * 设置：截止时间
+	 */
+    public void setDeadlineTime(Date deadlineTime) {
+        this.deadlineTime = deadlineTime;
+    }
+    /**
+	 * 获取：总分
+	 */
+    public Integer getScoreTotal() {
+        return scoreTotal;
+    }
+    /**
+	 * 设置：总分
+	 */
+    public void setScoreTotal(Integer scoreTotal) {
+        this.scoreTotal = scoreTotal;
+    }
+    /**
+	 * 获取：发布状态
+	 */
+    public String getPublishStatus() {
+        return publishStatus;
+    }
+    /**
+	 * 设置：发布状态
+	 */
+    public void setPublishStatus(String publishStatus) {
+        this.publishStatus = publishStatus;
+    }
+    /**
 	 * 获取：作业详情
 	 */
     public String getZuoyeContent() {
@@ -278,6 +375,11 @@ public class ZuoyeEntity<T> implements Serializable {
             ", zuoyeTypes=" + zuoyeTypes +
             ", zuoyeFile=" + zuoyeFile +
             ", jiaoshiId=" + jiaoshiId +
+            ", kechengId=" + kechengId +
+            ", chapterId=" + chapterId +
+            ", deadlineTime=" + DateUtil.convertString(deadlineTime,"yyyy-MM-dd") +
+            ", scoreTotal=" + scoreTotal +
+            ", publishStatus=" + publishStatus +
             ", zuoyeContent=" + zuoyeContent +
             ", zuoyeDelete=" + zuoyeDelete +
             ", insertTime=" + DateUtil.convertString(insertTime,"yyyy-MM-dd") +

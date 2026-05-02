@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.CourseCreditRecordDao">
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.kecheng_id as kechengId
+        ,a.yonghu_id as yonghuId
+        ,a.credit_score as creditScore
+        ,a.grant_status as grantStatus
+        ,a.grant_time as grantTime
+        ,a.grant_remark as grantRemark
+        ,a.source_rule_snapshot as sourceRuleSnapshot
+        ,a.create_time as createTime
+    </sql>
+
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.CourseCreditRecordView">
+        select
+        <include refid="Base_Column_List"/>
+        ,k.kecheng_name as kechengName
+        ,y.yonghu_name as yonghuName
+        from course_credit_record a
+        left join kecheng k on a.kecheng_id = k.id
+        left join yonghu y on a.yonghu_id = y.id
+        <where>
+            <if test="params.kechengId != null and params.kechengId != ''">
+                and a.kecheng_id = #{params.kechengId}
+            </if>
+            <if test="params.yonghuId != null and params.yonghuId != ''">
+                and a.yonghu_id = #{params.yonghuId}
+            </if>
+            <if test="params.grantStatus != null and params.grantStatus != '' and params.grantStatus != 'null'">
+                and a.grant_status = #{params.grantStatus}
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+</mapper>

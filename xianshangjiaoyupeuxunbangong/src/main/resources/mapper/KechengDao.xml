@@ -12,6 +12,11 @@
         ,a.kecheng_time as kechengTime
         ,a.banji_types as banjiTypes
         ,a.jiaoshi_id as jiaoshiId
+        ,a.course_status as courseStatus
+        ,a.credit_score as creditScore
+        ,a.review_remark as reviewRemark
+        ,a.review_time as reviewTime
+        ,a.review_admin_id as reviewAdminId
         ,a.kecheng_delete as kechengDelete
         ,a.kecheng_content as kechengContent
         ,a.create_time as createTime
@@ -66,6 +71,9 @@
                 and (
                     a.jiaoshi_id = #{params.jiaoshiId}
                 )
+            </if>
+            <if test="params.courseStatus != null and params.courseStatus != '' and params.courseStatus != 'null'">
+                and a.course_status = #{params.courseStatus}
             </if>
             <if test="params.kechengDeleteStart != null and params.kechengDeleteStart != ''">
                 <![CDATA[  and a.kecheng_delete >= #{params.kechengDeleteStart}   ]]>

@@ -27,6 +27,10 @@ public class ZuoyeView extends ZuoyeEntity implements Serializable {
 	*/
 	@ColumnInfo(comment="作业类型的字典表值",type="varchar(200)")
 	private String zuoyeValue;
+	@ColumnInfo(comment="课程标题",type="varchar(200)")
+	private String kechengName;
+	@ColumnInfo(comment="章节标题",type="varchar(200)")
+	private String chapterName;
 
 	//级联表 教师
 		/**
@@ -95,6 +99,18 @@ public class ZuoyeView extends ZuoyeEntity implements Serializable {
 	*/
 	public void setZuoyeValue(String zuoyeValue) {
 		this.zuoyeValue = zuoyeValue;
+	}
+	public String getKechengName() {
+		return kechengName;
+	}
+	public void setKechengName(String kechengName) {
+		this.kechengName = kechengName;
+	}
+	public String getChapterName() {
+		return chapterName;
+	}
+	public void setChapterName(String chapterName) {
+		this.chapterName = chapterName;
 	}
 
 
@@ -183,6 +199,8 @@ public class ZuoyeView extends ZuoyeEntity implements Serializable {
 	public String toString() {
 		return "ZuoyeView{" +
 			", zuoyeValue=" + zuoyeValue +
+			", kechengName=" + kechengName +
+			", chapterName=" + chapterName +
 			", jiaoshiName=" + jiaoshiName +
 			", jiaoshiPhoto=" + jiaoshiPhoto +
 			", jiaoshiIdNumber=" + jiaoshiIdNumber +

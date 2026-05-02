@@ -32,6 +32,12 @@ public class KechengView extends KechengEntity implements Serializable {
 	*/
 	@ColumnInfo(comment="班级的字典表值",type="varchar(200)")
 	private String banjiValue;
+	@ColumnInfo(comment="课程状态",type="varchar(50)")
+	private String courseStatus;
+	@ColumnInfo(comment="课程学分",type="int(11)")
+	private Integer creditScore;
+	@ColumnInfo(comment="审核备注",type="varchar(255)")
+	private String reviewRemark;
 
 	//级联表 教师
 		/**
@@ -113,6 +119,24 @@ public class KechengView extends KechengEntity implements Serializable {
 	*/
 	public void setBanjiValue(String banjiValue) {
 		this.banjiValue = banjiValue;
+	}
+	public String getCourseStatus() {
+		return courseStatus;
+	}
+	public void setCourseStatus(String courseStatus) {
+		this.courseStatus = courseStatus;
+	}
+	public Integer getCreditScore() {
+		return creditScore;
+	}
+	public void setCreditScore(Integer creditScore) {
+		this.creditScore = creditScore;
+	}
+	public String getReviewRemark() {
+		return reviewRemark;
+	}
+	public void setReviewRemark(String reviewRemark) {
+		this.reviewRemark = reviewRemark;
 	}
 
 
@@ -202,6 +226,9 @@ public class KechengView extends KechengEntity implements Serializable {
 		return "KechengView{" +
 			", kechengValue=" + kechengValue +
 			", banjiValue=" + banjiValue +
+			", courseStatus=" + courseStatus +
+			", creditScore=" + creditScore +
+			", reviewRemark=" + reviewRemark +
 			", jiaoshiName=" + jiaoshiName +
 			", jiaoshiPhoto=" + jiaoshiPhoto +
 			", jiaoshiIdNumber=" + jiaoshiIdNumber +

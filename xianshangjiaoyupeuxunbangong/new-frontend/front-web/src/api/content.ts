@@ -1,5 +1,9 @@
 import type {
   CourseItem,
+  CourseChapterItem,
+  CourseEnrollItem,
+  CourseResourceItem,
+  CreditRecordItem,
   ApiResponse,
   ForumItem,
   HomeworkItem,
@@ -19,6 +23,56 @@ export async function fetchCoursePage(params?: Record<string, unknown>) {
     params: { page: 1, limit: 8, sort: "id", order: "desc", ...params }
   });
   return unwrap<PagePayload<CourseItem>>(data);
+}
+
+export async function fetchCourseDetail(id: number | string) {
+  const http = useHttp();
+  const { data } = await http.get(`/kecheng/detail/${id}`);
+  return unwrap<CourseItem>(data);
+}
+
+export async function fetchCourseChapterPage(params?: Record<string, unknown>) {
+  const http = useHttp();
+  const { data } = await http.get("/courseChapter/list", {
+    params: { page: 1, limit: 50, sort: "chapterSort", order: "asc", ...params }
+  });
+  return unwrap<PagePayload<CourseChapterItem>>(data);
+}
+
+export async function fetchCourseResourcePage(params?: Record<string, unknown>) {
+  const http = useHttp();
+  const { data } = await http.get("/courseResource/list", {
+    params: { page: 1, limit: 100, sort: "id", order: "desc", ...params }
+  });
+  return unwrap<PagePayload<CourseResourceItem>>(data);
+}
+
+export async function createCourseEnroll(payload: Record<string, unknown>) {
+  const http = useHttp();
+  const { data } = await http.post("/courseEnroll/save", payload);
+  return data as ApiResponse<unknown>;
+}
+
+export async function fetchMyCoursePage(params?: Record<string, unknown>) {
+  const http = useHttp();
+  const { data } = await http.get("/courseEnroll/myCourses", {
+    params: { page: 1, limit: 20, sort: "id", order: "desc", ...params }
+  });
+  return unwrap<PagePayload<CourseEnrollItem>>(data);
+}
+
+export async function saveStudyProgress(payload: Record<string, unknown>) {
+  const http = useHttp();
+  const { data } = await http.post("/studyProgress/saveOrUpdate", payload);
+  return data as ApiResponse<unknown>;
+}
+
+export async function fetchMyCreditPage(params?: Record<string, unknown>) {
+  const http = useHttp();
+  const { data } = await http.get("/courseCreditRecord/myPage", {
+    params: { page: 1, limit: 20, sort: "id", order: "desc", ...params }
+  });
+  return unwrap<PagePayload<CreditRecordItem>>(data);
 }
 
 export async function fetchNoticePage(params?: Record<string, unknown>) {

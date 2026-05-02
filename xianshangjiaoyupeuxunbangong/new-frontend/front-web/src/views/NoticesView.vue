@@ -1,9 +1,10 @@
 <template>
   <section class="section section--tight">
-    <div class="section__header">
+    <div class="section__header section__header--stack">
       <div>
         <p class="eyebrow">公告中心</p>
-        <h1>保留原公告接口，重写阅读层次和发布时间表达</h1>
+        <h1>重要信息按时间顺序集中发布</h1>
+        <p class="section__summary">教学通知、平台公告与日常提醒统一汇总，优先保证可读性与发布时间识别。</p>
       </div>
     </div>
 
