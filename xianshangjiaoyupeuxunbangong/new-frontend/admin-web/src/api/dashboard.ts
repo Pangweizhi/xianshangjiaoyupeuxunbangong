@@ -3,6 +3,7 @@ import type {
   CourseItem,
   CourseChapterItem,
   CourseEnrollItem,
+  CourseReportOverview,
   CourseResourceItem,
   CreditRecordItem,
   DictionaryItem,
@@ -184,4 +185,10 @@ export async function fetchExamRecordPage(params?: Record<string, unknown>) {
     params: { page: 1, limit: 10, sort: "id", order: "desc", ...params }
   });
   return unwrap<PagePayload<ExamRecordItem>>(data);
+}
+
+export async function fetchCourseReportOverview() {
+  const http = useAdminHttp();
+  const { data } = await http.get("/courseReport/overview");
+  return unwrap<CourseReportOverview>(data);
 }

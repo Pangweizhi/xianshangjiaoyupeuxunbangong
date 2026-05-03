@@ -2,6 +2,7 @@ import type {
   CourseItem,
   CourseChapterItem,
   CourseEnrollItem,
+  StudentCoursePerformanceResponse,
   CourseResourceItem,
   CreditRecordItem,
   ApiResponse,
@@ -118,6 +119,12 @@ export async function fetchMyExamRecordPage(params?: Record<string, unknown>) {
     params: { page: 1, limit: 20, sort: "id", order: "desc", ...params }
   });
   return unwrap<PagePayload<ExamRecordItem>>(data);
+}
+
+export async function fetchMyCoursePerformanceSummary() {
+  const http = useHttp();
+  const { data } = await http.get("/courseReport/mySummary");
+  return unwrap<StudentCoursePerformanceResponse>(data);
 }
 
 export async function fetchNoticePage(params?: Record<string, unknown>) {

@@ -298,3 +298,75 @@ export interface DashboardCard {
   value: number;
   hint: string;
 }
+
+export interface CourseReportSummary {
+  courseCount: number;
+  enrollCount?: number;
+  finishedCount: number;
+  creditGrantedCount?: number;
+  creditGrantedScore?: number;
+  homeworkCount?: number;
+  reviewedHomeworkCount: number;
+  passedHomeworkCount?: number;
+  examCount?: number;
+  checkedExamCount: number;
+  passedExamCount?: number;
+  averageHomeworkScore: number;
+  averageExamScore: number;
+  averageProgressPercent: number;
+  grantedCreditCount?: number;
+  grantedCreditScore?: number;
+}
+
+export interface CourseReportCourseItem {
+  courseId: number;
+  courseName: string;
+  teacherName?: string;
+  creditScore?: number;
+  enrollCount?: number;
+  finishedCount?: number;
+  averageProgressPercent?: number;
+  creditGrantedCount?: number;
+  creditGrantedScore?: number;
+  homeworkCount?: number;
+  reviewedHomeworkCount?: number;
+  passedHomeworkCount?: number;
+  averageHomeworkScore?: number;
+  examCount?: number;
+  checkedExamCount?: number;
+  passedExamCount?: number;
+  averageExamScore?: number;
+}
+
+export interface StudentCoursePerformanceItem {
+  courseId: number;
+  courseName: string;
+  teacherName?: string;
+  creditScore?: number;
+  progressPercent?: number;
+  enrollStatus?: string;
+  finishTime?: string;
+  homeworkTotal?: number;
+  reviewedHomeworkCount?: number;
+  passedHomeworkCount?: number;
+  averageHomeworkScore?: number;
+  examTotal?: number;
+  checkedExamCount?: number;
+  passedExamCount?: number;
+  averageExamScore?: number;
+  bestExamScore?: number;
+  grantStatus?: string;
+  grantedCreditScore?: number;
+  grantTime?: string;
+  grantRemark?: string;
+}
+
+export interface CourseReportOverview {
+  summary: CourseReportSummary;
+  courseStats: CourseReportCourseItem[];
+}
+
+export interface StudentCoursePerformanceResponse {
+  summary: CourseReportSummary;
+  courseSummaries: StudentCoursePerformanceItem[];
+}

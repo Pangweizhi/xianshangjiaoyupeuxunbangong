@@ -166,6 +166,12 @@ body {
   line-height: 1.6;
 }
 
+.report-figure {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--admin-accent);
+}
+
 .table-actions {
   gap: 8px;
 }
