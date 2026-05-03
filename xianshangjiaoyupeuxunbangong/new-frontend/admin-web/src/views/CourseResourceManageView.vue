@@ -215,16 +215,24 @@ function resetForm() {
 
 async function openCreate() {
   resetForm();
-  await loadOptions();
-  dialogVisible.value = true;
+  try {
+    await loadOptions();
+    dialogVisible.value = true;
+  } catch (error) {
+    ElMessage.error(error instanceof Error ? error.message : "加载资源表单失败");
+  }
 }
 
 async function openEdit(id: number) {
   resetForm();
-  await loadOptions();
-  Object.assign(form, await fetchEntityDetail("courseResource", id));
-  formChapterOptions.value = await fetchCourseChaptersForSelect(form.kechengId);
-  dialogVisible.value = true;
+  try {
+    await loadOptions();
+    Object.assign(form, await fetchEntityDetail("courseResource", id));
+    formChapterOptions.value = await fetchCourseChaptersForSelect(form.kechengId);
+    dialogVisible.value = true;
+  } catch (error) {
+    ElMessage.error(error instanceof Error ? error.message : "加载资源详情失败");
+  }
 }
 
 async function handleFormCourseChange() {

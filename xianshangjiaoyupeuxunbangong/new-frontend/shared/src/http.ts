@@ -16,7 +16,9 @@ export interface SimpleHttpClient {
 }
 
 function buildUrl(baseURL: string, url: string, params?: Record<string, unknown>) {
-  const target = new URL(url, baseURL.endsWith("/") ? baseURL : `${baseURL}/`);
+  const normalizedBase = baseURL.endsWith("/") ? baseURL : `${baseURL}/`;
+  const normalizedUrl = url.startsWith("/") ? url.slice(1) : url;
+  const target = new URL(normalizedUrl, normalizedBase);
   if (params) {
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== "") {

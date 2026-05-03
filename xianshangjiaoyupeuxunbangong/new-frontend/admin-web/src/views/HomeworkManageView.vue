@@ -182,13 +182,16 @@ function downloadUrl(fileName?: string) {
 }
 
 async function loadOptions() {
+  const teacherTask = isTeacher.value
+    ? Promise.resolve([{ id: store.session?.userId ?? 0, jiaoshiName: store.session?.username || "当前教师" }])
+    : fetchTeachersForSelect();
   const [courses, teachers, types] = await Promise.all([
     fetchCoursesForSelect(),
-    fetchTeachersForSelect(),
+    teacherTask,
     fetchDictionaryOptions("zuoye_types")
   ]);
   courseOptions.value = courses;
-  teacherOptions.value = teachers;
+  teacherOptions.value = teachers as Array<{ id: number; jiaoshiName: string }>;
   typeOptions.value = types;
   filterChapterOptions.value = await fetchCourseChaptersForSelect(filters.kechengId);
 }
@@ -243,22 +246,30 @@ function resetForm() {
 
 async function openCreate() {
   resetForm();
-  await loadOptions();
-  if (form.kechengId) {
-    formChapterOptions.value = await fetchCourseChaptersForSelect(form.kechengId);
+  try {
+    await loadOptions();
+    if (form.kechengId) {
+      formChapterOptions.value = await fetchCourseChaptersForSelect(form.kechengId);
+    }
+    dialogVisible.value = true;
+  } catch (error) {
+    ElMessage.error(error instanceof Error ? error.message : "加载作业表单失败");
   }
-  dialogVisible.value = true;
 }
 
 async function openEdit(id: number) {
   resetForm();
-  await loadOptions();
-  Object.assign(form, await fetchEntityDetail("zuoye", id));
-  if (!isTeacher.value && !form.jiaoshiId) {
-    form.jiaoshiId = undefined;
+  try {
+    await loadOptions();
+    Object.assign(form, await fetchEntityDetail("zuoye", id));
+    if (!isTeacher.value && !form.jiaoshiId) {
+      form.jiaoshiId = undefined;
+    }
+    formChapterOptions.value = await fetchCourseChaptersForSelect(form.kechengId);
+    dialogVisible.value = true;
+  } catch (error) {
+    ElMessage.error(error instanceof Error ? error.message : "加载作业详情失败");
   }
-  formChapterOptions.value = await fetchCourseChaptersForSelect(form.kechengId);
-  dialogVisible.value = true;
 }
 
 async function handleFormCourseChange() {

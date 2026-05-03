@@ -161,13 +161,39 @@ function resetFilters() { keyword.value = ""; statusFilter.value = ""; paginatio
 function handleSizeChange() { pagination.page = 1; loadCourses(); }
 function resetForm() { Object.assign(form, createForm()); }
 async function prepareOptions() {
-  const [teachers, courseTypes, banjiTypes] = await Promise.all([fetchTeachersForSelect(), fetchDictionaryOptions("kecheng_types"), fetchDictionaryOptions("banji_types")]);
-  teacherOptions.value = teachers;
-  courseTypeOptions.value = courseTypes;
-  banjiOptions.value = banjiTypes;
+  const tasks: Array<Promise<unknown>> = [
+    fetchDictionaryOptions("kecheng_types"),
+    fetchDictionaryOptions("banji_types")
+  ];
+  if (isTeacher.value) {
+    tasks.unshift(Promise.resolve([{ id: store.session?.userId ?? 0, jiaoshiName: store.session?.username || "当前教师" }]));
+  } else {
+    tasks.unshift(fetchTeachersForSelect());
+  }
+  const [teachers, courseTypes, banjiTypes] = await Promise.all(tasks);
+  teacherOptions.value = teachers as Array<{ id: number; jiaoshiName: string }>;
+  courseTypeOptions.value = courseTypes as Array<{ codeIndex: number; indexName: string }>;
+  banjiOptions.value = banjiTypes as Array<{ codeIndex: number; indexName: string }>;
 }
-async function openCreate() { resetForm(); await prepareOptions(); dialogVisible.value = true; }
-async function openEdit(id: number) { resetForm(); await prepareOptions(); Object.assign(form, await fetchEntityDetail("kecheng", id)); dialogVisible.value = true; }
+async function openCreate() {
+  resetForm();
+  try {
+    await prepareOptions();
+    dialogVisible.value = true;
+  } catch (error) {
+    ElMessage.error(error instanceof Error ? error.message : "加载课程表单失败");
+  }
+}
+async function openEdit(id: number) {
+  resetForm();
+  try {
+    await prepareOptions();
+    Object.assign(form, await fetchEntityDetail("kecheng", id));
+    dialogVisible.value = true;
+  } catch (error) {
+    ElMessage.error(error instanceof Error ? error.message : "加载课程详情失败");
+  }
+}
 async function handleUpload(event: Event, field: "kechengPhoto") {
   const file = (event.target as HTMLInputElement).files?.[0];
   if (!file) return;

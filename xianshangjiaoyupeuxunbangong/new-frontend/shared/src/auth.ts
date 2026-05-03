@@ -1,7 +1,35 @@
 import type { AuthSession, UserTable } from "./types";
 
-export const DEFAULT_BASE_URL =
-  "http://localhost:8080/xianshangjiaoyupeuxunbangong";
+const DEFAULT_CONTEXT_PATH = "/xianshangjiaoyupeuxunbangong";
+
+function normalizeBaseUrl(baseUrl: string) {
+  const trimmed = baseUrl.replace(/\/$/, "");
+  if (trimmed.endsWith(DEFAULT_CONTEXT_PATH)) {
+    return trimmed;
+  }
+  return `${trimmed}${DEFAULT_CONTEXT_PATH}`;
+}
+
+function resolveBaseUrl() {
+  const envValue =
+    typeof import.meta !== "undefined" &&
+    (import.meta as { env?: Record<string, string | undefined> }).env
+      ? (import.meta as { env?: Record<string, string | undefined> }).env?.VITE_API_BASE_URL
+      : undefined;
+
+  if (envValue) {
+    return normalizeBaseUrl(envValue);
+  }
+
+  if (typeof window !== "undefined" && window.location?.origin) {
+    const { origin } = window.location;
+    return normalizeBaseUrl(origin);
+  }
+
+  return normalizeBaseUrl("http://localhost:8080");
+}
+
+export const DEFAULT_BASE_URL = resolveBaseUrl();
 
 export const loginEndpointMap: Record<UserTable, string> = {
   users: "/users/login",

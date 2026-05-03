@@ -167,15 +167,23 @@ function resetForm() {
 
 async function openCreate() {
   resetForm();
-  await loadOptions();
-  dialogVisible.value = true;
+  try {
+    await loadOptions();
+    dialogVisible.value = true;
+  } catch (error) {
+    ElMessage.error(error instanceof Error ? error.message : "加载章节表单失败");
+  }
 }
 
 async function openEdit(id: number) {
   resetForm();
-  await loadOptions();
-  Object.assign(form, await fetchEntityDetail("courseChapter", id));
-  dialogVisible.value = true;
+  try {
+    await loadOptions();
+    Object.assign(form, await fetchEntityDetail("courseChapter", id));
+    dialogVisible.value = true;
+  } catch (error) {
+    ElMessage.error(error instanceof Error ? error.message : "加载章节详情失败");
+  }
 }
 
 async function submitForm() {
@@ -231,4 +239,3 @@ async function submitReview(id: number) {
 loadOptions();
 loadRows();
 </script>
-
