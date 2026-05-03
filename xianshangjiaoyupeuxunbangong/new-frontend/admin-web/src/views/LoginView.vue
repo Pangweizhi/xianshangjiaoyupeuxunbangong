@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="admin-login">
     <form class="admin-login__panel" @submit.prevent="submit">
       <p class="admin-kicker">后台登录</p>

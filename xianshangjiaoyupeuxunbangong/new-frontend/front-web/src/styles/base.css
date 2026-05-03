@@ -54,7 +54,7 @@ button {
 
 .shell {
   min-height: 100vh;
-  width: min(1320px, calc(100% - 40px));
+  width: min(1320px, calc(100% - 56px));
   margin: 0 auto;
   padding: 18px 0 48px;
 }
@@ -79,7 +79,7 @@ button {
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  padding: 18px 24px;
+  padding: 20px 28px;
   border: 1px solid rgba(255, 255, 255, 0.7);
   border-radius: calc(var(--radius) + 8px);
   background: rgba(255, 255, 255, 0.78);
@@ -116,7 +116,7 @@ button {
 }
 
 .topbar__nav a:hover,
-.topbar__nav a.router-link-active {
+.topbar__nav a:focus-visible {
   color: var(--text);
   background: rgba(255, 122, 26, 0.12);
   transform: translateY(-1px);
@@ -136,7 +136,6 @@ button {
   gap: 14px;
 }
 
-.brand-mark strong,
 .hero h1,
 .section h1,
 .section h2,
@@ -149,13 +148,13 @@ button {
   font-family: "STZhongsong", "FangSong", serif;
 }
 
-.brand-mark strong {
-  display: block;
-  font-size: 1.15rem;
-}
-
 .brand-mark small {
   color: var(--muted);
+  font-family: "STZhongsong", "FangSong", serif;
+  font-size: 1.16rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text);
 }
 
 .brand-mark__pulse {

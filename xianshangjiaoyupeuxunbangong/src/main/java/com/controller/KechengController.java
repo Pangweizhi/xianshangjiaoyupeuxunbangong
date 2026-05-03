@@ -295,7 +295,8 @@ public class KechengController {
     public R list(@RequestParam Map<String, Object> params, HttpServletRequest request){
         logger.debug("list方法:,,Controller:{},,params:{}",this.getClass().getName(),JSONObject.toJSONString(params));
 
-        params.put("courseStatus","approved");
+        params.put("kechengDeleteStart",1);
+        params.put("kechengDeleteEnd",1);
         CommonUtil.checkMap(params);
         PageUtils page = kechengService.queryPage(params);
 

@@ -259,10 +259,14 @@ export interface StudentItem {
   id: number;
   username: string;
   yonghuName: string;
+  password?: string;
+  sexTypes?: number;
   sexValue?: string;
   yonghuPhoto?: string;
+  yonghuIdNumber?: string;
   yonghuPhone?: string;
   yonghuEmail?: string;
+  banjiTypes?: number;
   banjiValue?: string;
   createTime?: string;
 }

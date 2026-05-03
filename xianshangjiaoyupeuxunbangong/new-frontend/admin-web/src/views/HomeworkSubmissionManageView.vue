@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <section class="admin-panel">
     <div class="panel-header panel-header--spread">
       <div>

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div v-loading="loading" class="dashboard-stack">
     <div class="dashboard-grid">
       <article class="admin-card accent">

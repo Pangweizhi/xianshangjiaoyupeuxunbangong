@@ -1,11 +1,12 @@
 :root {
-  --admin-bg: #f4f7fb;
-  --admin-panel: #ffffff;
-  --admin-text: #172033;
-  --admin-muted: #6a7488;
-  --admin-line: #d7deea;
-  --admin-accent: #1347c9;
-  --admin-shadow: 0 22px 56px rgba(23, 32, 51, 0.08);
+  --admin-bg: #f6f8fc;
+  --admin-panel: rgba(255, 255, 255, 0.9);
+  --admin-text: #162033;
+  --admin-muted: #667085;
+  --admin-line: rgba(15, 23, 42, 0.1);
+  --admin-accent: #ff7a1a;
+  --admin-accent-deep: #1a4ed8;
+  --admin-shadow: 0 22px 54px rgba(31, 41, 55, 0.08);
 }
 
 * {
@@ -14,9 +15,10 @@
 
 body {
   margin: 0;
-  font-family: "Segoe UI", "PingFang SC", sans-serif;
+  font-family: "Aptos", "Microsoft YaHei UI", "PingFang SC", sans-serif;
   background:
-    linear-gradient(180deg, #e8eefb 0%, transparent 24%),
+    radial-gradient(circle at top left, rgba(255, 122, 26, 0.12), transparent 28%),
+    radial-gradient(circle at top right, rgba(26, 78, 216, 0.12), transparent 26%),
     var(--admin-bg);
   color: var(--admin-text);
 }
@@ -24,13 +26,20 @@ body {
 .admin-shell {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 260px 1fr;
+  grid-template-columns: 228px 1fr;
+  background:
+    linear-gradient(90deg, rgba(18, 32, 61, 0.9) 0, rgba(18, 32, 61, 0.55) 220px, rgba(246, 248, 252, 0) 360px),
+    radial-gradient(circle at top left, rgba(255, 122, 26, 0.12), transparent 28%),
+    radial-gradient(circle at top right, rgba(26, 78, 216, 0.12), transparent 26%),
+    var(--admin-bg);
 }
 
 .admin-aside {
-  background: #101826;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 22%),
+    linear-gradient(180deg, #12203d, #162b55 52%, #10203f 100%);
   color: #edf2ff;
-  padding: 28px 20px;
+  padding: 24px 16px;
   display: grid;
   align-content: start;
   gap: 8px;
@@ -65,7 +74,8 @@ body {
 }
 
 .admin-main {
-  padding: 24px;
+  padding: 18px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0));
 }
 
 .admin-header,
@@ -75,7 +85,8 @@ body {
   background: var(--admin-panel);
   border: 1px solid var(--admin-line);
   box-shadow: var(--admin-shadow);
-  border-radius: 24px;
+  border-radius: 28px;
+  backdrop-filter: blur(14px);
 }
 
 .admin-header {
@@ -116,7 +127,7 @@ body {
 }
 
 .admin-card.accent {
-  background: linear-gradient(135deg, #102d7a, #1c5cff);
+  background: linear-gradient(135deg, #ff7a1a, #ef5b11 48%, #1a4ed8);
   color: white;
 }
 
@@ -208,6 +219,37 @@ body {
   display: flex;
   justify-content: flex-end;
   margin-top: 18px;
+}
+
+.admin-content .el-table {
+  width: 100%;
+  font-size: 13px;
+  --el-table-header-bg-color: rgba(255, 248, 240, 0.92);
+  --el-table-row-hover-bg-color: rgba(255, 122, 26, 0.06);
+}
+
+.admin-content .el-table .cell {
+  white-space: normal;
+  line-height: 1.55;
+  word-break: break-word;
+}
+
+.admin-content .el-table .cell .el-button {
+  padding: 2px 0;
+}
+
+.admin-content .el-table .el-button + .el-button {
+  margin-left: 8px;
+}
+
+.admin-content .el-form-item {
+  margin-bottom: 18px;
+}
+
+.admin-content .el-input,
+.admin-content .el-select,
+.admin-content .el-date-editor {
+  width: 100%;
 }
 
 .admin-login {

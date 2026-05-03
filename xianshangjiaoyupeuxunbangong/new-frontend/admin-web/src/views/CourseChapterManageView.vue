@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <section class="admin-panel" v-loading="loading">
     <div class="panel-header panel-header--spread">
       <h2>章节与资源</h2>

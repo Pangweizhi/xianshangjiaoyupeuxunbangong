@@ -1,11 +1,16 @@
 <template>
   <section class="section section--tight">
-    <div class="section__header section__header--stack">
-      <div>
-        <p class="eyebrow">备课资源</p>
-        <h1>集中查看教学资料与配套附件</h1>
-        <p class="section__summary">封面、教师、时间与附件状态保持同层展示，兼顾浏览效率与内容识别。</p>
-      </div>
+    <div class="filter-bar filter-bar--surface filter-grid">
+      <input v-model="filters.keyword" class="field" placeholder="搜索资源标题" />
+      <select v-model="filters.teacher" class="field">
+        <option value="">全部教师</option>
+        <option v-for="item in teacherOptions" :key="item" :value="item">{{ item }}</option>
+      </select>
+      <select v-model="filters.type" class="field">
+        <option value="">全部类型</option>
+        <option v-for="item in typeOptions" :key="item" :value="item">{{ item }}</option>
+      </select>
+      <button class="primary-button" @click="loadMaterials">查询</button>
     </div>
 
     <div class="content-grid">
@@ -18,9 +23,9 @@
           </div>
           <h3>{{ item.jiaoxueshipinName }}</h3>
           <p>{{ stripHtml(item.jiaoxueshipinContent) }}</p>
-          <div class="stack-inline">
-            <span class="meta">{{ item.jiaoxueshipinTime?.slice(0, 10) || "时间待定" }}</span>
-            <span class="meta">{{ item.jiaoxueshipinFile ? "含资料" : "无附件" }}</span>
+          <div class="status-list">
+            <span>{{ item.jiaoxueshipinTime?.slice(0, 10) || "时间待定" }}</span>
+            <span>{{ item.jiaoxueshipinFile ? "含附件" : "无附件" }}</span>
           </div>
           <RouterLink class="text-link" :to="`/materials/${item.id}`">查看详情</RouterLink>
         </div>
@@ -30,22 +35,54 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import { RouterLink } from "vue-router";
 import { DEFAULT_BASE_URL, createAssetUrl, type LessonMaterialItem } from "@shared/index";
 import { fetchMaterialPage } from "@/api/content";
 
+const filters = reactive({
+  keyword: "",
+  teacher: "",
+  type: ""
+});
 const materials = ref<LessonMaterialItem[]>([]);
+
+const teacherOptions = computed(() =>
+  Array.from(new Set(materials.value.map((item) => item.jiaoshiName).filter(Boolean) as string[]))
+);
+const typeOptions = computed(() =>
+  Array.from(new Set(materials.value.map((item) => item.jiaoxueshipinValue).filter(Boolean) as string[]))
+);
 
 function toAsset(path?: string) {
   return createAssetUrl(DEFAULT_BASE_URL, path) || "https://dummyimage.com/600x400/e6efe4/21393b&text=Lesson";
 }
 
 function stripHtml(value?: string) {
-  return value?.replace(/<[^>]+>/g, "").slice(0, 100) || "暂无备课内容";
+  return value?.replace(/<[^>]+>/g, "").slice(0, 100) || "暂无备课内容。";
 }
 
-fetchMaterialPage().then((page) => {
-  materials.value = page.list;
-});
+async function loadMaterials() {
+  const page = await fetchMaterialPage({ limit: 100, jiaoxueshipinName: filters.keyword || undefined });
+  materials.value = page.list.filter((item) => {
+    const matchTeacher = !filters.teacher || item.jiaoshiName === filters.teacher;
+    const matchType = !filters.type || item.jiaoxueshipinValue === filters.type;
+    return matchTeacher && matchType;
+  });
+}
+
+loadMaterials();
 </script>
+
+<style scoped>
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (max-width: 960px) {
+  .filter-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

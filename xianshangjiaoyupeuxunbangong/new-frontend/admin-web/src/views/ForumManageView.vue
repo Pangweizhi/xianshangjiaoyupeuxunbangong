@@ -1,10 +1,13 @@
 <template>
   <section class="admin-panel" v-loading="loading">
     <div class="panel-header panel-header--spread">
-      <h2>论坛管理</h2>
+      <div>
+        <h2>论坛管理</h2>
+        <p class="panel-note">按前台阅读逻辑展示主题帖与回复帖，便于教师直接跟帖处理交流内容。</p>
+      </div>
       <div class="toolbar toolbar--wrap">
         <el-input v-model="keyword" placeholder="搜索帖子标题" clearable />
-        <el-select v-model="authorFilter" placeholder="发帖身份" clearable>
+        <el-select v-model="authorFilter" placeholder="发布身份" clearable>
           <el-option label="学生" value="student" />
           <el-option label="教师" value="teacher" />
           <el-option label="管理员" value="admin" />
@@ -20,26 +23,28 @@
     </div>
 
     <el-table :data="displayItems" stripe empty-text="暂无帖子数据">
-      <el-table-column prop="forumName" label="标题" min-width="220" />
-      <el-table-column label="类型" min-width="100">
+      <el-table-column prop="forumName" label="标题" min-width="180" show-overflow-tooltip />
+      <el-table-column label="类型" width="82">
         <template #default="{ row }">{{ row.superIds ? "回复帖" : "主题帖" }}</template>
       </el-table-column>
-      <el-table-column prop="forumStateValue" label="状态" min-width="120" />
-      <el-table-column label="发布者" min-width="140">
+      <el-table-column prop="forumStateValue" label="状态" min-width="96" />
+      <el-table-column label="发布者" min-width="110">
         <template #default="{ row }">{{ resolveAuthor(row) }}</template>
       </el-table-column>
-      <el-table-column label="身份" min-width="100">
+      <el-table-column label="身份" width="74">
         <template #default="{ row }">{{ resolveAuthorType(row) }}</template>
       </el-table-column>
-      <el-table-column label="所属主题" min-width="220" show-overflow-tooltip>
+      <el-table-column label="所属主题" min-width="170" show-overflow-tooltip>
         <template #default="{ row }">{{ resolveParentName(row) }}</template>
       </el-table-column>
-      <el-table-column prop="insertTime" label="发布时间" min-width="180" />
-      <el-table-column label="操作" min-width="220" fixed="right">
+      <el-table-column prop="insertTime" label="发布时间" min-width="126" />
+      <el-table-column label="操作" width="160">
         <template #default="{ row }">
-          <el-button link type="success" @click="openReply(row)">回复</el-button>
-          <el-button link type="primary" @click="openEdit(row.id)">编辑</el-button>
-          <el-button link type="danger" @click="removeItem(row.id)">删除</el-button>
+          <div class="table-actions table-actions--wrap">
+            <el-button link type="success" @click="openReply(row)">回复</el-button>
+            <el-button link type="primary" @click="openEdit(row.id)">编辑</el-button>
+            <el-button link type="danger" @click="removeItem(row.id)">删除</el-button>
+          </div>
         </template>
       </el-table-column>
     </el-table>
@@ -59,7 +64,7 @@
   </section>
 
   <el-dialog v-model="dialogVisible" :title="dialogTitle" width="760px">
-    <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
+    <el-form ref="formRef" :model="form" :rules="rules" label-width="96px">
       <el-form-item label="帖子标题" prop="forumName">
         <el-input v-model="form.forumName" />
       </el-form-item>
@@ -119,16 +124,16 @@ const rules: FormRules = {
   forumContent: [{ required: true, message: "请输入发布内容", trigger: "blur" }]
 };
 
-const displayItems = computed(() => {
-  return items.value.filter((item) => {
+const displayItems = computed(() =>
+  items.value.filter((item) => {
     if (authorFilter.value === "student" && !item.yonghuName) return false;
     if (authorFilter.value === "teacher" && !item.jiaoshiName) return false;
     if (authorFilter.value === "admin" && !item.uusername) return false;
     if (typeFilter.value === "topic" && item.superIds) return false;
     if (typeFilter.value === "reply" && !item.superIds) return false;
     return true;
-  });
-});
+  })
+);
 
 function resolveAuthor(item: ForumItem) {
   return item.yonghuName || item.jiaoshiName || item.uusername || "-";
@@ -242,3 +247,9 @@ async function removeItem(id: number) {
 
 loadItems();
 </script>
+
+<style scoped>
+.table-actions--wrap {
+  flex-wrap: wrap;
+}
+</style>

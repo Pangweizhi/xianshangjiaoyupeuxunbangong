@@ -16,7 +16,9 @@ import type {
   LessonMaterialItem,
   MeetingItem,
   NoticeItem,
-  PagePayload
+  PagePayload,
+  StudyProgressItem,
+  StudentItem
 } from "@shared/index";
 import { DEFAULT_BASE_URL, unwrap } from "@shared/index";
 import { useHttp } from "./client";
@@ -24,10 +26,18 @@ import axios from "axios";
 
 export async function fetchCoursePage(params?: Record<string, unknown>) {
   const http = useHttp();
-  const { data } = await http.get("/kecheng/list", {
-    params: { page: 1, limit: 8, sort: "id", order: "desc", ...params }
-  });
-  return unwrap<PagePayload<CourseItem>>(data);
+  const requestParams = { page: 1, limit: 8, sort: "id", order: "desc", ...params };
+  const { data } = await http.get("/kecheng/list", { params: requestParams });
+  const page = unwrap<PagePayload<CourseItem>>(data);
+  if (Array.isArray(page.list) && page.list.length > 0) {
+    return page;
+  }
+  try {
+    const fallback = await http.get("/kecheng/page", { params: requestParams });
+    return unwrap<PagePayload<CourseItem>>(fallback.data);
+  } catch {
+    return page;
+  }
 }
 
 export async function fetchCourseDetail(id: number | string) {
@@ -70,6 +80,14 @@ export async function saveStudyProgress(payload: Record<string, unknown>) {
   const http = useHttp();
   const { data } = await http.post("/studyProgress/saveOrUpdate", payload);
   return data as ApiResponse<unknown>;
+}
+
+export async function fetchStudyProgressPage(params?: Record<string, unknown>) {
+  const http = useHttp();
+  const { data } = await http.get("/studyProgress/page", {
+    params: { page: 1, limit: 100, sort: "id", order: "desc", ...params }
+  });
+  return unwrap<PagePayload<StudyProgressItem>>(data);
 }
 
 export async function fetchMyCreditPage(params?: Record<string, unknown>) {
@@ -231,4 +249,16 @@ export async function fetchHomeworkSubmissions(params?: Record<string, unknown>)
     params: { page: 1, limit: 10, sort: "id", order: "desc", ...params }
   });
   return unwrap<PagePayload<HomeworkSubmissionItem>>(data);
+}
+
+export async function fetchStudentProfile() {
+  const http = useHttp();
+  const { data } = await http.get("/yonghu/session");
+  return unwrap<StudentItem>(data);
+}
+
+export async function updateStudentProfile(payload: Record<string, unknown>) {
+  const http = useHttp();
+  const { data } = await http.post("/yonghu/update", payload);
+  return data as ApiResponse<unknown>;
 }

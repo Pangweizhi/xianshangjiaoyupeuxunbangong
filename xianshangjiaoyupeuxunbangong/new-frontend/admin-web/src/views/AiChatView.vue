@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="ai-admin-page">
     <aside class="ai-admin-page__sidebar">
       <div class="ai-admin-page__header">

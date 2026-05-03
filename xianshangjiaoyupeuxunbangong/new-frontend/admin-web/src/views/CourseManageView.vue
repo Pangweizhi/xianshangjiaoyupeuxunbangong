@@ -1,7 +1,10 @@
 <template>
   <section class="admin-panel" v-loading="loading">
     <div class="panel-header panel-header--spread">
-      <h2>{{ isTeacher ? "课程管理" : "课程审核" }}</h2>
+      <div>
+        <h2>{{ isTeacher ? "课程管理" : "课程审核" }}</h2>
+        <p class="panel-note">{{ isTeacher ? "课程图片、时间和内容统一在这里维护。" : "管理员在这里完成课程审核。" }}</p>
+      </div>
       <div class="toolbar toolbar--wrap">
         <el-input v-model="keyword" placeholder="搜索课程标题" clearable />
         <el-select v-model="statusFilter" placeholder="审核状态" clearable>
@@ -16,23 +19,32 @@
     </div>
 
     <el-table :data="courses" stripe empty-text="暂无课程数据">
-      <el-table-column prop="kechengName" label="课程标题" min-width="220" />
-      <el-table-column prop="kechengValue" label="课程类型" min-width="120" />
-      <el-table-column prop="creditScore" label="学分" min-width="90" />
-      <el-table-column prop="kechengShichang" label="时长" min-width="100" />
-      <el-table-column prop="banjiValue" label="班级" min-width="120" />
-      <el-table-column prop="jiaoshiName" label="教师" min-width="120" />
-      <el-table-column prop="courseStatus" label="审核状态" min-width="120" />
-      <el-table-column prop="reviewRemark" label="审核备注" min-width="180" show-overflow-tooltip />
-      <el-table-column prop="kechengTime" label="开始时间" min-width="180" />
-      <el-table-column prop="kechengEndTime" label="结束时间" min-width="180" />
-      <el-table-column label="操作" min-width="260" fixed="right">
+      <el-table-column prop="kechengName" label="课程标题" min-width="180" show-overflow-tooltip />
+      <el-table-column prop="kechengValue" label="类型" min-width="100" />
+      <el-table-column prop="jiaoshiName" label="教师" min-width="100" />
+      <el-table-column prop="banjiValue" label="班级" min-width="100" />
+      <el-table-column prop="creditScore" label="学分" width="74" />
+      <el-table-column prop="kechengShichang" label="时长" width="82" />
+      <el-table-column prop="courseStatus" label="状态" min-width="100" />
+      <el-table-column prop="kechengTime" label="开始时间" min-width="132" />
+      <el-table-column prop="kechengEndTime" label="结束时间" min-width="132" />
+      <el-table-column prop="reviewRemark" label="审核备注" min-width="160" show-overflow-tooltip />
+      <el-table-column label="操作" width="170">
         <template #default="{ row }">
-          <el-button v-if="isTeacher" link type="primary" @click="openEdit(row.id)">编辑</el-button>
-          <el-button v-if="isTeacher" link type="danger" @click="removeItem(row.id)">删除</el-button>
-          <el-button v-if="isTeacher && row.courseStatus === 'rejected'" link type="warning" @click="submitReview(row.id)">重新提交</el-button>
-          <el-button v-if="!isTeacher" link type="success" @click="openReview(row, 'approved')">通过</el-button>
-          <el-button v-if="!isTeacher" link type="danger" @click="openReview(row, 'rejected')">驳回</el-button>
+          <div class="table-actions table-actions--wrap">
+            <el-button v-if="isTeacher" link type="primary" @click="openEdit(row.id)">编辑</el-button>
+            <el-button v-if="isTeacher" link type="danger" @click="removeItem(row.id)">删除</el-button>
+            <el-button
+              v-if="isTeacher && row.courseStatus === 'rejected'"
+              link
+              type="warning"
+              @click="submitReview(row.id)"
+            >
+              重新提交
+            </el-button>
+            <el-button v-if="!isTeacher" link type="success" @click="openReview(row, 'approved')">通过</el-button>
+            <el-button v-if="!isTeacher" link type="danger" @click="openReview(row, 'rejected')">驳回</el-button>
+          </div>
         </template>
       </el-table-column>
     </el-table>
@@ -52,12 +64,12 @@
   </section>
 
   <el-dialog v-model="dialogVisible" :title="form.id ? '编辑课程' : '新增课程'" width="760px">
-    <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
+    <el-form ref="formRef" :model="form" :rules="rules" label-width="96px">
       <el-form-item label="课程标题" prop="kechengName">
         <el-input v-model="form.kechengName" maxlength="100" show-word-limit />
       </el-form-item>
       <el-form-item label="课程类型" prop="kechengTypes">
-        <el-select v-model="form.kechengTypes" placeholder="请选择">
+        <el-select v-model="form.kechengTypes" placeholder="请选择课程类型">
           <el-option v-for="item in courseTypeOptions" :key="item.codeIndex" :label="item.indexName" :value="item.codeIndex" />
         </el-select>
       </el-form-item>
@@ -68,25 +80,38 @@
         <el-input-number v-model="form.creditScore" :min="0" :max="99" />
       </el-form-item>
       <el-form-item label="班级" prop="banjiTypes">
-        <el-select v-model="form.banjiTypes" placeholder="请选择">
+        <el-select v-model="form.banjiTypes" placeholder="请选择班级">
           <el-option v-for="item in banjiOptions" :key="item.codeIndex" :label="item.indexName" :value="item.codeIndex" />
         </el-select>
       </el-form-item>
       <el-form-item v-if="!isTeacher" label="教师" prop="jiaoshiId">
-        <el-select v-model="form.jiaoshiId" placeholder="请选择">
+        <el-select v-model="form.jiaoshiId" placeholder="请选择教师">
           <el-option v-for="item in teacherOptions" :key="item.id" :label="item.jiaoshiName" :value="item.id" />
         </el-select>
       </el-form-item>
       <el-form-item label="开始时间" prop="kechengTime">
-        <el-date-picker v-model="form.kechengTime" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" placeholder="请选择开始时间" />
+        <el-date-picker
+          v-model="form.kechengTime"
+          type="datetime"
+          value-format="YYYY-MM-DD HH:mm:ss"
+          placeholder="请选择开始时间"
+        />
       </el-form-item>
       <el-form-item label="结束时间" prop="kechengEndTime">
-        <el-date-picker v-model="form.kechengEndTime" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" placeholder="请选择结束时间" />
+        <el-date-picker
+          v-model="form.kechengEndTime"
+          type="datetime"
+          value-format="YYYY-MM-DD HH:mm:ss"
+          placeholder="请选择结束时间"
+        />
       </el-form-item>
       <el-form-item label="课程图片">
-        <input type="file" accept="image/*" @change="handleUpload($event, 'kechengPhoto')" />
-        <p class="upload-tip">{{ form.kechengPhoto || "未上传" }}</p>
-        <img v-if="assetUrl(form.kechengPhoto)" class="upload-preview" :src="assetUrl(form.kechengPhoto)" alt="课程图片预览" />
+        <label class="ghost-button upload-button">
+          上传图片
+          <input type="file" accept="image/*" hidden @change="handleUpload" />
+        </label>
+        <p class="upload-tip">{{ form.kechengPhoto || "未上传课程图片" }}</p>
+        <img v-if="assetUrl(form.kechengPhoto)" class="upload-preview upload-preview--large" :src="assetUrl(form.kechengPhoto)" alt="课程图片预览" />
       </el-form-item>
       <el-form-item label="课程详情" prop="kechengContent">
         <el-input v-model="form.kechengContent" type="textarea" :rows="5" />
@@ -98,8 +123,8 @@
     </template>
   </el-dialog>
 
-  <el-dialog v-model="reviewVisible" :title="reviewForm.courseStatus === 'approved' ? '通过课程' : '驳回课程'" width="620px">
-    <el-form :model="reviewForm" label-width="100px">
+  <el-dialog v-model="reviewVisible" :title="reviewForm.courseStatus === 'approved' ? '通过课程' : '驳回课程'" width="560px">
+    <el-form :model="reviewForm" label-width="88px">
       <el-form-item label="审核备注">
         <el-input v-model="reviewForm.reviewRemark" type="textarea" :rows="4" placeholder="填写审核意见" />
       </el-form-item>
@@ -229,35 +254,29 @@ async function prepareOptions() {
 
 async function openCreate() {
   resetForm();
-  try {
-    await prepareOptions();
-    dialogVisible.value = true;
-  } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : "加载课程表单失败");
-  }
+  await prepareOptions();
+  dialogVisible.value = true;
 }
 
 async function openEdit(id: number) {
   resetForm();
-  try {
-    await prepareOptions();
-    Object.assign(form, await fetchEntityDetail("kecheng", id));
-    dialogVisible.value = true;
-  } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : "加载课程详情失败");
-  }
+  await prepareOptions();
+  Object.assign(form, await fetchEntityDetail("kecheng", id));
+  dialogVisible.value = true;
 }
 
-async function handleUpload(event: Event, field: "kechengPhoto") {
+async function handleUpload(event: Event) {
   const file = (event.target as HTMLInputElement).files?.[0];
   if (!file) {
     return;
   }
   try {
-    form[field] = await uploadAdminFile(file);
-    ElMessage.success("课程图片已上传");
+    form.kechengPhoto = await uploadAdminFile(file);
+    ElMessage.success("课程图片上传成功");
   } catch (error) {
     ElMessage.error(error instanceof Error ? error.message : "上传失败");
+  } finally {
+    (event.target as HTMLInputElement).value = "";
   }
 }
 
@@ -297,26 +316,33 @@ async function submitReviewAction() {
   if (!reviewForm.id) {
     return;
   }
-  try {
-    await postModuleAction("kecheng", "review", reviewForm as unknown as Record<string, unknown>);
-    ElMessage.success("审核结果已提交");
-    reviewVisible.value = false;
-    await loadCourses();
-  } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : "审核失败");
-  }
+  await postModuleAction("kecheng", "review", reviewForm as unknown as Record<string, unknown>);
+  ElMessage.success("审核结果已提交");
+  reviewVisible.value = false;
+  await loadCourses();
 }
 
 async function submitReview(id: number) {
-  try {
-    await postModuleAction("kecheng", "submitReview", { id });
-    ElMessage.success("已重新提交审核");
-    await loadCourses();
-  } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : "提交失败");
-  }
+  await postModuleAction("kecheng", "submitReview", { id });
+  ElMessage.success("已重新提交审核");
+  await loadCourses();
 }
 
 prepareOptions();
 loadCourses();
 </script>
+
+<style scoped>
+.upload-button {
+  cursor: pointer;
+}
+
+.upload-preview--large {
+  width: 220px;
+  height: 132px;
+}
+
+.table-actions--wrap {
+  flex-wrap: wrap;
+}
+</style>

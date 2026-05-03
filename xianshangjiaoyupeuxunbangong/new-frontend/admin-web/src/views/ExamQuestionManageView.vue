@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <section class="admin-panel" v-loading="loading">
     <div class="panel-header panel-header--spread">
       <h2>题库管理</h2>

@@ -2,7 +2,7 @@
   <div class="admin-shell">
     <aside class="admin-aside">
       <div class="admin-brand">
-        <strong>教学管理中心</strong>
+        <strong>知行学堂后台</strong>
         <span>{{ isTeacher ? "教师工作台" : "平台管理台" }}</span>
       </div>
 
@@ -42,6 +42,7 @@
           <el-button plain @click="handleLogout">退出登录</el-button>
         </div>
       </header>
+
       <section class="admin-content">
         <RouterView />
       </section>
@@ -57,6 +58,7 @@ import { useAdminSessionStore } from "@/stores/session";
 const route = useRoute();
 const router = useRouter();
 const store = useAdminSessionStore();
+
 const isTeacher = computed(() => store.session?.tableName === "jiaoshi");
 const aiLink = computed(() => ({
   name: "ai-chat",
@@ -67,46 +69,28 @@ const aiLink = computed(() => ({
 }));
 
 const title = computed(() => {
-  switch (route.name) {
-    case "courses":
-      return "课程管理";
-    case "chapters":
-      return "章节与资源";
-    case "enrolls":
-      return "选课管理";
-    case "progress":
-      return "学习进度";
-    case "homeworks":
-      return "作业管理";
-    case "exams":
-      return "考试管理";
-    case "exam-questions":
-      return "题库管理";
-    case "exam-records":
-      return "阅卷管理";
-    case "submissions":
-      return "提交记录";
-    case "notices":
-      return "公告管理";
-    case "students":
-      return "学生管理";
-    case "teachers":
-      return "教师管理";
-    case "dictionary":
-      return "字典管理";
-    case "config":
-      return "轮播图管理";
-    case "forums":
-      return "论坛管理";
-    case "materials":
-      return "备课管理";
-    case "meetings":
-      return "会议管理";
-    case "ai-chat":
-      return "智能问答助手";
-    default:
-      return "仪表盘";
-  }
+  const titleMap: Record<string, string> = {
+    dashboard: "仪表盘",
+    courses: "课程管理",
+    chapters: "章节与资源",
+    enrolls: "选课管理",
+    progress: "学习进度",
+    homeworks: "作业管理",
+    exams: "考试管理",
+    "exam-questions": "题库管理",
+    "exam-records": "阅卷管理",
+    submissions: "提交记录",
+    notices: "公告管理",
+    students: "学生管理",
+    teachers: "教师管理",
+    dictionary: "字典管理",
+    config: "轮播图管理",
+    forums: "论坛管理",
+    materials: "备课管理",
+    meetings: "会议管理",
+    "ai-chat": "智能问答助手"
+  };
+  return titleMap[String(route.name ?? "dashboard")] || "仪表盘";
 });
 
 function handleLogout() {
@@ -132,7 +116,7 @@ function handleLogout() {
   text-decoration: none;
   font-weight: 700;
   color: #fff;
-  background: linear-gradient(135deg, #fb6a3d, #eb3b5a);
+  background: linear-gradient(135deg, #ff7a1a, #ef5b11 46%, #eb3b5a);
   box-shadow: 0 12px 28px rgba(235, 59, 90, 0.24);
 }
 

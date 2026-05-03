@@ -22,8 +22,7 @@ function resolveBaseUrl() {
   }
 
   if (typeof window !== "undefined" && window.location?.origin) {
-    const { origin } = window.location;
-    return normalizeBaseUrl(origin);
+    return normalizeBaseUrl(window.location.origin);
   }
 
   return normalizeBaseUrl("http://localhost:8080");
@@ -76,26 +75,25 @@ export function createAssetUrl(baseUrl: string, path?: string | null) {
   }
   const normalizedPath = path.replace(/\\/g, "/");
   if (/^https?:\/\//.test(normalizedPath)) {
-    return normalizedPath;
+    return encodeURI(normalizedPath);
   }
   if (normalizedPath.startsWith("/")) {
-    return `${baseUrl}${normalizedPath}`;
+    return encodeURI(`${baseUrl}${normalizedPath}`);
   }
   if (!normalizedPath.includes("/")) {
-    return `${baseUrl}/upload/${normalizedPath}`;
+    return `${baseUrl}/file/download?fileName=${encodeURIComponent(normalizedPath)}`;
   }
-  return `${baseUrl}/${normalizedPath}`;
+  return encodeURI(`${baseUrl}/${normalizedPath}`);
 }
 
 export function createDownloadUrl(baseUrl: string, fileName?: string | null) {
   if (!fileName) {
     return "";
   }
-  const value = fileName.replace(/\\/g, "/").startsWith("/")
-    ? fileName.replace(/\\/g, "/").slice(1)
-    : fileName.replace(/\\/g, "/");
+  const normalized = fileName.replace(/\\/g, "/");
+  const value = normalized.startsWith("/") ? normalized.slice(1) : normalized;
   if (value.includes("/")) {
-    return `${baseUrl}/${value}`;
+    return encodeURI(`${baseUrl}/${value}`);
   }
   return `${baseUrl}/file/download?fileName=${encodeURIComponent(value)}`;
 }
