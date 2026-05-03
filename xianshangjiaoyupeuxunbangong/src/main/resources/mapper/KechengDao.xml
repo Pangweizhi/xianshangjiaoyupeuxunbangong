@@ -10,6 +10,7 @@
         ,a.kecheng_types as kechengTypes
         ,a.kecheng_shichang as kechengShichang
         ,a.kecheng_time as kechengTime
+        ,a.kecheng_end_time as kechengEndTime
         ,a.banji_types as banjiTypes
         ,a.jiaoshi_id as jiaoshiId
         ,a.course_status as courseStatus

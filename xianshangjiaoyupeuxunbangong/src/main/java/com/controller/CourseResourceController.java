@@ -38,7 +38,6 @@ public class CourseResourceController {
     @IgnoreAuth
     @RequestMapping("/list")
     public R list(@RequestParam Map<String, Object> params) {
-        params.put("resourceStatus", "approved");
         params.put("isDeleted", 1);
         CommonUtil.checkMap(params);
         return R.ok().put("data", courseResourceService.queryPage(params));
@@ -52,24 +51,24 @@ public class CourseResourceController {
 
     @RequestMapping("/save")
     public R save(@RequestBody CourseResourceEntity entity) {
-        entity.setResourceStatus("pending_review");
-        entity.setReviewRemark(null);
-        entity.setReviewTime(null);
-        entity.setReviewAdminId(null);
+        entity.setResourceStatus("approved");
+        entity.setReviewRemark("课程审核通过后，资源直接生效");
+        entity.setReviewTime(new Date());
+        entity.setReviewAdminId(0L);
         entity.setIsDeleted(1);
         entity.setCreateTime(new Date());
         courseResourceService.insert(entity);
-        return R.ok();
+        return R.ok().put("data", entity);
     }
 
     @RequestMapping("/update")
     public R update(@RequestBody CourseResourceEntity entity) {
-        entity.setResourceStatus("pending_review");
-        entity.setReviewRemark(null);
-        entity.setReviewTime(null);
-        entity.setReviewAdminId(null);
+        entity.setResourceStatus("approved");
+        entity.setReviewRemark("课程审核通过后，资源直接生效");
+        entity.setReviewTime(new Date());
+        entity.setReviewAdminId(0L);
         courseResourceService.updateById(entity);
-        return R.ok();
+        return R.ok().put("data", entity);
     }
 
     @RequestMapping("/delete")
@@ -98,4 +97,3 @@ public class CourseResourceController {
         return R.ok();
     }
 }
-

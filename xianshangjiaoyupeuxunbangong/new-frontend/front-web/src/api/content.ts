@@ -1,4 +1,5 @@
 import type {
+  ConfigItem,
   CourseItem,
   CourseChapterItem,
   CourseEnrollItem,
@@ -38,7 +39,7 @@ export async function fetchCourseDetail(id: number | string) {
 export async function fetchCourseChapterPage(params?: Record<string, unknown>) {
   const http = useHttp();
   const { data } = await http.get("/courseChapter/list", {
-    params: { page: 1, limit: 50, sort: "chapterSort", order: "asc", ...params }
+    params: { page: 1, limit: 50, sort: "chapter_sort", order: "asc", ...params }
   });
   return unwrap<PagePayload<CourseChapterItem>>(data);
 }
@@ -133,6 +134,14 @@ export async function fetchNoticePage(params?: Record<string, unknown>) {
     params: { page: 1, limit: 6, sort: "id", order: "desc", ...params }
   });
   return unwrap<PagePayload<NoticeItem>>(data);
+}
+
+export async function fetchConfigList(params?: Record<string, unknown>) {
+  const http = useHttp();
+  const { data } = await http.get("/config/list", {
+    params: { page: 1, limit: 50, sort: "id", order: "asc", ...params }
+  });
+  return unwrap<PagePayload<ConfigItem>>(data);
 }
 
 export async function fetchHomeworkPage(params?: Record<string, unknown>) {

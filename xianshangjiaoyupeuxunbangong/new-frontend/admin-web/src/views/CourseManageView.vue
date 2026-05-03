@@ -10,7 +10,7 @@
           <el-option label="已驳回" value="rejected" />
         </el-select>
         <el-button type="primary" @click="handleSearch">查询</el-button>
-        <el-button @click="resetFilters">重置筛选</el-button>
+        <el-button @click="resetFilters">重置</el-button>
         <el-button v-if="isTeacher" type="success" @click="openCreate">新增课程</el-button>
       </div>
     </div>
@@ -25,11 +25,12 @@
       <el-table-column prop="courseStatus" label="审核状态" min-width="120" />
       <el-table-column prop="reviewRemark" label="审核备注" min-width="180" show-overflow-tooltip />
       <el-table-column prop="kechengTime" label="开始时间" min-width="180" />
+      <el-table-column prop="kechengEndTime" label="结束时间" min-width="180" />
       <el-table-column label="操作" min-width="260" fixed="right">
         <template #default="{ row }">
           <el-button v-if="isTeacher" link type="primary" @click="openEdit(row.id)">编辑</el-button>
           <el-button v-if="isTeacher" link type="danger" @click="removeItem(row.id)">删除</el-button>
-          <el-button v-if="isTeacher && row.courseStatus === 'rejected'" link type="warning" @click="submitReview(row.id)">重新提审</el-button>
+          <el-button v-if="isTeacher && row.courseStatus === 'rejected'" link type="warning" @click="submitReview(row.id)">重新提交</el-button>
           <el-button v-if="!isTeacher" link type="success" @click="openReview(row, 'approved')">通过</el-button>
           <el-button v-if="!isTeacher" link type="danger" @click="openReview(row, 'rejected')">驳回</el-button>
         </template>
@@ -79,6 +80,9 @@
       <el-form-item label="开始时间" prop="kechengTime">
         <el-date-picker v-model="form.kechengTime" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" placeholder="请选择开始时间" />
       </el-form-item>
+      <el-form-item label="结束时间" prop="kechengEndTime">
+        <el-date-picker v-model="form.kechengEndTime" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" placeholder="请选择结束时间" />
+      </el-form-item>
       <el-form-item label="课程图片">
         <input type="file" accept="image/*" @change="handleUpload($event, 'kechengPhoto')" />
         <p class="upload-tip">{{ form.kechengPhoto || "未上传" }}</p>
@@ -112,7 +116,15 @@ import { computed, reactive, ref } from "vue";
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
 import { DEFAULT_BASE_URL, createAssetUrl, type CourseItem } from "@shared/index";
 import { fetchAdminCourses } from "@/api/dashboard";
-import { deleteEntities, fetchDictionaryOptions, fetchEntityDetail, fetchTeachersForSelect, postModuleAction, saveEntity, uploadAdminFile } from "@/api/manage";
+import {
+  deleteEntities,
+  fetchDictionaryOptions,
+  fetchEntityDetail,
+  fetchTeachersForSelect,
+  postModuleAction,
+  saveEntity,
+  uploadAdminFile
+} from "@/api/manage";
 import { useAdminSessionStore } from "@/stores/session";
 
 const store = useAdminSessionStore();
@@ -131,7 +143,20 @@ const banjiOptions = ref<Array<{ codeIndex: number; indexName: string }>>([]);
 const pagination = reactive({ page: 1, limit: 10, total: 0 });
 const reviewForm = reactive({ id: undefined as number | undefined, courseStatus: "approved", reviewRemark: "" });
 
-const createForm = () => ({ id: undefined as number | undefined, kechengName: "", kechengPhoto: "", kechengTypes: undefined as number | undefined, kechengShichang: undefined as number | undefined, creditScore: 0, kechengTime: "", banjiTypes: undefined as number | undefined, jiaoshiId: undefined as number | undefined, kechengContent: "", kechengDelete: 1 });
+const createForm = () => ({
+  id: undefined as number | undefined,
+  kechengName: "",
+  kechengPhoto: "",
+  kechengTypes: undefined as number | undefined,
+  kechengShichang: undefined as number | undefined,
+  creditScore: 0,
+  kechengTime: "",
+  kechengEndTime: "",
+  banjiTypes: undefined as number | undefined,
+  jiaoshiId: undefined as number | undefined,
+  kechengContent: "",
+  kechengDelete: 1
+});
 const form = reactive(createForm());
 
 const rules: FormRules = {
@@ -139,27 +164,53 @@ const rules: FormRules = {
   kechengTypes: [{ required: true, message: "请选择课程类型", trigger: "change" }],
   kechengShichang: [{ required: true, message: "请输入课程时长", trigger: "change" }],
   kechengTime: [{ required: true, message: "请选择开始时间", trigger: "change" }],
+  kechengEndTime: [{ required: true, message: "请选择结束时间", trigger: "change" }],
   banjiTypes: [{ required: true, message: "请选择班级", trigger: "change" }],
   jiaoshiId: [{ required: true, message: "请选择教师", trigger: "change" }],
   kechengContent: [{ required: true, message: "请输入课程详情", trigger: "blur" }]
 };
 
-function assetUrl(path?: string) { return createAssetUrl(DEFAULT_BASE_URL, path); }
+function assetUrl(path?: string) {
+  return createAssetUrl(DEFAULT_BASE_URL, path);
+}
 
 async function loadCourses() {
   loading.value = true;
   try {
-    const page = await fetchAdminCourses({ page: pagination.page, limit: pagination.limit, kechengName: keyword.value || undefined, courseStatus: statusFilter.value || undefined });
+    const page = await fetchAdminCourses({
+      page: pagination.page,
+      limit: pagination.limit,
+      kechengName: keyword.value || undefined,
+      courseStatus: statusFilter.value || undefined
+    });
     courses.value = page.list;
     pagination.total = page.totalCount;
   } finally {
     loading.value = false;
   }
 }
-function handleSearch() { pagination.page = 1; loadCourses(); }
-function resetFilters() { keyword.value = ""; statusFilter.value = ""; pagination.page = 1; loadCourses(); }
-function handleSizeChange() { pagination.page = 1; loadCourses(); }
-function resetForm() { Object.assign(form, createForm()); }
+
+function handleSearch() {
+  pagination.page = 1;
+  loadCourses();
+}
+
+function resetFilters() {
+  keyword.value = "";
+  statusFilter.value = "";
+  pagination.page = 1;
+  loadCourses();
+}
+
+function handleSizeChange() {
+  pagination.page = 1;
+  loadCourses();
+}
+
+function resetForm() {
+  Object.assign(form, createForm());
+}
+
 async function prepareOptions() {
   const tasks: Array<Promise<unknown>> = [
     fetchDictionaryOptions("kecheng_types"),
@@ -175,6 +226,7 @@ async function prepareOptions() {
   courseTypeOptions.value = courseTypes as Array<{ codeIndex: number; indexName: string }>;
   banjiOptions.value = banjiTypes as Array<{ codeIndex: number; indexName: string }>;
 }
+
 async function openCreate() {
   resetForm();
   try {
@@ -184,6 +236,7 @@ async function openCreate() {
     ElMessage.error(error instanceof Error ? error.message : "加载课程表单失败");
   }
 }
+
 async function openEdit(id: number) {
   resetForm();
   try {
@@ -194,17 +247,44 @@ async function openEdit(id: number) {
     ElMessage.error(error instanceof Error ? error.message : "加载课程详情失败");
   }
 }
+
 async function handleUpload(event: Event, field: "kechengPhoto") {
   const file = (event.target as HTMLInputElement).files?.[0];
-  if (!file) return;
-  try { form[field] = await uploadAdminFile(file); ElMessage.success("课程图片已上传"); } catch (error) { ElMessage.error(error instanceof Error ? error.message : "上传失败"); }
+  if (!file) {
+    return;
+  }
+  try {
+    form[field] = await uploadAdminFile(file);
+    ElMessage.success("课程图片已上传");
+  } catch (error) {
+    ElMessage.error(error instanceof Error ? error.message : "上传失败");
+  }
 }
+
 async function submitForm() {
   await formRef.value?.validate();
+  if (form.kechengEndTime <= form.kechengTime) {
+    ElMessage.error("结束时间必须晚于开始时间");
+    return;
+  }
   saving.value = true;
-  try { await saveEntity("kecheng", form as unknown as Record<string, unknown>); ElMessage.success("课程已保存"); dialogVisible.value = false; await loadCourses(); } catch (error) { ElMessage.error(error instanceof Error ? error.message : "保存失败"); } finally { saving.value = false; }
+  try {
+    await saveEntity("kecheng", form as unknown as Record<string, unknown>);
+    ElMessage.success("课程已保存");
+    dialogVisible.value = false;
+    await loadCourses();
+  } catch (error) {
+    ElMessage.error(error instanceof Error ? error.message : "保存失败");
+  } finally {
+    saving.value = false;
+  }
 }
-async function removeItem(id: number) { await deleteEntities("kecheng", [id]); ElMessage.success("课程已删除"); await loadCourses(); }
+
+async function removeItem(id: number) {
+  await deleteEntities("kecheng", [id]);
+  ElMessage.success("课程已删除");
+  await loadCourses();
+}
 
 function openReview(row: CourseItem, status: "approved" | "rejected") {
   reviewForm.id = row.id;
@@ -214,7 +294,9 @@ function openReview(row: CourseItem, status: "approved" | "rejected") {
 }
 
 async function submitReviewAction() {
-  if (!reviewForm.id) return;
+  if (!reviewForm.id) {
+    return;
+  }
   try {
     await postModuleAction("kecheng", "review", reviewForm as unknown as Record<string, unknown>);
     ElMessage.success("审核结果已提交");

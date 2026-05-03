@@ -3,8 +3,8 @@
     <div class="section__header section__header--stack">
       <div>
         <p class="eyebrow">我的课程</p>
-        <h1>已选课程与学分记录</h1>
-        <p class="section__summary">展示选课状态、进度百分比和已发放学分。</p>
+        <h1>已选课程、学习进度与学分记录</h1>
+        <p class="section__summary">进入课程详情后可继续查看章节与学习资源，作业和考试也会按课程展开。</p>
       </div>
     </div>
 
@@ -20,7 +20,7 @@
           <p>学习进度 {{ Math.round(course.progressPercent || 0) }}%</p>
           <div class="stack-inline">
             <span class="meta">学分 {{ course.creditScore ?? 0 }}</span>
-            <RouterLink class="ghost-button" :to="`/courses/${course.kechengId}`">继续学习</RouterLink>
+            <RouterLink class="ghost-button" :to="`/courses/${course.kechengId}`">进入课程</RouterLink>
           </div>
         </div>
       </article>

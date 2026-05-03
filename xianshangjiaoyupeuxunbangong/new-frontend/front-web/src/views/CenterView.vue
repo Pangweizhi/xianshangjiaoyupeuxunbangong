@@ -13,36 +13,46 @@
       </aside>
 
       <section class="profile-panel">
-        <h2>常用入口</h2>
+        <h2>学习路径</h2>
         <div class="mini-list">
-          <RouterLink class="mini-list__row" to="/courses">
-            <div>
-              <strong>课程中心</strong>
-              <p>查看课程与授课安排</p>
-            </div>
-          </RouterLink>
           <RouterLink class="mini-list__row" to="/my-courses">
             <div>
               <strong>我的课程</strong>
-              <p>查看选课进度与学分发放</p>
+              <p>从课程详情继续查看章节和学习资源。</p>
             </div>
           </RouterLink>
           <RouterLink class="mini-list__row" to="/homeworks">
             <div>
-              <strong>作业中心</strong>
-              <p>进入作业详情与提交记录</p>
+              <strong>作业</strong>
+              <p>作业按课程组织，进入后再选择具体任务。</p>
+            </div>
+          </RouterLink>
+          <RouterLink class="mini-list__row" to="/exams">
+            <div>
+              <strong>考试</strong>
+              <p>考试与成绩统一在这里查看。</p>
+            </div>
+          </RouterLink>
+        </div>
+
+        <h2 class="profile-panel__subhead">公共入口</h2>
+        <div class="mini-list">
+          <RouterLink class="mini-list__row" to="/courses">
+            <div>
+              <strong>课程中心</strong>
+              <p>浏览全部课程与授课安排。</p>
             </div>
           </RouterLink>
           <RouterLink class="mini-list__row" to="/forum">
             <div>
               <strong>论坛交流</strong>
-              <p>查看帖子、发布回复与参与讨论</p>
+              <p>查看帖子、回复问题和参与讨论。</p>
             </div>
           </RouterLink>
           <RouterLink class="mini-list__row" to="/notices">
             <div>
               <strong>公告通知</strong>
-              <p>掌握近期教学与办公信息</p>
+              <p>掌握近期教学与办公信息。</p>
             </div>
           </RouterLink>
         </div>
@@ -74,3 +84,9 @@ onMounted(async () => {
   profile.value = await session.hydrateProfile();
 });
 </script>
+
+<style scoped>
+.profile-panel__subhead {
+  margin-top: 22px;
+}
+</style>

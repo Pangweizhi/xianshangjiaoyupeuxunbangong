@@ -74,17 +74,26 @@ export function createAssetUrl(baseUrl: string, path?: string | null) {
   if (!path) {
     return "";
   }
-  if (/^https?:\/\//.test(path)) {
-    return path;
+  const normalizedPath = path.replace(/\\/g, "/");
+  if (/^https?:\/\//.test(normalizedPath)) {
+    return normalizedPath;
   }
-  return `${baseUrl}${path.startsWith("/") ? path : `/${path}`}`;
+  if (normalizedPath.startsWith("/")) {
+    return `${baseUrl}${normalizedPath}`;
+  }
+  if (!normalizedPath.includes("/")) {
+    return `${baseUrl}/upload/${normalizedPath}`;
+  }
+  return `${baseUrl}/${normalizedPath}`;
 }
 
 export function createDownloadUrl(baseUrl: string, fileName?: string | null) {
   if (!fileName) {
     return "";
   }
-  const value = fileName.startsWith("/") ? fileName.slice(1) : fileName;
+  const value = fileName.replace(/\\/g, "/").startsWith("/")
+    ? fileName.replace(/\\/g, "/").slice(1)
+    : fileName.replace(/\\/g, "/");
   if (value.includes("/")) {
     return `${baseUrl}/${value}`;
   }

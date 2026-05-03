@@ -101,6 +101,17 @@ public class KechengEntity<T> implements Serializable {
 
 
     /**
+     * 缁撴潫鏃堕棿
+     */
+    @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat
+    @ColumnInfo(comment="缁撴潫鏃堕棿",type="timestamp")
+    @TableField(value = "kecheng_end_time")
+
+    private Date kechengEndTime;
+
+
+    /**
      * 班级
      */
     @ColumnInfo(comment="班级",type="int(11)")
@@ -263,6 +274,19 @@ public class KechengEntity<T> implements Serializable {
         this.kechengTime = kechengTime;
     }
     /**
+	 * 鑾峰彇锛氱粨鏉熸椂闂?
+	 */
+    public Date getKechengEndTime() {
+        return kechengEndTime;
+    }
+    /**
+	 * 璁剧疆锛氱粨鏉熸椂闂?
+	 */
+
+    public void setKechengEndTime(Date kechengEndTime) {
+        this.kechengEndTime = kechengEndTime;
+    }
+    /**
 	 * 获取：班级
 	 */
     public Integer getBanjiTypes() {
@@ -397,6 +421,7 @@ public class KechengEntity<T> implements Serializable {
             ", kechengTypes=" + kechengTypes +
             ", kechengShichang=" + kechengShichang +
             ", kechengTime=" + DateUtil.convertString(kechengTime,"yyyy-MM-dd") +
+            ", kechengEndTime=" + DateUtil.convertString(kechengEndTime,"yyyy-MM-dd") +
             ", banjiTypes=" + banjiTypes +
             ", jiaoshiId=" + jiaoshiId +
             ", courseStatus=" + courseStatus +

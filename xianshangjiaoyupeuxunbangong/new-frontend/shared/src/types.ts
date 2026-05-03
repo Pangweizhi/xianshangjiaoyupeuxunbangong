@@ -34,6 +34,7 @@ export interface CourseItem {
   kechengTypes?: number;
   kechengShichang?: number;
   kechengTime?: string;
+  kechengEndTime?: string;
   banjiValue?: string;
   jiaoshiName?: string;
   kechengContent?: string;
@@ -249,6 +250,7 @@ export interface ForumItem {
   yonghuName?: string;
   jiaoshiName?: string;
   uusername?: string;
+  superIds?: number;
   insertTime?: string;
   updateTime?: string;
 }

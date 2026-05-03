@@ -43,7 +43,6 @@ public class CourseChapterController {
     @IgnoreAuth
     @RequestMapping("/list")
     public R list(@RequestParam Map<String, Object> params) {
-        params.put("chapterStatus", "approved");
         params.put("isDeleted", 1);
         CommonUtil.checkMap(params);
         return R.ok().put("data", courseChapterService.queryPage(params));
@@ -64,14 +63,14 @@ public class CourseChapterController {
         if (old != null) {
             return R.error(511, "章节排序不能重复");
         }
-        entity.setChapterStatus("pending_review");
-        entity.setReviewRemark(null);
-        entity.setReviewTime(null);
-        entity.setReviewAdminId(null);
+        entity.setChapterStatus("approved");
+        entity.setReviewRemark("课程审核通过后，章节直接生效");
+        entity.setReviewTime(new Date());
+        entity.setReviewAdminId(0L);
         entity.setIsDeleted(1);
         entity.setCreateTime(new Date());
         courseChapterService.insert(entity);
-        return R.ok();
+        return R.ok().put("data", entity);
     }
 
     @RequestMapping("/update")
@@ -84,12 +83,12 @@ public class CourseChapterController {
         if (old != null) {
             return R.error(511, "章节排序不能重复");
         }
-        entity.setChapterStatus("pending_review");
-        entity.setReviewRemark(null);
-        entity.setReviewTime(null);
-        entity.setReviewAdminId(null);
+        entity.setChapterStatus("approved");
+        entity.setReviewRemark("课程审核通过后，章节直接生效");
+        entity.setReviewTime(new Date());
+        entity.setReviewAdminId(0L);
         courseChapterService.updateById(entity);
-        return R.ok();
+        return R.ok().put("data", entity);
     }
 
     @RequestMapping("/delete")
@@ -118,4 +117,3 @@ public class CourseChapterController {
         return R.ok();
     }
 }
-

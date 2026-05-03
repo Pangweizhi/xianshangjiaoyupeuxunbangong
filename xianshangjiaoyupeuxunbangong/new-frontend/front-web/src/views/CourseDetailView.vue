@@ -14,6 +14,7 @@
           <p>{{ stripHtml(detail.kechengContent) }}</p>
           <div class="status-list">
             <span>开始时间：{{ detail.kechengTime || "待定" }}</span>
+            <span>结束时间：{{ detail.kechengEndTime || "待定" }}</span>
             <span>课程时长：{{ detail.kechengShichang || 0 }} 分钟</span>
             <span>班级：{{ detail.banjiValue || "未设置" }}</span>
           </div>
@@ -44,19 +45,15 @@
       </aside>
     </div>
 
-    <section v-if="chapters.length" class="section">
+    <section v-if="resources.length" class="section">
       <div class="section__header section__header--stack">
         <div>
           <p class="eyebrow">学习资源</p>
-          <h2>视频与资料</h2>
+          <h2>课程资源已按章节归集</h2>
         </div>
       </div>
       <div class="content-grid">
-        <article
-          v-for="resource in resources"
-          :key="resource.id"
-          class="feature-card feature-card--compact"
-        >
+        <article v-for="resource in resources" :key="resource.id" class="feature-card feature-card--compact">
           <img :src="toAsset(resource.coverUrl)" :alt="resource.resourceName" />
           <div>
             <div class="stack-inline">
@@ -66,12 +63,7 @@
             <h3>{{ resource.resourceName }}</h3>
             <p>时长 {{ resource.durationSeconds || 0 }} 秒</p>
             <div class="stack-inline">
-              <a
-                v-if="resource.resourceUrl"
-                class="ghost-button"
-                :href="downloadUrl(resource.resourceUrl)"
-                target="_blank"
-              >
+              <a v-if="resource.resourceUrl" class="ghost-button" :href="downloadUrl(resource.resourceUrl)" target="_blank">
                 打开资源
               </a>
               <button
@@ -136,11 +128,10 @@ const chapterNameMap = computed(() => Object.fromEntries(chapters.value.map((ite
 const resourcesByChapter = computed(() => {
   const map: Record<number, CourseResourceItem[]> = {};
   resources.value.forEach((item) => {
-    const key = item.chapterId;
-    if (!map[key]) {
-      map[key] = [];
+    if (!map[item.chapterId]) {
+      map[item.chapterId] = [];
     }
-    map[key].push(item);
+    map[item.chapterId].push(item);
   });
   return map;
 });
@@ -181,7 +172,7 @@ async function handleEnroll() {
 async function markAsLearned(resource: CourseResourceItem) {
   if (!session.isLoggedIn) {
     messageType.value = "error";
-    message.value = "请先登录后记录学习进度。";
+    message.value = "请先登录后再记录学习进度。";
     return;
   }
   try {
@@ -202,18 +193,20 @@ async function markAsLearned(resource: CourseResourceItem) {
   }
 }
 
-Promise.all([
-  fetchCourseDetail(route.params.id as string),
-  fetchCourseChapterPage({ kechengId: route.params.id }),
-  fetchCourseResourcePage({ kechengId: route.params.id })
-]).then(([course, chapterPage, resourcePage]) => {
+async function loadPage() {
+  const [course, chapterPage, resourcePage] = await Promise.all([
+    fetchCourseDetail(route.params.id as string),
+    fetchCourseChapterPage({ kechengId: route.params.id }),
+    fetchCourseResourcePage({ kechengId: route.params.id })
+  ]);
   detail.value = course;
   chapters.value = chapterPage.list;
   resources.value = resourcePage.list;
-});
+}
+
+loadPage();
 
 if (session.isLoggedIn) {
   checkEnrollStatus();
 }
 </script>
-
