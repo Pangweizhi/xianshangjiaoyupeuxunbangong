@@ -20,6 +20,7 @@ import ForumManageView from "@/views/ForumManageView.vue";
 import MaterialManageView from "@/views/MaterialManageView.vue";
 import MeetingManageView from "@/views/MeetingManageView.vue";
 import HomeworkSubmissionManageView from "@/views/HomeworkSubmissionManageView.vue";
+import AiChatView from "@/views/AiChatView.vue";
 import { useAdminSessionStore } from "@/stores/session";
 
 const router = createRouter({
@@ -50,7 +51,8 @@ const router = createRouter({
         { path: "forums", name: "forums", component: ForumManageView },
         { path: "materials", name: "materials", component: MaterialManageView },
         { path: "meetings", name: "meetings", component: MeetingManageView },
-        { path: "submissions", name: "submissions", component: HomeworkSubmissionManageView }
+        { path: "submissions", name: "submissions", component: HomeworkSubmissionManageView },
+        { path: "ai-chat", name: "ai-chat", component: AiChatView }
       ]
     }
   ]

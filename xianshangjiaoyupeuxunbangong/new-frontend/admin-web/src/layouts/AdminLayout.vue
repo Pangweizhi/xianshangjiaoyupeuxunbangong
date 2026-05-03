@@ -20,6 +20,7 @@
       <RouterLink to="/forums">论坛管理</RouterLink>
       <RouterLink to="/materials">备课管理</RouterLink>
       <RouterLink to="/meetings">会议管理</RouterLink>
+      <RouterLink :to="aiLink">智能问答</RouterLink>
       <RouterLink v-if="!isTeacher" to="/students">学生管理</RouterLink>
       <RouterLink v-if="!isTeacher" to="/teachers">教师管理</RouterLink>
       <RouterLink v-if="!isTeacher" to="/dictionary">字典管理</RouterLink>
@@ -32,7 +33,10 @@
           <h1>{{ title }}</h1>
           <p>{{ store.displayRole }}</p>
         </div>
-        <el-button plain @click="store.logout">退出登录</el-button>
+        <div class="admin-header__actions">
+          <RouterLink class="admin-ai-entry" :to="aiLink">问AI</RouterLink>
+          <el-button plain @click="store.logout">退出登录</el-button>
+        </div>
       </header>
       <section class="admin-content">
         <RouterView />
@@ -49,6 +53,13 @@ import { useAdminSessionStore } from "@/stores/session";
 const route = useRoute();
 const store = useAdminSessionStore();
 const isTeacher = computed(() => store.session?.tableName === "jiaoshi");
+const aiLink = computed(() => ({
+  name: "ai-chat",
+  query: {
+    bizScene: "course_manage",
+    pageCode: String(route.name ?? "admin")
+  }
+}));
 
 const title = computed(() => {
   switch (route.name) {
@@ -88,8 +99,37 @@ const title = computed(() => {
       return "备课管理";
     case "meetings":
       return "会议管理";
+    case "ai-chat":
+      return "智能问答助手";
     default:
       return "仪表盘";
   }
 });
 </script>
+
+<style scoped>
+.admin-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.admin-ai-entry {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 86px;
+  padding: 0.68rem 1rem;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #fb6a3d, #eb3b5a);
+  box-shadow: 0 12px 28px rgba(235, 59, 90, 0.24);
+}
+
+.admin-ai-entry::before {
+  content: "✦";
+  margin-right: 0.35rem;
+}
+</style>

@@ -38,3 +38,10 @@ mybatis-plus:
 logging:
   level:
     com.dao: debug
+
+qa:
+  ai:
+    enabled: ${QA_AI_ENABLED:false}
+    api-key: ${QA_AI_API_KEY:}
+    base-url: ${QA_AI_BASE_URL:}
+    model: ${QA_AI_MODEL:qwen-plus}

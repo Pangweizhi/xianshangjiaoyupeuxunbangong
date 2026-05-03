@@ -22,6 +22,7 @@
       </nav>
       <div class="topbar__actions">
         <template v-if="session.isLoggedIn">
+          <RouterLink class="ai-entry" :to="aiLink">问AI</RouterLink>
           <span class="tag">{{ session.displayRole }}</span>
           <button class="ghost-button" @click="session.logout">退出登录</button>
         </template>
@@ -36,9 +37,58 @@
 </template>
 
 <script setup lang="ts">
-import { RouterLink, RouterView } from "vue-router";
+import { computed } from "vue";
+import { RouterLink, RouterView, useRoute } from "vue-router";
 import BrandMark from "@/components/BrandMark.vue";
 import { useSessionStore } from "@/stores/session";
 
 const session = useSessionStore();
+const route = useRoute();
+
+const aiLink = computed(() => {
+  const query: Record<string, string | number> = {
+    bizScene: route.name === "course-detail" ? "course_learning" : "system_nav",
+    pageCode: String(route.name ?? "public")
+  };
+  if (route.name === "course-detail" && route.params.id) {
+    query.courseId = Number(route.params.id);
+  }
+  return { name: "ai-chat", query };
+});
 </script>
+
+<style scoped>
+.ai-entry {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 94px;
+  padding: 0.7rem 1.15rem;
+  border-radius: 999px;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: linear-gradient(135deg, #ff7b38, #ff4f88, #f03f6b);
+  box-shadow: 0 14px 30px rgba(240, 63, 107, 0.28);
+  animation: aiPulse 2.2s ease-in-out infinite;
+}
+
+.ai-entry::before {
+  content: "✦";
+  margin-right: 0.4rem;
+  font-size: 0.9rem;
+}
+
+@keyframes aiPulse {
+  0%,
+  100% {
+    transform: translateY(0);
+    box-shadow: 0 14px 30px rgba(240, 63, 107, 0.28);
+  }
+  50% {
+    transform: translateY(-1px);
+    box-shadow: 0 18px 38px rgba(240, 63, 107, 0.36);
+  }
+}
+</style>

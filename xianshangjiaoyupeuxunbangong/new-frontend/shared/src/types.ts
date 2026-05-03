@@ -370,3 +370,49 @@ export interface StudentCoursePerformanceResponse {
   summary: CourseReportSummary;
   courseSummaries: StudentCoursePerformanceItem[];
 }
+
+export interface AiChatSessionItem {
+  id: number;
+  userId: number;
+  userTable: UserTable;
+  roleType?: string;
+  sessionTitle: string;
+  bizScene?: string;
+  courseId?: number;
+  chapterId?: number;
+  resourceId?: number;
+  messageCount?: number;
+  lastMessageAt?: string;
+  status?: string;
+  createTime?: string;
+  updateTime?: string;
+}
+
+export interface AiChatMessageItem {
+  id: number;
+  sessionId: number;
+  userId: number;
+  roleType?: string;
+  messageRole: "user" | "assistant" | "system" | "tool";
+  messageType?: string;
+  content: string;
+  toolName?: string;
+  toolRequestJson?: string;
+  toolResponseJson?: string;
+  contextJson?: string;
+  tokenEstimate?: number;
+  sortNo?: number;
+  createTime?: string;
+}
+
+export interface AiChatSessionCreateResponse {
+  session: AiChatSessionItem;
+  recommendQuestions: string[];
+}
+
+export interface AiChatSendResponse {
+  session: AiChatSessionItem;
+  userMessage: AiChatMessageItem;
+  assistantMessage: AiChatMessageItem;
+  recommendQuestions: string[];
+}

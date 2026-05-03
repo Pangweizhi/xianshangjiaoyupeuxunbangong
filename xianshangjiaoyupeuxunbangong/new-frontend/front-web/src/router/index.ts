@@ -18,6 +18,7 @@ import MaterialDetailView from "@/views/MaterialDetailView.vue";
 import MeetingDetailView from "@/views/MeetingDetailView.vue";
 import CenterView from "@/views/CenterView.vue";
 import MyCoursesView from "@/views/MyCoursesView.vue";
+import AiChatView from "@/views/AiChatView.vue";
 import { useSessionStore } from "@/stores/session";
 
 const router = createRouter({
@@ -48,7 +49,8 @@ const router = createRouter({
           name: "center",
           component: CenterView,
           meta: { requiresAuth: true }
-        }
+        },
+        { path: "ai-chat", name: "ai-chat", component: AiChatView, meta: { requiresAuth: true } }
       ]
     },
     { path: "/login", name: "login", component: LoginView }
