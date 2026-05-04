@@ -276,20 +276,28 @@ public class ExamRecordController {
         if (correct == null) {
             return false;
         }
-        if ("多选".equals(question.getQuestionType())) {
+        if (isMultiChoice(question.getQuestionType())) {
             return normalizeMulti(answer).equals(normalizeMulti(correct));
         }
-        return answer.trim().equalsIgnoreCase(correct.trim());
+        return normalizeText(answer).equals(normalizeText(correct));
     }
 
     private boolean isSubjective(String questionType) {
-        return "简答".equals(questionType) || "问答".equals(questionType);
+        return "简答题".equals(questionType) || "简答".equals(questionType) || "问答".equals(questionType);
+    }
+
+    private boolean isMultiChoice(String questionType) {
+        return "多选".equals(questionType) || "多选题".equals(questionType);
     }
 
     private String normalizeMulti(String value) {
         String[] parts = value.replace(" ", "").split(",");
         Arrays.sort(parts);
         return String.join(",", parts);
+    }
+
+    private String normalizeText(String value) {
+        return value == null ? "" : value.trim().replace(" ", "").replace("，", ",").toLowerCase();
     }
 
     private String buildActionRemark(String oldRemark, String inputRemark, String fallbackAction) {

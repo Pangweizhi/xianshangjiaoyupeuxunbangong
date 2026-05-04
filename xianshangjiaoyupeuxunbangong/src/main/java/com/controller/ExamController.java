@@ -78,7 +78,7 @@ public class ExamController {
         entity.setCreateTime(new Date());
         syncExamScore(entity);
         examService.insert(entity);
-        return R.ok();
+        return R.ok().put("data", entity);
     }
 
     @RequestMapping("/update")
@@ -101,7 +101,7 @@ public class ExamController {
         }
         syncExamScore(entity);
         examService.updateById(entity);
-        return R.ok();
+        return R.ok().put("data", entity);
     }
 
     @RequestMapping("/delete")
@@ -126,7 +126,7 @@ public class ExamController {
         old.setExamStatus("published");
         old.setPublishTime(new Date());
         examService.updateById(old);
-        return R.ok();
+        return R.ok().put("data", old);
     }
 
     private void fillRuleDefaults(ExamEntity entity) {

@@ -32,6 +32,8 @@ public class StudyProgressEntity implements Serializable {
     private Double progressPercent;
     @TableField(value = "is_completed")
     private Integer isCompleted;
+    @TableField(exist = false)
+    private Integer forceCompleted;
     @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat
     @TableField(value = "last_study_time")
@@ -57,9 +59,10 @@ public class StudyProgressEntity implements Serializable {
     public void setProgressPercent(Double progressPercent) { this.progressPercent = progressPercent; }
     public Integer getIsCompleted() { return isCompleted; }
     public void setIsCompleted(Integer isCompleted) { this.isCompleted = isCompleted; }
+    public Integer getForceCompleted() { return forceCompleted; }
+    public void setForceCompleted(Integer forceCompleted) { this.forceCompleted = forceCompleted; }
     public Date getLastStudyTime() { return lastStudyTime; }
     public void setLastStudyTime(Date lastStudyTime) { this.lastStudyTime = lastStudyTime; }
     public Date getCreateTime() { return createTime; }
     public void setCreateTime(Date createTime) { this.createTime = createTime; }
 }
-

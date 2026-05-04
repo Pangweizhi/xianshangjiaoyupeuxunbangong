@@ -1,9 +1,12 @@
-﻿<template>
+<template>
   <section class="admin-panel">
     <div class="panel-header panel-header--spread">
-      <h2>字典管理</h2>
+      <div>
+        <h2>{{ pageTitle }}</h2>
+        <p class="panel-note">{{ pageNote }}</p>
+      </div>
       <div class="toolbar toolbar--wrap">
-        <el-input v-model="keyword" placeholder="搜索字段名" clearable />
+        <el-input v-model="keyword" :placeholder="searchPlaceholder" clearable />
         <el-button type="primary" @click="handleSearch">查询</el-button>
         <el-button @click="resetFilters">重置筛选</el-button>
         <el-button type="success" @click="openCreate">新增字典</el-button>
@@ -38,14 +41,26 @@
     </div>
   </section>
 
-  <el-dialog v-model="dialogVisible" :title="form.id ? '编辑字典' : '新增字典'" width="720px">
+  <el-dialog v-model="dialogVisible" :title="form.id ? `编辑${pageTitle}` : `新增${pageTitle}`" width="720px">
     <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
-      <el-form-item label="字段" prop="dicCode"><el-input v-model="form.dicCode" /></el-form-item>
-      <el-form-item label="字段名" prop="dicName"><el-input v-model="form.dicName" /></el-form-item>
-      <el-form-item label="编码" prop="codeIndex"><el-input-number v-model="form.codeIndex" :min="0" :max="999999" /></el-form-item>
-      <el-form-item label="编码名称" prop="indexName"><el-input v-model="form.indexName" /></el-form-item>
-      <el-form-item label="父字段 ID"><el-input-number v-model="form.superId" :min="0" :max="999999" /></el-form-item>
-      <el-form-item label="备注"><el-input v-model="form.beizhu" type="textarea" :rows="4" /></el-form-item>
+      <el-form-item label="字段" prop="dicCode">
+        <el-input v-model="form.dicCode" :disabled="!!fixedDicCode" />
+      </el-form-item>
+      <el-form-item label="字段名" prop="dicName">
+        <el-input v-model="form.dicName" :disabled="!!fixedDicName" />
+      </el-form-item>
+      <el-form-item label="编码" prop="codeIndex">
+        <el-input-number v-model="form.codeIndex" :min="0" :max="999999" />
+      </el-form-item>
+      <el-form-item label="编码名称" prop="indexName">
+        <el-input v-model="form.indexName" />
+      </el-form-item>
+      <el-form-item label="父字段 ID">
+        <el-input-number v-model="form.superId" :min="0" :max="999999" />
+      </el-form-item>
+      <el-form-item label="备注">
+        <el-input v-model="form.beizhu" type="textarea" :rows="4" />
+      </el-form-item>
     </el-form>
     <template #footer>
       <el-button @click="dialogVisible = false">取消</el-button>
@@ -55,11 +70,24 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
 import type { DictionaryItem } from "@shared/index";
 import { fetchDictionary } from "@/api/dashboard";
 import { deleteEntities, fetchEntityDetail, saveEntity } from "@/api/manage";
+
+const props = withDefaults(
+  defineProps<{
+    dicCode?: string;
+    dicName?: string;
+    pageTitle?: string;
+    pageNote?: string;
+  }>(),
+  {
+    pageTitle: "字典管理",
+    pageNote: "维护系统字典编码和值，课程和作业类型都在这里统一管理。"
+  }
+);
 
 const keyword = ref("");
 const dictionary = ref<DictionaryItem[]>([]);
@@ -72,10 +100,16 @@ const pagination = reactive({
   total: 0
 });
 
+const fixedDicCode = computed(() => props.dicCode || "");
+const fixedDicName = computed(() => props.dicName || "");
+const searchPlaceholder = computed(() =>
+  fixedDicCode.value ? "搜索类型名称" : "搜索字段名"
+);
+
 const createForm = () => ({
   id: undefined as number | undefined,
-  dicCode: "",
-  dicName: "",
+  dicCode: fixedDicCode.value,
+  dicName: fixedDicName.value,
   codeIndex: undefined as number | undefined,
   indexName: "",
   superId: 0,
@@ -91,11 +125,22 @@ const rules: FormRules = {
   indexName: [{ required: true, message: "请输入编码名称", trigger: "blur" }]
 };
 
+function syncFixedFields() {
+  if (fixedDicCode.value) {
+    form.dicCode = fixedDicCode.value;
+  }
+  if (fixedDicName.value) {
+    form.dicName = fixedDicName.value;
+  }
+}
+
 async function loadDictionary() {
+  const searchKey = fixedDicCode.value ? "indexName" : "dicName";
   const page = await fetchDictionary({
     page: pagination.page,
     limit: pagination.limit,
-    dicName: keyword.value || undefined
+    dicCode: fixedDicCode.value || undefined,
+    [searchKey]: keyword.value || undefined
   });
   dictionary.value = page.list;
   pagination.total = page.totalCount;
@@ -129,11 +174,13 @@ function openCreate() {
 async function openEdit(id: number) {
   resetForm();
   Object.assign(form, await fetchEntityDetail("dictionary", id));
+  syncFixedFields();
   dialogVisible.value = true;
 }
 
 async function submitForm() {
   await formRef.value?.validate();
+  syncFixedFields();
   saving.value = true;
   try {
     await saveEntity("dictionary", form as unknown as Record<string, unknown>);
@@ -155,3 +202,10 @@ async function removeItem(id: number) {
 
 loadDictionary();
 </script>
+
+<style scoped>
+.panel-note {
+  margin: 8px 0 0;
+  color: var(--muted-strong);
+}
+</style>

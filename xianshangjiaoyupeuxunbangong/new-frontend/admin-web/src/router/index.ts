@@ -48,6 +48,28 @@ const router = createRouter({
         { path: "students", name: "students", component: StudentsManageView },
         { path: "teachers", name: "teachers", component: TeachersManageView },
         { path: "dictionary", name: "dictionary", component: DictionaryManageView },
+        {
+          path: "course-types",
+          name: "course-types",
+          component: DictionaryManageView,
+          props: {
+            dicCode: "kecheng_types",
+            dicName: "课程类型",
+            pageTitle: "课程类型管理",
+            pageNote: "维护课程下拉里的课程类型编码和值。"
+          }
+        },
+        {
+          path: "homework-types",
+          name: "homework-types",
+          component: DictionaryManageView,
+          props: {
+            dicCode: "zuoye_types",
+            dicName: "作业类型",
+            pageTitle: "作业类型管理",
+            pageNote: "维护作业下拉里的作业类型编码和值。"
+          }
+        },
         { path: "config", name: "config", component: ConfigManageView },
         { path: "homeworks", name: "homeworks", component: HomeworkManageView },
         { path: "forums", name: "forums", component: ForumManageView },

@@ -23,7 +23,7 @@
       <el-table-column prop="studySeconds" label="学习秒数" min-width="100" />
       <el-table-column label="进度" min-width="140">
         <template #default="{ row }">
-          <el-progress :percentage="Math.round(row.progressPercent || 0)" :stroke-width="10" />
+          <el-progress :percentage="progressDisplay(row)" :stroke-width="10" />
         </template>
       </el-table-column>
       <el-table-column label="完成状态" min-width="120">
@@ -97,6 +97,13 @@ function resetFilters() {
   filters.yonghuId = undefined;
   pagination.page = 1;
   loadRows();
+}
+
+function progressDisplay(row: StudyProgressItem) {
+  if (row.isCompleted === 1) {
+    return 100;
+  }
+  return Math.min(99, Math.floor(row.progressPercent || 0));
 }
 
 function handleSizeChange() {

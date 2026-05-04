@@ -84,22 +84,19 @@
             <el-input v-model="draft.resourceName" placeholder="资源名称" />
             <el-select v-model="draft.resourceType" placeholder="资源类型">
               <el-option label="视频" value="视频" />
-              <el-option label="PPT" value="PPT" />
-              <el-option label="文档" value="文档" />
-              <el-option label="压缩包" value="压缩包" />
+              <el-option label="压缩包（PPT、文档等）" value="压缩包" />
             </el-select>
-            <el-input-number v-model="draft.durationSeconds" :min="0" :max="99999" />
+            <div class="resource-duration">
+              <span>预估课时</span>
+              <el-input-number v-model="draft.durationSeconds" :min="0" :max="99999" />
+            </div>
             <label class="resource-upload">
               <span>上传资源文件</span>
-              <input type="file" @change="handleResourceUpload($event, draft, 'resourceUrl')" />
+              <input type="file" @change="handleResourceUpload($event, draft)" />
             </label>
-            <label class="resource-upload">
-              <span>上传封面图片</span>
-              <input type="file" accept="image/*" @change="handleResourceUpload($event, draft, 'coverUrl')" />
-            </label>
-            <img v-if="assetUrl(draft.coverUrl)" class="upload-preview" :src="assetUrl(draft.coverUrl)" alt="资源封面" />
           </div>
           <p class="upload-tip">{{ draft.resourceUrl || "未上传资源文件" }}</p>
+          <p class="upload-tip">视频资源会影响学习进度，压缩包（PPT、文档等）仅供下载。</p>
         </article>
       </div>
       <el-empty v-else description="当前还没有资源，可直接新增" />
@@ -115,7 +112,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from "vue";
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
-import { DEFAULT_BASE_URL, createAssetUrl, type CourseChapterItem, type CourseResourceItem } from "@shared/index";
+import { type CourseChapterItem, type CourseResourceItem } from "@shared/index";
 import { fetchCourseChapterPage, fetchCourseResourcePage } from "@/api/dashboard";
 import {
   deleteEntities,
@@ -131,7 +128,6 @@ type ResourceDraft = {
   resourceName: string;
   resourceType: string;
   resourceUrl: string;
-  coverUrl: string;
   durationSeconds: number;
 };
 
@@ -173,19 +169,18 @@ const resourcesByChapter = computed(() => {
   return map;
 });
 
-function assetUrl(path?: string) {
-  return createAssetUrl(DEFAULT_BASE_URL, path);
-}
-
 function createDraft(): ResourceDraft {
   return {
     localKey: `${Date.now()}-${Math.random()}`,
     resourceName: "",
     resourceType: "",
     resourceUrl: "",
-    coverUrl: "",
     durationSeconds: 0
   };
+}
+
+function normalizeResourceType(value?: string) {
+  return value && value.includes("视频") ? "视频" : "压缩包";
 }
 
 async function loadOptions() {
@@ -263,9 +258,8 @@ async function openEdit(id: number) {
       id: item.id,
       localKey: `resource-${item.id}`,
       resourceName: item.resourceName,
-      resourceType: item.resourceType || "",
+      resourceType: normalizeResourceType(item.resourceType),
       resourceUrl: item.resourceUrl || "",
-      coverUrl: item.coverUrl || "",
       durationSeconds: item.durationSeconds || 0
     }));
     dialogVisible.value = true;
@@ -282,14 +276,14 @@ function removeResourceDraft(index: number) {
   resourceDrafts.value.splice(index, 1);
 }
 
-async function handleResourceUpload(event: Event, draft: ResourceDraft, field: "resourceUrl" | "coverUrl") {
+async function handleResourceUpload(event: Event, draft: ResourceDraft) {
   const file = (event.target as HTMLInputElement).files?.[0];
   if (!file) {
     return;
   }
   try {
-    draft[field] = await uploadAdminFile(file);
-    ElMessage.success(field === "coverUrl" ? "封面已上传" : "资源文件已上传");
+    draft.resourceUrl = await uploadAdminFile(file);
+    ElMessage.success("资源文件已上传");
   } catch (error) {
     ElMessage.error(error instanceof Error ? error.message : "上传失败");
   }
@@ -312,7 +306,6 @@ async function submitForm() {
         resourceName: draft.resourceName,
         resourceType: draft.resourceType,
         resourceUrl: draft.resourceUrl,
-        coverUrl: draft.coverUrl,
         durationSeconds: draft.durationSeconds
       });
     }
@@ -384,6 +377,13 @@ loadRows();
 }
 
 .resource-upload {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  color: var(--admin-muted);
+}
+
+.resource-duration {
   display: grid;
   gap: 8px;
   align-content: start;

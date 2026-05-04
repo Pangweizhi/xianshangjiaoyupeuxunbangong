@@ -62,6 +62,12 @@ export async function fetchCourseResourcePage(params?: Record<string, unknown>) 
   return unwrap<PagePayload<CourseResourceItem>>(data);
 }
 
+export async function fetchCourseResourceDetail(id: number | string) {
+  const http = useHttp();
+  const { data } = await http.get(`/courseResource/info/${id}`);
+  return unwrap<CourseResourceItem>(data);
+}
+
 export async function createCourseEnroll(payload: Record<string, unknown>) {
   const http = useHttp();
   const { data } = await http.post("/courseEnroll/save", payload);

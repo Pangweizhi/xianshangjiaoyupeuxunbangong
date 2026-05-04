@@ -1,6 +1,16 @@
 <template>
   <section class="home-banner" v-if="bannerImages.length">
     <div class="home-banner__viewport">
+      <button
+        v-if="bannerImages.length > 1"
+        class="home-banner__arrow home-banner__arrow--left"
+        type="button"
+        aria-label="上一张轮播图"
+        @click="prevBanner"
+      >
+        <span>‹</span>
+      </button>
+
       <img
         v-for="(image, index) in bannerImages"
         :key="`${image}-${index}`"
@@ -8,20 +18,32 @@
         :class="['home-banner__image', 'media-fit-contain', { 'is-active': index === activeBanner }]"
         :alt="`轮播图 ${index + 1}`"
       />
+
+      <button
+        v-if="bannerImages.length > 1"
+        class="home-banner__arrow home-banner__arrow--right"
+        type="button"
+        aria-label="下一张轮播图"
+        @click="nextBanner"
+      >
+        <span>›</span>
+      </button>
     </div>
+
     <div class="home-banner__dots">
       <button
         v-for="(_, index) in bannerImages"
         :key="index"
         :class="['home-banner__dot', { 'is-active': index === activeBanner }]"
         @click="activeBanner = index"
+        :aria-label="`切换到第 ${index + 1} 张轮播图`"
       />
     </div>
   </section>
 
   <section class="hero">
     <div class="hero__copy">
-      <h1>课程、公告、作业和论坛，在一个首页里顺序展开。</h1>
+      <h1>学习内容一屏聚合</h1>
       <div class="hero__actions">
         <RouterLink class="primary-button" to="/courses">进入课程</RouterLink>
         <RouterLink class="ghost-button" to="/my-courses">进入我的课程</RouterLink>
@@ -49,6 +71,8 @@
     <aside class="hero__panel">
       <div class="hero__panel-card hero__panel-card--accent">
         <span class="meta-label">今日导览</span>
+        <h2>先看课程，再看公告和作业。</h2>
+        <p>首页信息压缩到更短的链路，减少视觉拖沓，保留必要入口。</p>
       </div>
       <div class="hero__panel-card">
         <div class="metric-card">
@@ -71,7 +95,7 @@
     <div class="section__header">
       <div>
         <p class="eyebrow">快捷入口</p>
-        <h2>公共入口与学习入口分开展示</h2>
+        <h2>公共入口与学习入口分组展示</h2>
       </div>
     </div>
     <div class="shortcut-columns">
@@ -79,7 +103,7 @@
         <div class="shortcut-panel__head">
           <span class="tag">公共服务</span>
         </div>
-        <div class="shortcut-grid shortcut-grid--dual">
+        <div class="shortcut-grid shortcut-grid--dual shortcut-grid--compact">
           <RouterLink class="shortcut-card" to="/">
             <strong>首页</strong>
           </RouterLink>
@@ -102,7 +126,7 @@
         <div class="shortcut-panel__head">
           <span class="tag">我的学习</span>
         </div>
-        <div class="shortcut-grid shortcut-grid--dual">
+        <div class="shortcut-grid shortcut-grid--dual shortcut-grid--compact">
           <RouterLink class="shortcut-card" to="/my-courses">
             <strong>我的课程</strong>
             <p>章节和学习资源都在课程详情里查看。</p>
@@ -240,17 +264,33 @@ function startBannerLoop() {
   }, 3600);
 }
 
+function prevBanner() {
+  if (!bannerImages.value.length) {
+    return;
+  }
+  activeBanner.value =
+    (activeBanner.value - 1 + bannerImages.value.length) % bannerImages.value.length;
+}
+
+function nextBanner() {
+  if (!bannerImages.value.length) {
+    return;
+  }
+  activeBanner.value = (activeBanner.value + 1) % bannerImages.value.length;
+}
+
 onMounted(async () => {
   try {
-    const [configPage, coursePage, noticePage, homeworkPage, forumPage, materialPage, meetingPage] = await Promise.all([
-      fetchConfigList(),
-      fetchCoursePage(),
-      fetchNoticePage(),
-      fetchHomeworkPage(),
-      fetchForumPage(),
-      fetchMaterialPage(),
-      fetchMeetingPage()
-    ]);
+    const [configPage, coursePage, noticePage, homeworkPage, forumPage, materialPage, meetingPage] =
+      await Promise.all([
+        fetchConfigList(),
+        fetchCoursePage(),
+        fetchNoticePage(),
+        fetchHomeworkPage(),
+        fetchForumPage(),
+        fetchMaterialPage(),
+        fetchMeetingPage()
+      ]);
 
     parseBannerImages(configPage.list);
     courses.value = coursePage.list;
@@ -304,17 +344,53 @@ onBeforeUnmount(() => {
   opacity: 1;
 }
 
+.home-banner__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--primary-deep);
+  font-size: 1.9rem;
+  line-height: 1;
+  box-shadow: 0 12px 28px rgba(31, 41, 55, 0.16);
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.home-banner__arrow:hover {
+  transform: translateY(-50%) scale(1.04);
+  background: #ffffff;
+  box-shadow: 0 14px 32px rgba(31, 41, 55, 0.18);
+}
+
+.home-banner__arrow--left {
+  left: 18px;
+}
+
+.home-banner__arrow--right {
+  right: 18px;
+}
+
 .home-banner__dots {
   display: flex;
   justify-content: center;
   gap: 10px;
-  padding: 16px;
+  padding: 12px 16px 14px;
 }
 
 .home-banner__dot {
   width: 12px;
   height: 12px;
-  border-radius: 50%;
+  border-radius: 999px;
   background: rgba(22, 32, 51, 0.18);
 }
 
@@ -325,7 +401,7 @@ onBeforeUnmount(() => {
 .shortcut-columns {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  gap: 14px;
 }
 
 .shortcut-panel {
@@ -333,11 +409,11 @@ onBeforeUnmount(() => {
   border: 1px solid var(--line);
   background: var(--surface);
   box-shadow: var(--shadow-soft);
-  padding: 20px;
+  padding: 18px;
 }
 
 .shortcut-panel__head {
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
 
 .shortcut-panel--study .shortcut-panel__head {
@@ -348,10 +424,63 @@ onBeforeUnmount(() => {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.shortcut-grid--compact {
+  gap: 12px;
+}
+
+.shortcut-grid--compact .shortcut-card {
+  padding: 18px;
+}
+
+.shortcut-grid--compact .shortcut-card p {
+  margin-top: 8px;
+}
+
+.hero {
+  gap: 18px;
+}
+
+.hero__copy {
+  padding: 40px 38px 30px;
+}
+
+.hero__signals {
+  margin-top: 18px;
+  gap: 12px;
+}
+
+.hero__signals .signal-card {
+  padding: 16px 16px 14px;
+}
+
+.hero__panel-card {
+  padding: 20px;
+}
+
+.hero__panel {
+  gap: 14px;
+}
+
 @media (max-width: 1120px) {
   .shortcut-columns,
   .shortcut-grid--dual {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .home-banner__arrow {
+    width: 40px;
+    height: 40px;
+    font-size: 1.7rem;
+  }
+
+  .home-banner__arrow--left {
+    left: 12px;
+  }
+
+  .home-banner__arrow--right {
+    right: 12px;
   }
 }
 </style>

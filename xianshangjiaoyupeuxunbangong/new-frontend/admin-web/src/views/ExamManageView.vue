@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <section class="admin-panel" v-loading="loading">
     <div class="panel-header panel-header--spread">
       <h2>考试管理</h2>
@@ -49,60 +49,87 @@
         background
         layout="total, sizes, prev, pager, next"
         :total="pagination.total"
-        :page-sizes="[10,20,50]"
+        :page-sizes="[10, 20, 50]"
         @current-change="loadRows"
         @size-change="handleSizeChange"
       />
     </div>
   </section>
 
-  <el-dialog v-model="dialogVisible" :title="form.id ? '编辑考试' : '新增考试'" width="780px">
-    <el-form ref="formRef" :model="form" :rules="rules" label-width="110px">
-      <el-form-item label="考试名称" prop="examName"><el-input v-model="form.examName" /></el-form-item>
-      <el-form-item label="所属课程" prop="kechengId">
-        <el-select v-model="form.kechengId" @change="handleCourseChange">
-          <el-option v-for="item in courseOptions" :key="item.id" :label="item.kechengName" :value="item.id" />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="所属章节">
-        <el-select v-model="form.chapterId" clearable>
-          <el-option v-for="item in chapterOptions" :key="item.id" :label="item.chapterName" :value="item.id" />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="时长(分钟)" prop="durationMinutes"><el-input-number v-model="form.durationMinutes" :min="1" :max="300" /></el-form-item>
-      <el-form-item label="及格线" prop="passScore"><el-input-number v-model="form.passScore" :min="1" :max="300" /></el-form-item>
-      <el-form-item label="允许重复考试" prop="allowRetake">
-        <el-radio-group v-model="form.allowRetake">
-          <el-radio :label="0">否</el-radio>
-          <el-radio :label="1">是</el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="最大次数" prop="maxAttemptCount">
-        <el-input-number v-model="form.maxAttemptCount" :min="1" :max="20" />
-      </el-form-item>
-      <el-form-item label="允许退出恢复" prop="allowResume">
-        <el-radio-group v-model="form.allowResume">
-          <el-radio :label="0">否</el-radio>
-          <el-radio :label="1">是</el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="开始时间" prop="startTime"><el-date-picker v-model="form.startTime" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" /></el-form-item>
-      <el-form-item label="结束时间" prop="endTime"><el-date-picker v-model="form.endTime" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" /></el-form-item>
-      <el-form-item label="考试说明"><el-input v-model="form.examSummary" type="textarea" :rows="4" /></el-form-item>
-    </el-form>
+  <el-dialog v-model="dialogVisible" :title="form.id ? '编辑考试' : '新增考试'" width="1080px">
+    <div class="exam-editor">
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="110px" class="exam-editor__form">
+        <el-form-item label="考试名称" prop="examName"><el-input v-model="form.examName" /></el-form-item>
+        <el-form-item label="所属课程" prop="kechengId">
+          <el-select v-model="form.kechengId" @change="handleCourseChange">
+            <el-option v-for="item in courseOptions" :key="item.id" :label="item.kechengName" :value="item.id" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="所属章节">
+          <el-select v-model="form.chapterId" clearable>
+            <el-option v-for="item in chapterOptions" :key="item.id" :label="item.chapterName" :value="item.id" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="时长(分钟)" prop="durationMinutes"><el-input-number v-model="form.durationMinutes" :min="1" :max="300" /></el-form-item>
+        <el-form-item label="及格线" prop="passScore"><el-input-number v-model="form.passScore" :min="1" :max="300" /></el-form-item>
+        <el-form-item label="允许重复考试" prop="allowRetake">
+          <el-radio-group v-model="form.allowRetake">
+            <el-radio :label="0">否</el-radio>
+            <el-radio :label="1">是</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="最大次数" prop="maxAttemptCount">
+          <el-input-number v-model="form.maxAttemptCount" :min="1" :max="20" />
+        </el-form-item>
+        <el-form-item label="允许退出恢复" prop="allowResume">
+          <el-radio-group v-model="form.allowResume">
+            <el-radio :label="0">否</el-radio>
+            <el-radio :label="1">是</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="开始时间" prop="startTime"><el-date-picker v-model="form.startTime" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" /></el-form-item>
+        <el-form-item label="结束时间" prop="endTime"><el-date-picker v-model="form.endTime" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" /></el-form-item>
+        <el-form-item label="考试说明"><el-input v-model="form.examSummary" type="textarea" :rows="4" /></el-form-item>
+      </el-form>
+
+      <section class="question-binding">
+        <div class="panel-header panel-header--spread">
+          <div>
+            <h3>从题库中选题</h3>
+            <p class="panel-note">先在题库中维护题目，再在这里选择本场考试要使用的题目。</p>
+          </div>
+          <span class="panel-note">已选 {{ selectedQuestionIds.length }} 题</span>
+        </div>
+        <el-transfer
+          v-model="selectedQuestionIds"
+          :data="transferData"
+          filterable
+          filter-placeholder="搜索题目"
+          :titles="['题库', '本考试']"
+          class="question-transfer"
+        />
+      </section>
+    </div>
+
     <template #footer>
-      <el-button @click="dialogVisible=false">取消</el-button>
+      <el-button @click="dialogVisible = false">取消</el-button>
       <el-button type="primary" :loading="saving" @click="submitForm">提交</el-button>
     </template>
   </el-dialog>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
-import type { ExamItem } from "@shared/index";
-import { fetchExamPage } from "@/api/dashboard";
+import type { ExamItem, ExamQuestionItem } from "@shared/index";
+import { fetchExamPage, fetchExamQuestionPage } from "@/api/dashboard";
 import { deleteEntities, fetchCourseChaptersForSelect, fetchCoursesForSelect, fetchEntityDetail, postModuleAction, saveEntity } from "@/api/manage";
+
+type TransferItem = {
+  key: number;
+  label: string;
+  disabled?: boolean;
+};
 
 const loading = ref(false);
 const saving = ref(false);
@@ -111,6 +138,8 @@ const formRef = ref<FormInstance>();
 const rows = ref<ExamItem[]>([]);
 const courseOptions = ref<Array<{ id: number; kechengName: string }>>([]);
 const chapterOptions = ref<Array<{ id: number; chapterName: string; kechengId: number }>>([]);
+const questionPool = ref<ExamQuestionItem[]>([]);
+const selectedQuestionIds = ref<number[]>([]);
 const pagination = reactive({ page: 1, limit: 10, total: 0 });
 const filters = reactive({ examName: "", kechengId: undefined as number | undefined, examStatus: "" });
 
@@ -142,8 +171,21 @@ const rules: FormRules = {
   endTime: [{ required: true, message: "请选择结束时间", trigger: "change" }]
 };
 
+const transferData = computed<TransferItem[]>(() =>
+  questionPool.value.map((item) => ({
+    key: item.id,
+    label: `${item.questionType || "题目"}｜${item.questionTitle}`,
+    disabled: Boolean(item.examId && item.examId !== form.id)
+  }))
+);
+
 async function loadOptions() {
   courseOptions.value = await fetchCoursesForSelect();
+}
+
+async function loadQuestionPool() {
+  const page = await fetchExamQuestionPage({ page: 1, limit: 500 });
+  questionPool.value = page.list;
 }
 
 async function loadRows() {
@@ -190,19 +232,21 @@ async function handleCourseChange() {
 function resetForm() {
   Object.assign(form, createForm());
   chapterOptions.value = [];
+  selectedQuestionIds.value = [];
 }
 
 async function openCreate() {
   resetForm();
-  await loadOptions();
+  await Promise.all([loadOptions(), loadQuestionPool()]);
   dialogVisible.value = true;
 }
 
 async function openEdit(id: number) {
   resetForm();
-  await loadOptions();
+  await Promise.all([loadOptions(), loadQuestionPool()]);
   Object.assign(form, await fetchEntityDetail("exam", id));
   chapterOptions.value = await fetchCourseChaptersForSelect(form.kechengId);
+  selectedQuestionIds.value = questionPool.value.filter((item) => item.examId === form.id).map((item) => item.id);
   dialogVisible.value = true;
 }
 
@@ -210,7 +254,16 @@ async function submitForm() {
   await formRef.value?.validate();
   saving.value = true;
   try {
-    await saveEntity("exam", form as unknown as Record<string, unknown>);
+    const result = await saveEntity("exam", form as unknown as Record<string, unknown>);
+    const savedExam = result?.data as { id?: number } | undefined;
+    const examId = savedExam?.id || form.id;
+    if (examId) {
+      form.id = examId;
+      await postModuleAction("examQuestion", "bindToExam", {
+        examId,
+        questionIds: selectedQuestionIds.value
+      });
+    }
     ElMessage.success("考试已保存");
     dialogVisible.value = false;
     await loadRows();
@@ -236,3 +289,28 @@ async function removeItem(id: number) {
 loadOptions();
 loadRows();
 </script>
+
+<style scoped>
+.exam-editor {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.question-binding {
+  padding: 18px;
+  border-radius: 20px;
+  background: rgba(247, 243, 238, 0.8);
+}
+
+.question-transfer {
+  margin-top: 14px;
+}
+
+@media (max-width: 1024px) {
+  .exam-editor {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

@@ -56,22 +56,22 @@
             <div>
               <strong>{{ question.sortNo }}. {{ question.questionTitle }}</strong>
               <p class="meta">{{ question.questionType }} / {{ question.questionScore }} 分</p>
-              <div v-if="parsedOptions(question).length" class="mini-list">
+              <div v-if="hasChoices(question)" class="mini-list">
                 <label v-for="option in parsedOptions(question)" :key="option.value" class="stack-inline">
                   <input
-                    v-if="question.questionType !== '多选'"
+                    v-if="multiChoiceQuestion(question)"
+                    :checked="selectedMulti(question.id, option.value)"
+                    :disabled="!canEditAnswers"
+                    type="checkbox"
+                    @change="handleMultiChange(question.id, option.value, $event)"
+                  />
+                  <input
+                    v-else
                     v-model="answers[String(question.id)]"
                     :disabled="!canEditAnswers"
                     type="radio"
                     :name="`q-${question.id}`"
                     :value="option.value"
-                  />
-                  <input
-                    v-else
-                    :checked="selectedMulti(question.id, option.value)"
-                    :disabled="!canEditAnswers"
-                    type="checkbox"
-                    @change="handleMultiChange(question.id, option.value, $event)"
                   />
                   <span>{{ option.value }}. {{ option.label }}</span>
                 </label>
@@ -146,13 +146,54 @@ const recordSummary = computed(() => {
 });
 
 function parsedOptions(question: ExamQuestionItem) {
-  if (!question.optionJson) return [];
+  if (!question.optionJson) {
+    if (judgementQuestion(question)) {
+      return [
+        { value: "A", label: "正确" },
+        { value: "B", label: "错误" }
+      ];
+    }
+    return [];
+  }
   try {
     const data = JSON.parse(question.optionJson) as Record<string, string>;
     return Object.entries(data).map(([value, label]) => ({ value, label }));
   } catch {
     return [];
   }
+}
+
+function questionTypeText(question: ExamQuestionItem) {
+  return question.questionType || "";
+}
+
+function choiceQuestion(question: ExamQuestionItem) {
+  const type = questionTypeText(question);
+  return type === "选择题" || type === "单选" || type === "单选题";
+}
+
+function multiChoiceQuestion(question: ExamQuestionItem) {
+  const type = questionTypeText(question);
+  return type === "多选" || type === "多选题";
+}
+
+function judgementQuestion(question: ExamQuestionItem) {
+  const type = questionTypeText(question);
+  return type === "判断题" || type === "判断";
+}
+
+function fillQuestion(question: ExamQuestionItem) {
+  const type = questionTypeText(question);
+  return type === "填空题" || type === "填空";
+}
+
+function subjectiveQuestion(question: ExamQuestionItem) {
+  const type = questionTypeText(question);
+  return type === "简答题" || type === "简答" || type === "问答";
+}
+
+function hasChoices(question: ExamQuestionItem) {
+  return choiceQuestion(question) || multiChoiceQuestion(question) || judgementQuestion(question);
 }
 
 function selectedMulti(questionId: number, value: string) {

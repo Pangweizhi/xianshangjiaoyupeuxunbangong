@@ -4,6 +4,7 @@ import HomeView from "@/views/HomeView.vue";
 import LoginView from "@/views/LoginView.vue";
 import CoursesView from "@/views/CoursesView.vue";
 import CourseDetailView from "@/views/CourseDetailView.vue";
+import CourseVideoView from "@/views/CourseVideoView.vue";
 import NoticesView from "@/views/NoticesView.vue";
 import HomeworksView from "@/views/HomeworksView.vue";
 import ExamsView from "@/views/ExamsView.vue";
@@ -31,6 +32,7 @@ const router = createRouter({
         { path: "", name: "home", component: HomeView },
         { path: "courses", name: "courses", component: CoursesView },
         { path: "courses/:id", name: "course-detail", component: CourseDetailView },
+        { path: "courses/:courseId/video/:resourceId", name: "course-video", component: CourseVideoView, meta: { requiresAuth: true } },
         { path: "my-courses", name: "my-courses", component: MyCoursesView, meta: { requiresAuth: true } },
         { path: "notices", name: "notices", component: NoticesView },
         { path: "homeworks", name: "homeworks", component: HomeworksView },

@@ -31,7 +31,7 @@
       <el-table-column prop="reviewRemark" label="审核备注" min-width="180" show-overflow-tooltip />
       <el-table-column label="操作" min-width="260" fixed="right">
         <template #default="{ row }">
-          <el-button v-if="row.resourceUrl" link type="primary" :href="assetUrl(row.resourceUrl)" target="_blank">查看资源</el-button>
+          <el-button v-if="row.resourceUrl" link type="primary" :href="createAssetUrl(DEFAULT_BASE_URL, row.resourceUrl)" target="_blank">查看资源</el-button>
           <el-button v-if="isTeacher" link type="primary" @click="openEdit(row.id)">编辑</el-button>
           <el-button v-if="isTeacher" link type="danger" @click="removeItem(row.id)">删除</el-button>
           <el-button v-if="!isTeacher" link type="success" @click="openReview(row, 'approved')">通过</el-button>
@@ -72,21 +72,15 @@
       <el-form-item label="资源类型" prop="resourceType">
         <el-select v-model="form.resourceType" placeholder="请选择类型">
           <el-option label="视频" value="视频" />
-          <el-option label="PPT" value="PPT" />
-          <el-option label="文档" value="文档" />
-          <el-option label="压缩包" value="压缩包" />
+          <el-option label="压缩包（PPT、文档等）" value="压缩包" />
         </el-select>
+        <p class="panel-note">视频资源会影响学习进度，压缩包（PPT、文档等）仅供下载。</p>
       </el-form-item>
       <el-form-item label="资源文件">
-        <input type="file" @change="handleUpload($event, 'resourceUrl')" />
+        <input type="file" @change="handleUpload($event)" />
         <p class="upload-tip">{{ form.resourceUrl || "未上传" }}</p>
       </el-form-item>
-      <el-form-item label="封面图片">
-        <input type="file" accept="image/*" @change="handleUpload($event, 'coverUrl')" />
-        <p class="upload-tip">{{ form.coverUrl || "未上传" }}</p>
-        <img v-if="assetUrl(form.coverUrl)" class="upload-preview" :src="assetUrl(form.coverUrl)" alt="资源封面预览" />
-      </el-form-item>
-      <el-form-item label="时长(秒)" prop="durationSeconds">
+      <el-form-item label="预估课时" prop="durationSeconds">
         <el-input-number v-model="form.durationSeconds" :min="0" :max="99999" />
       </el-form-item>
     </el-form>
@@ -143,7 +137,6 @@ const createForm = () => ({
   resourceName: "",
   resourceType: "",
   resourceUrl: "",
-  coverUrl: "",
   durationSeconds: 0
 });
 const form = reactive(createForm());
@@ -155,10 +148,6 @@ const rules: FormRules = {
   resourceName: [{ required: true, message: "请输入资源名称", trigger: "blur" }],
   resourceType: [{ required: true, message: "请选择资源类型", trigger: "change" }]
 };
-
-function assetUrl(path?: string) {
-  return createAssetUrl(DEFAULT_BASE_URL, path);
-}
 
 async function loadOptions() {
   courseOptions.value = await fetchCoursesForSelect();
@@ -213,6 +202,10 @@ function resetForm() {
   formChapterOptions.value = [];
 }
 
+function normalizeResourceType(value?: string) {
+  return value && value.includes("视频") ? "视频" : "压缩包";
+}
+
 async function openCreate() {
   resetForm();
   try {
@@ -228,6 +221,7 @@ async function openEdit(id: number) {
   try {
     await loadOptions();
     Object.assign(form, await fetchEntityDetail("courseResource", id));
+    form.resourceType = normalizeResourceType(form.resourceType);
     formChapterOptions.value = await fetchCourseChaptersForSelect(form.kechengId);
     dialogVisible.value = true;
   } catch (error) {
@@ -240,12 +234,12 @@ async function handleFormCourseChange() {
   formChapterOptions.value = await fetchCourseChaptersForSelect(form.kechengId);
 }
 
-async function handleUpload(event: Event, field: "resourceUrl" | "coverUrl") {
+async function handleUpload(event: Event) {
   const file = (event.target as HTMLInputElement).files?.[0];
   if (!file) return;
   try {
-    form[field] = await uploadAdminFile(file);
-    ElMessage.success(field === "coverUrl" ? "封面已上传" : "资源文件已上传");
+    form.resourceUrl = await uploadAdminFile(file);
+    ElMessage.success("资源文件已上传");
   } catch (error) {
     ElMessage.error(error instanceof Error ? error.message : "上传失败");
   }

@@ -43,13 +43,13 @@
           <span class="kicker">当前场景</span>
           <h1>{{ sceneTitle }}</h1>
         </div>
-        <p>当前版本优先支持系统导航、课程管理、作业考试和统计口径问答。</p>
+        <p>{{ sceneDescription }}</p>
       </header>
 
       <div class="chat-scroll">
         <div v-if="!messages.length" class="empty-state">
           <h3>开始向 AI 提问</h3>
-          <p>可以直接问“如何新增课程”“如何发布考试”或“怎么看课程成绩汇总”。</p>
+          <p>{{ emptyHint }}</p>
         </div>
         <article
           v-for="message in messages"
@@ -110,7 +110,24 @@ const sceneTitle = computed(() => {
   if (bizScene.value === "course_manage") {
     return "教师/后台管理助手";
   }
+  if (bizScene.value === "teacher_question_generation") {
+    return "教师出题助手";
+  }
   return "智能问答助手";
+});
+
+const sceneDescription = computed(() => {
+  if (bizScene.value === "teacher_question_generation") {
+    return "这里用于生成题干、选项、答案和解析草稿，最终仍由教师在题库中审核保存。";
+  }
+  return "这里主要用于系统导航、课程管理、作业考试和统计口径问答。";
+});
+
+const emptyHint = computed(() => {
+  if (bizScene.value === "teacher_question_generation") {
+    return "可以直接问“请按高等数学生成 5 道选择题”“给这道题补一个答案和解析”或“按判断题格式重写题干”。";
+  }
+  return "可以直接问“如何新增课程”“如何发布考试”或“怎么看课程成绩汇总”。";
 });
 
 async function loadSessions() {

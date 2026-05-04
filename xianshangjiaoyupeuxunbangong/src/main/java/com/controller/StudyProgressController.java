@@ -48,23 +48,35 @@ public class StudyProgressController {
         if (!"学生".equals(role)) {
             return R.error(511, "仅学生可以记录学习进度");
         }
+
         Integer yonghuId = Integer.valueOf(String.valueOf(request.getSession().getAttribute("userId")));
         entity.setYonghuId(yonghuId);
+
         CourseResourceEntity resource = courseResourceService.selectById(entity.getResourceId());
         if (resource == null) {
             return R.error(511, "学习资源不存在");
         }
+        if (!isVideoResource(resource)) {
+            return R.ok();
+        }
+
         entity.setKechengId(resource.getKechengId());
         entity.setChapterId(resource.getChapterId());
         if (entity.getStudySeconds() == null) {
             entity.setStudySeconds(0);
         }
+
+        boolean forceCompleted = entity.getForceCompleted() != null && entity.getForceCompleted() == 1;
         double percent = entity.getProgressPercent() == null ? 0D : entity.getProgressPercent();
         if (resource.getDurationSeconds() != null && resource.getDurationSeconds() > 0) {
-            percent = Math.max(percent, Math.min(100D, entity.getStudySeconds() * 100D / resource.getDurationSeconds()));
+            double calculated = entity.getStudySeconds() * 100D / resource.getDurationSeconds();
+            percent = forceCompleted ? 100D : Math.max(percent, Math.min(99.5D, calculated));
+        } else if (forceCompleted) {
+            percent = 100D;
         }
+
         entity.setProgressPercent(percent);
-        entity.setIsCompleted(percent >= 90D ? 1 : 0);
+        entity.setIsCompleted(percent >= 100D ? 1 : 0);
         entity.setLastStudyTime(new Date());
 
         StudyProgressEntity old = studyProgressService.selectOne(new EntityWrapper<StudyProgressEntity>()
@@ -76,11 +88,18 @@ public class StudyProgressController {
         } else {
             old.setStudySeconds(Math.max(old.getStudySeconds() == null ? 0 : old.getStudySeconds(), entity.getStudySeconds()));
             old.setProgressPercent(Math.max(old.getProgressPercent() == null ? 0D : old.getProgressPercent(), entity.getProgressPercent()));
-            old.setIsCompleted(old.getProgressPercent() != null && old.getProgressPercent() >= 90D ? 1 : entity.getIsCompleted());
+            old.setIsCompleted(old.getProgressPercent() != null && old.getProgressPercent() >= 100D ? 1 : entity.getIsCompleted());
             old.setLastStudyTime(entity.getLastStudyTime());
             studyProgressService.updateById(old);
         }
+
         courseSettlementService.refreshCourseCompletion(entity.getKechengId(), yonghuId);
         return R.ok();
+    }
+
+    private boolean isVideoResource(CourseResourceEntity resource) {
+        String type = resource.getResourceType() == null ? "" : resource.getResourceType();
+        String url = resource.getResourceUrl() == null ? "" : resource.getResourceUrl();
+        return type.contains("视频") || url.matches("(?i).*(mp4|m3u8|webm|mov)$");
     }
 }

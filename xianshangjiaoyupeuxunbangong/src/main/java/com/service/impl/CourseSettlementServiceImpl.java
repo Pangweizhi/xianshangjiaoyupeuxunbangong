@@ -52,10 +52,11 @@ public class CourseSettlementServiceImpl implements CourseSettlementService {
             .eq("kecheng_id", kechengId)
             .eq("resource_status", "approved")
             .eq("is_deleted", 1));
-        int totalResources = resources.size();
-        Set<Integer> resourceIds = new HashSet<Integer>();
+        Set<Integer> videoResourceIds = new HashSet<Integer>();
         for (CourseResourceEntity resource : resources) {
-            resourceIds.add(resource.getId());
+            if (isVideoResource(resource)) {
+                videoResourceIds.add(resource.getId());
+            }
         }
 
         List<StudyProgressEntity> progressList = studyProgressService.selectList(new EntityWrapper<StudyProgressEntity>()
@@ -64,17 +65,17 @@ public class CourseSettlementServiceImpl implements CourseSettlementService {
             .eq("is_completed", 1));
         int completedCount = 0;
         for (StudyProgressEntity progress : progressList) {
-            if (progress.getResourceId() != null && resourceIds.contains(progress.getResourceId())) {
+            if (progress.getResourceId() != null && videoResourceIds.contains(progress.getResourceId())) {
                 completedCount++;
             }
         }
 
-        double progressPercent = totalResources == 0 ? 0D : (completedCount * 100D / totalResources);
+        double progressPercent = videoResourceIds.isEmpty() ? 0D : (completedCount * 100D / videoResourceIds.size());
         enroll.setProgressPercent(progressPercent);
 
         boolean homeworkPassed = isHomeworkPassed(kechengId, yonghuId);
         boolean examPassed = isExamPassed(kechengId, yonghuId);
-        if (progressPercent >= 90D && homeworkPassed && examPassed) {
+        if (progressPercent >= 100D && homeworkPassed && examPassed) {
             enroll.setEnrollStatus("已结课");
             enroll.setFinishTime(new Date());
             grantCredit(kechengId, yonghuId, progressPercent);
@@ -84,6 +85,15 @@ public class CourseSettlementServiceImpl implements CourseSettlementService {
             enroll.setEnrollStatus("已选课");
         }
         courseEnrollService.updateById(enroll);
+    }
+
+    private boolean isVideoResource(CourseResourceEntity resource) {
+        if (resource == null) {
+            return false;
+        }
+        String type = resource.getResourceType() == null ? "" : resource.getResourceType();
+        String url = resource.getResourceUrl() == null ? "" : resource.getResourceUrl();
+        return type.contains("视频") || url.matches("(?i).*(mp4|m3u8|webm|mov)$");
     }
 
     private boolean isHomeworkPassed(Integer kechengId, Integer yonghuId) {
