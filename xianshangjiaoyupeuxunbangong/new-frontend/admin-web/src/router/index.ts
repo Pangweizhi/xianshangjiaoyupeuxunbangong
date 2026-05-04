@@ -21,6 +21,7 @@ import MaterialManageView from "@/views/MaterialManageView.vue";
 import MeetingManageView from "@/views/MeetingManageView.vue";
 import HomeworkSubmissionManageView from "@/views/HomeworkSubmissionManageView.vue";
 import AiChatView from "@/views/AiChatView.vue";
+import ProfileView from "@/views/ProfileView.vue";
 import { useAdminSessionStore } from "@/stores/session";
 
 const router = createRouter({
@@ -34,6 +35,7 @@ const router = createRouter({
       children: [
         { path: "", redirect: "/dashboard" },
         { path: "dashboard", name: "dashboard", component: DashboardView },
+        { path: "profile", name: "profile", component: ProfileView },
         { path: "courses", name: "courses", component: CourseManageView },
         { path: "chapters", name: "chapters", component: CourseChapterManageView },
         { path: "resources", name: "resources", component: CourseResourceManageView },

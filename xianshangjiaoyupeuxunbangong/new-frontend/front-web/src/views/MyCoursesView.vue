@@ -17,7 +17,7 @@
 
     <div class="content-grid">
       <article v-for="course in courses" :key="course.id" class="feature-card feature-card--compact">
-        <img :src="toAsset(course.kechengPhoto)" :alt="course.kechengName" />
+        <img :src="toAsset(course.kechengPhoto)" :alt="course.kechengName" class="media-fit-contain media-fit-contain--course" />
         <div>
           <div class="stack-inline">
             <span class="tag">{{ course.enrollStatus || "已选课" }}</span>

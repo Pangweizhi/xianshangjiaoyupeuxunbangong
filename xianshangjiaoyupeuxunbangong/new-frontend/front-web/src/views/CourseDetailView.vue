@@ -4,7 +4,7 @@
 
     <div v-if="detail" class="detail-shell">
       <article class="detail-card">
-        <img :src="toAsset(detail.kechengPhoto)" :alt="detail.kechengName" />
+        <img :src="toAsset(detail.kechengPhoto)" :alt="detail.kechengName" class="media-fit-contain media-fit-contain--course" />
         <div class="detail-card__body">
           <div class="stack-inline">
             <span class="tag">{{ detail.kechengValue || "课程" }}</span>

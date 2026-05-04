@@ -5,7 +5,7 @@
         v-for="(image, index) in bannerImages"
         :key="`${image}-${index}`"
         :src="toAsset(image, '轮播图')"
-        :class="['home-banner__image', { 'is-active': index === activeBanner }]"
+        :class="['home-banner__image', 'media-fit-contain', { 'is-active': index === activeBanner }]"
         :alt="`轮播图 ${index + 1}`"
       />
     </div>
@@ -77,7 +77,7 @@
     <div class="shortcut-columns">
       <section class="shortcut-panel">
         <div class="shortcut-panel__head">
-          <span class="tag">公共功能</span>
+          <span class="tag">公共服务</span>
         </div>
         <div class="shortcut-grid shortcut-grid--dual">
           <RouterLink class="shortcut-card" to="/">
@@ -98,7 +98,7 @@
         </div>
       </section>
 
-      <section class="shortcut-panel">
+      <section class="shortcut-panel shortcut-panel--study">
         <div class="shortcut-panel__head">
           <span class="tag">我的学习</span>
         </div>
@@ -137,7 +137,11 @@
 
     <div class="spotlight-grid">
       <article class="spotlight-card" v-if="highlightCourse">
-        <img :src="toAsset(highlightCourse.kechengPhoto, '课程') " :alt="highlightCourse.kechengName" />
+        <img
+          :src="toAsset(highlightCourse.kechengPhoto, '课程')"
+          :alt="highlightCourse.kechengName"
+          class="media-fit-contain media-fit-contain--course"
+        />
         <div class="spotlight-card__body">
           <div class="stack-inline">
             <span class="tag">{{ highlightCourse.kechengValue || "课程" }}</span>
@@ -238,16 +242,15 @@ function startBannerLoop() {
 
 onMounted(async () => {
   try {
-    const [configPage, coursePage, noticePage, homeworkPage, forumPage, materialPage, meetingPage] =
-      await Promise.all([
-        fetchConfigList(),
-        fetchCoursePage(),
-        fetchNoticePage(),
-        fetchHomeworkPage(),
-        fetchForumPage(),
-        fetchMaterialPage(),
-        fetchMeetingPage()
-      ]);
+    const [configPage, coursePage, noticePage, homeworkPage, forumPage, materialPage, meetingPage] = await Promise.all([
+      fetchConfigList(),
+      fetchCoursePage(),
+      fetchNoticePage(),
+      fetchHomeworkPage(),
+      fetchForumPage(),
+      fetchMaterialPage(),
+      fetchMeetingPage()
+    ]);
 
     parseBannerImages(configPage.list);
     courses.value = coursePage.list;
@@ -282,6 +285,10 @@ onBeforeUnmount(() => {
 .home-banner__viewport {
   position: relative;
   min-height: 340px;
+  background:
+    radial-gradient(circle at top left, rgba(255, 122, 26, 0.16), transparent 28%),
+    radial-gradient(circle at top right, rgba(26, 78, 216, 0.14), transparent 26%),
+    linear-gradient(135deg, rgba(255, 248, 240, 0.9), rgba(238, 245, 255, 0.94));
 }
 
 .home-banner__image {
@@ -289,7 +296,6 @@ onBeforeUnmount(() => {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
   opacity: 0;
   transition: opacity 0.5s ease;
 }
@@ -332,6 +338,10 @@ onBeforeUnmount(() => {
 
 .shortcut-panel__head {
   margin-bottom: 14px;
+}
+
+.shortcut-panel--study .shortcut-panel__head {
+  margin-top: -6px;
 }
 
 .shortcut-grid--dual {

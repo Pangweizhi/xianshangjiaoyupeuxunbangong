@@ -130,7 +130,7 @@ function handleLogout() {
 
 .nav-group--right {
   justify-items: end;
-  margin-top: -8px;
+  margin-top: -14px;
 }
 
 .nav-group__label {

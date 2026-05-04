@@ -133,7 +133,9 @@ public class JiaoshiController {
         if(jiaoshiEntity==null){
             jiaoshi.setJiaoshiDelete(1);
             jiaoshi.setCreateTime(new Date());
-            jiaoshi.setPassword("123456");
+            if(StringUtils.isBlank(jiaoshi.getPassword())) {
+                jiaoshi.setPassword("123456");
+            }
             jiaoshiService.insert(jiaoshi);
             return R.ok();
         }else {
@@ -169,6 +171,12 @@ public class JiaoshiController {
         JiaoshiEntity jiaoshiEntity = jiaoshiService.selectOne(queryWrapper);
         if("".equals(jiaoshi.getJiaoshiPhoto()) || "null".equals(jiaoshi.getJiaoshiPhoto())){
                 jiaoshi.setJiaoshiPhoto(null);
+        }
+        if(jiaoshi.getJiaoshiDelete() == null){
+            jiaoshi.setJiaoshiDelete(oldJiaoshiEntity != null && oldJiaoshiEntity.getJiaoshiDelete() != null ? oldJiaoshiEntity.getJiaoshiDelete() : 1);
+        }
+        if(StringUtils.isBlank(jiaoshi.getPassword()) && oldJiaoshiEntity != null){
+            jiaoshi.setPassword(oldJiaoshiEntity.getPassword());
         }
         if(jiaoshiEntity==null){
             jiaoshiService.updateById(jiaoshi);//根据id更新
@@ -324,9 +332,13 @@ public class JiaoshiController {
         JiaoshiEntity jiaoshi = jiaoshiService.selectOne(new EntityWrapper<JiaoshiEntity>().eq("username", username));
         if(jiaoshi==null || !jiaoshi.getPassword().equals(password))
             return R.error("账号或密码不正确");
-        else if(jiaoshi.getJiaoshiDelete() != 1)
+        else if(Integer.valueOf(2).equals(jiaoshi.getJiaoshiDelete()))
             return R.error("账户已被删除");
         String token = tokenService.generateToken(jiaoshi.getId(),username, "jiaoshi", "教师");
+        if(jiaoshi.getJiaoshiDelete() == null || jiaoshi.getJiaoshiDelete() == 0) {
+            jiaoshi.setJiaoshiDelete(1);
+            jiaoshiService.updateById(jiaoshi);
+        }
         R r = R.ok();
         r.put("token", token);
         r.put("role","教师");

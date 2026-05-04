@@ -439,6 +439,18 @@ button {
   object-fit: cover;
 }
 
+.media-fit-contain {
+  object-fit: contain !important;
+  background:
+    linear-gradient(135deg, rgba(255, 244, 231, 0.92), rgba(238, 245, 255, 0.94)),
+    #fff;
+  padding: 12px;
+}
+
+.media-fit-contain--course {
+  min-height: 220px;
+}
+
 .spotlight-card img {
   height: 280px;
 }

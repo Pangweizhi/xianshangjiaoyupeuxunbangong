@@ -282,6 +282,14 @@ export interface TeacherItem {
   createTime?: string;
 }
 
+export interface AdminUserItem {
+  id: number;
+  username: string;
+  password?: string;
+  role?: string;
+  addtime?: string;
+}
+
 export interface DictionaryItem {
   id: number;
   dicCode: string;

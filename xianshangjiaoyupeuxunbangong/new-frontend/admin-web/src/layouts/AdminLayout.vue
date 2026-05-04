@@ -7,6 +7,7 @@
       </div>
 
       <RouterLink to="/dashboard">仪表盘</RouterLink>
+      <RouterLink to="/profile">个人中心</RouterLink>
       <RouterLink to="/courses">课程管理</RouterLink>
       <RouterLink v-if="isTeacher" to="/chapters">章节与资源</RouterLink>
       <RouterLink to="/enrolls">选课管理</RouterLink>
@@ -71,8 +72,10 @@ const aiLink = computed(() => ({
 const title = computed(() => {
   const titleMap: Record<string, string> = {
     dashboard: "仪表盘",
+    profile: "个人中心",
     courses: "课程管理",
     chapters: "章节与资源",
+    resources: "资源管理",
     enrolls: "选课管理",
     progress: "学习进度",
     homeworks: "作业管理",

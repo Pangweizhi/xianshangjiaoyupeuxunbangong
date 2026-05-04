@@ -9,6 +9,12 @@ export async function fetchEntityDetail<T>(module: string, id: number | string) 
   return data.data as T;
 }
 
+export async function fetchCurrentEntitySession<T>(module: string) {
+  const http = useAdminHttp();
+  const { data } = await http.get(`/${module}/session`);
+  return data.data as T;
+}
+
 export async function saveEntity(module: string, payload: Record<string, unknown>) {
   const http = useAdminHttp();
   const hasId = Boolean(payload.id);
