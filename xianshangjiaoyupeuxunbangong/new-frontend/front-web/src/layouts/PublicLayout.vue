@@ -8,11 +8,11 @@
             <div class="nav-group__row nav-group__row--left">
               <span class="nav-group__label">公共服务</span>
               <nav class="topbar__nav topbar__nav--left">
-                <RouterLink to="/">首页</RouterLink>
-                <RouterLink to="/courses">课程</RouterLink>
-                <RouterLink to="/notices">公告</RouterLink>
-                <RouterLink to="/forum">论坛</RouterLink>
-                <RouterLink to="/materials">备课</RouterLink>
+                <RouterLink :class="{ 'is-active': isActive('/') }" to="/">首页</RouterLink>
+                <RouterLink :class="{ 'is-active': isActive('/courses') }" to="/courses">课程</RouterLink>
+                <RouterLink :class="{ 'is-active': isActive('/notices') }" to="/notices">公告</RouterLink>
+                <RouterLink :class="{ 'is-active': isActive('/forum') }" to="/forum">论坛</RouterLink>
+                <RouterLink :class="{ 'is-active': isActive('/materials') }" to="/materials">备课</RouterLink>
               </nav>
             </div>
           </section>
@@ -32,11 +32,11 @@
             <div class="nav-group__row nav-group__row--right">
               <span class="nav-group__label">我的学习</span>
               <nav class="topbar__nav topbar__nav--right">
-                <RouterLink to="/my-courses">我的课程</RouterLink>
-                <RouterLink to="/homeworks">作业</RouterLink>
-                <RouterLink to="/exams">考试</RouterLink>
-                <RouterLink to="/meetings">会议</RouterLink>
-                <RouterLink to="/center">个人中心</RouterLink>
+                <RouterLink :class="{ 'is-active': isActive('/my-courses') }" to="/my-courses">我的课程</RouterLink>
+                <RouterLink :class="{ 'is-active': isActive('/homeworks') }" to="/homeworks">作业</RouterLink>
+                <RouterLink :class="{ 'is-active': isActive('/exams') }" to="/exams">考试</RouterLink>
+                <RouterLink :class="{ 'is-active': isActive('/meetings') }" to="/meetings">会议</RouterLink>
+                <RouterLink :class="{ 'is-active': isActive('/center') }" to="/center">个人中心</RouterLink>
               </nav>
             </div>
           </section>
@@ -74,6 +74,13 @@ const aiLink = computed(() => {
 function handleLogout() {
   session.logout();
   router.push({ name: "login" });
+}
+
+function isActive(path: string) {
+  if (path === "/") {
+    return route.path === "/";
+  }
+  return route.path === path || route.path.startsWith(`${path}/`);
 }
 </script>
 
@@ -194,6 +201,12 @@ function handleLogout() {
   color: var(--text);
   background: rgba(255, 122, 26, 0.12);
   transform: translateY(-1px);
+}
+
+.topbar__nav a.is-active {
+  color: #b85c19;
+  background: rgba(255, 122, 26, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(255, 122, 26, 0.14);
 }
 
 .ai-entry {

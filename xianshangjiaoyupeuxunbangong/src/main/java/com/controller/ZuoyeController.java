@@ -117,6 +117,7 @@ public class ZuoyeController {
         if (exists != null) {
             return R.error(511, "表中有相同数据");
         }
+        normalizeHomeworkTimeWindow(zuoye, null);
 
         if (zuoye.getPublishStatus() == null || "".equals(zuoye.getPublishStatus().trim())) {
             zuoye.setPublishStatus("draft");
@@ -138,6 +139,7 @@ public class ZuoyeController {
             return R.error(511, "作业不存在");
         }
         sanitizeHomework(zuoye);
+        normalizeHomeworkTimeWindow(zuoye, old);
 
         String role = String.valueOf(request.getSession().getAttribute("role"));
         if ("教师".equals(role) && zuoye.getJiaoshiId() == null) {
@@ -314,13 +316,41 @@ public class ZuoyeController {
         if (zuoye == null) {
             return;
         }
-        if ("".equals(zuoye.getZuoyePhoto()) || "null".equals(zuoye.getZuoyePhoto())) {
-            zuoye.setZuoyePhoto(null);
-        }
+        zuoye.setZuoyePhoto(null);
         if ("".equals(zuoye.getZuoyeFile()) || "null".equals(zuoye.getZuoyeFile())) {
             zuoye.setZuoyeFile(null);
         }
         zuoye.setQuestionIds(joinQuestionIds(parseQuestionIds(zuoye.getQuestionIds())));
+    }
+
+    private void normalizeHomeworkTimeWindow(ZuoyeEntity zuoye, ZuoyeEntity old) {
+        if (zuoye == null) {
+            return;
+        }
+        if (zuoye.getStartTime() == null) {
+            if (old != null && old.getStartTime() != null) {
+                zuoye.setStartTime(old.getStartTime());
+            } else if (zuoye.getInsertTime() != null) {
+                zuoye.setStartTime(zuoye.getInsertTime());
+            } else {
+                zuoye.setStartTime(new Date());
+            }
+        }
+        if (zuoye.getEndTime() == null) {
+            if (old != null && old.getEndTime() != null) {
+                zuoye.setEndTime(old.getEndTime());
+            } else if (zuoye.getDeadlineTime() != null) {
+                zuoye.setEndTime(zuoye.getDeadlineTime());
+            } else {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(zuoye.getStartTime());
+                calendar.add(Calendar.DAY_OF_MONTH, 7);
+                zuoye.setEndTime(calendar.getTime());
+            }
+        }
+        if (zuoye.getDeadlineTime() == null && zuoye.getEndTime() != null) {
+            zuoye.setDeadlineTime(zuoye.getEndTime());
+        }
     }
 
     private List<Integer> parseQuestionIdList(Object rawIds) {

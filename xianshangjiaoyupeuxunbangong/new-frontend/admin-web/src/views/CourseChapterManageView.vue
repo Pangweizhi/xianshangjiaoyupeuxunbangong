@@ -93,8 +93,9 @@
               </el-select>
             </div>
             <div class="resource-duration">
-              <span class="resource-field__label"><em>*</em>预估课时</span>
-              <el-input-number v-model="draft.durationSeconds" :min="0" :max="99999" />
+              <span class="resource-field__label"><em>*</em>{{ draft.resourceType === '视频' ? '视频时长' : '预估课时' }}</span>
+              <el-input-number v-if="draft.resourceType !== '视频'" v-model="draft.durationSeconds" :min="0" :max="99999" />
+              <el-input v-else :model-value="formatDuration(draft.durationSeconds)" disabled />
             </div>
             <label class="resource-upload">
               <span class="resource-field__label"><em>*</em>上传资源文件</span>
@@ -187,6 +188,32 @@ function createDraft(): ResourceDraft {
 
 function normalizeResourceType(value?: string) {
   return value && value.includes("视频") ? "视频" : "压缩包";
+}
+
+function formatDuration(seconds?: number) {
+  const total = Math.max(Number(seconds) || 0, 0);
+  if (!total) return "未识别";
+  const minutes = Math.floor(total / 60);
+  const remain = total % 60;
+  return `${minutes}分${String(remain).padStart(2, "0")}秒`;
+}
+
+async function readVideoDurationSeconds(file: File) {
+  return await new Promise<number>((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const video = document.createElement("video");
+    video.preload = "metadata";
+    video.src = url;
+    video.onloadedmetadata = () => {
+      URL.revokeObjectURL(url);
+      const duration = Number.isFinite(video.duration) ? Math.max(1, Math.round(video.duration)) : 0;
+      resolve(duration);
+    };
+    video.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("无法识别视频时长"));
+    };
+  });
 }
 
 async function loadOptions() {
@@ -288,6 +315,9 @@ async function handleResourceUpload(event: Event, draft: ResourceDraft) {
     return;
   }
   try {
+    if (draft.resourceType === "视频" || file.type.startsWith("video/")) {
+      draft.durationSeconds = await readVideoDurationSeconds(file);
+    }
     draft.resourceUrl = await uploadAdminFile(file);
     ElMessage.success("资源文件已上传");
   } catch (error) {

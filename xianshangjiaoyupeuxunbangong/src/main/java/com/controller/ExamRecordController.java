@@ -94,6 +94,10 @@ public class ExamRecordController {
         if (enroll == null) {
             return R.error(511, "请先选课后再参加考试");
         }
+        double progressPercent = enroll.getProgressPercent() == null ? 0D : enroll.getProgressPercent();
+        if (progressPercent < 100D) {
+            return R.error(511, "当前课程学习进度未达到100%，暂时无法进入考试");
+        }
 
         int finishedAttemptCount = examRecordService.selectCount(new EntityWrapper<ExamRecordEntity>()
             .eq("exam_id", exam.getId())

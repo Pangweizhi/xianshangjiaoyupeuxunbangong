@@ -16,11 +16,12 @@
     </div>
 
     <div class="content-grid">
-      <article v-for="item in exams" :key="item.id" class="feature-card feature-card--compact">
+      <article v-for="item in filteredExams" :key="item.id" class="feature-card feature-card--compact">
         <div>
           <div class="stack-inline">
             <span class="tag">{{ item.kechengName || "课程考试" }}</span>
             <span class="meta">{{ item.jiaoshiName || "教师待补充" }}</span>
+            <span v-if="ongoingExamIds.has(item.id)" class="status-pill status-pill--danger">进行中</span>
           </div>
           <h3>{{ item.examName }}</h3>
           <p>{{ item.examSummary || "暂无考试说明。" }}</p>
@@ -38,10 +39,10 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import { RouterLink } from "vue-router";
-import type { CourseItem, ExamItem } from "@shared/index";
-import { fetchCoursePage, fetchExamPage } from "@/api/content";
+import type { CourseItem, ExamItem, ExamRecordItem } from "@shared/index";
+import { fetchCoursePage, fetchExamPage, fetchMyExamRecordPage } from "@/api/content";
 
 const filters = reactive({
   keyword: "",
@@ -50,19 +51,47 @@ const filters = reactive({
 });
 const exams = ref<ExamItem[]>([]);
 const courses = ref<CourseItem[]>([]);
+const ongoingExamIds = ref(new Set<number>());
+
+const filteredExams = computed(() =>
+  exams.value.filter((item) => {
+    if (!filters.status) return true;
+    return resolveDisplayStatus(item) === filters.status;
+  })
+);
+
+function resolveDisplayStatus(item: ExamItem) {
+  if (ongoingExamIds.value.has(item.id)) {
+    return "进行中";
+  }
+  const now = Date.now();
+  const start = item.startTime ? new Date(item.startTime).getTime() : null;
+  const end = item.endTime ? new Date(item.endTime).getTime() : null;
+  if (start && now < start) return "未开始";
+  if (end && now > end) return "已结束";
+  return "进行中";
+}
 
 async function loadExams() {
-  const [coursePage, examPage] = await Promise.all([
+  const [coursePage, examPage, recordPage] = await Promise.all([
     fetchCoursePage({ limit: 100 }),
     fetchExamPage({
       limit: 100,
       examName: filters.keyword || undefined,
       kechengId: filters.courseId || undefined,
-      examStatus: filters.status || undefined
-    })
+      examStatus: undefined
+    }),
+    fetchMyExamRecordPage({ limit: 200 })
   ]);
   courses.value = coursePage.list;
   exams.value = examPage.list;
+  const ongoing = new Set<number>();
+  recordPage.list.forEach((record: ExamRecordItem) => {
+    if (record.recordStatus === "started") {
+      ongoing.add(record.examId);
+    }
+  });
+  ongoingExamIds.value = ongoing;
 }
 
 loadExams();
@@ -72,6 +101,22 @@ loadExams();
 .filter-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1;
+  background: #fff1e7;
+  color: #8a3412;
+}
+
+.status-pill--danger {
+  background: #ffe7e7;
+  color: #9d1c1c;
 }
 
 @media (max-width: 960px) {

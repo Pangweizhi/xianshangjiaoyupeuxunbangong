@@ -72,6 +72,18 @@ public class ZuoyeEntity<T> implements Serializable {
     @TableField(value = "deadline_time")
     private Date deadlineTime;
 
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat
+    @ColumnInfo(comment = "开始时间", type = "timestamp")
+    @TableField(value = "start_time")
+    private Date startTime;
+
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat
+    @ColumnInfo(comment = "结束时间", type = "timestamp")
+    @TableField(value = "end_time")
+    private Date endTime;
+
     @ColumnInfo(comment = "总分", type = "int(11)")
     @TableField(value = "score_total")
     private Integer scoreTotal;
@@ -176,6 +188,22 @@ public class ZuoyeEntity<T> implements Serializable {
         this.deadlineTime = deadlineTime;
     }
 
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
+    }
+
     public Integer getScoreTotal() {
         return scoreTotal;
     }
@@ -244,6 +272,8 @@ public class ZuoyeEntity<T> implements Serializable {
             ", kechengId=" + kechengId +
             ", chapterId=" + chapterId +
             ", deadlineTime=" + DateUtil.convertString(deadlineTime, "yyyy-MM-dd HH:mm:ss") +
+            ", startTime=" + DateUtil.convertString(startTime, "yyyy-MM-dd HH:mm:ss") +
+            ", endTime=" + DateUtil.convertString(endTime, "yyyy-MM-dd HH:mm:ss") +
             ", scoreTotal=" + scoreTotal +
             ", publishStatus='" + publishStatus + '\'' +
             ", questionIds='" + questionIds + '\'' +

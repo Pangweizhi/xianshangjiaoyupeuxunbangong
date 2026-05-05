@@ -6,6 +6,7 @@ import {
   loginEndpointMap,
   readSession,
   roleLabels,
+  sessionEndpointMap,
   writeSession,
   type AuthSession,
   type UserTable
@@ -16,6 +17,7 @@ const STORAGE_KEY = "admin-web-session";
 export const useAdminSessionStore = defineStore("admin-session", () => {
   const session = ref<AuthSession | null>(readSession(STORAGE_KEY));
   const pending = ref(false);
+  let validationPromise: Promise<boolean> | null = null;
 
   const isLoggedIn = computed(() => Boolean(session.value?.token));
   const displayRole = computed(() =>
@@ -50,6 +52,30 @@ export const useAdminSessionStore = defineStore("admin-session", () => {
     }
   }
 
+  async function ensureSessionValid() {
+    if (!session.value) {
+      return false;
+    }
+    if (validationPromise) {
+      return validationPromise;
+    }
+    validationPromise = axios
+      .get(`${DEFAULT_BASE_URL}${sessionEndpointMap[session.value.tableName]}`, {
+        headers: {
+          Token: session.value.token
+        }
+      })
+      .then(() => true)
+      .catch(() => {
+        setSession(null);
+        return false;
+      })
+      .finally(() => {
+        validationPromise = null;
+      });
+    return validationPromise;
+  }
+
   function logout() {
     setSession(null);
   }
@@ -60,6 +86,7 @@ export const useAdminSessionStore = defineStore("admin-session", () => {
     isLoggedIn,
     displayRole,
     login,
+    ensureSessionValid,
     logout
   };
 });

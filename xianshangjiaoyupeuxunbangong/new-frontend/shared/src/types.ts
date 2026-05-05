@@ -195,6 +195,8 @@ export interface HomeworkItem {
   kechengId?: number;
   chapterId?: number;
   deadlineTime?: string;
+  startTime?: string;
+  endTime?: string;
   scoreTotal?: number;
   publishStatus?: string;
   questionIds?: string;

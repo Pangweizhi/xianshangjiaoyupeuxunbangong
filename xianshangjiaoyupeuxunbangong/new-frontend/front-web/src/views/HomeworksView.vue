@@ -15,7 +15,6 @@
 
     <div class="content-grid">
       <article v-for="item in homeworks" :key="item.id" class="feature-card feature-card--compact">
-        <img :src="toAsset(item.zuoyePhoto)" :alt="item.zuoyeName" />
         <div>
           <div class="stack-inline">
             <span class="tag">{{ item.zuoyeValue || "作业" }}</span>
@@ -26,7 +25,8 @@
           <div class="status-list">
             <span>章节：{{ item.chapterName || "未指定" }}</span>
             <span>总分：{{ item.scoreTotal ?? 100 }}</span>
-            <span>截止：{{ item.deadlineTime || "未设置" }}</span>
+            <span>开始：{{ item.startTime || "未设置" }}</span>
+            <span>结束：{{ item.endTime || item.deadlineTime || "未设置" }}</span>
           </div>
           <RouterLink class="text-link" :to="`/homeworks/${item.id}`">查看详情</RouterLink>
         </div>
@@ -38,7 +38,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from "vue";
 import { RouterLink } from "vue-router";
-import { DEFAULT_BASE_URL, createAssetUrl, type CourseItem, type HomeworkItem } from "@shared/index";
+import { type CourseItem, type HomeworkItem } from "@shared/index";
 import { fetchCoursePage, fetchHomeworkPage } from "@/api/content";
 
 const filters = reactive({
@@ -52,10 +52,6 @@ const courses = ref<CourseItem[]>([]);
 const typeOptions = computed(() =>
   Array.from(new Set(homeworks.value.map((item) => item.zuoyeValue).filter(Boolean) as string[]))
 );
-
-function toAsset(path?: string) {
-  return createAssetUrl(DEFAULT_BASE_URL, path) || "https://dummyimage.com/600x400/f3d8c5/1c2430&text=Homework";
-}
 
 function stripHtml(value?: string) {
   return value?.replace(/<[^>]+>/g, "").slice(0, 100) || "暂无作业说明。";

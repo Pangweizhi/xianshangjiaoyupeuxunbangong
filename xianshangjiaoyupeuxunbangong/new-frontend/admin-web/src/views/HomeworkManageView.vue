@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <section class="admin-panel" v-loading="loading">
     <div class="panel-header panel-header--spread">
       <h2>作业管理</h2>
@@ -22,7 +22,8 @@
       <el-table-column prop="kechengName" label="课程" min-width="180" />
       <el-table-column prop="chapterName" label="章节" min-width="160" />
       <el-table-column prop="scoreTotal" label="总分" min-width="90" />
-      <el-table-column prop="deadlineTime" label="截止时间" min-width="180" />
+      <el-table-column prop="startTime" label="开始时间" min-width="180" />
+      <el-table-column prop="endTime" label="结束时间" min-width="180" />
       <el-table-column label="状态" min-width="120">
         <template #default="{ row }">
           {{ formatStatus(row.publishStatus) }}
@@ -78,20 +79,19 @@
           </el-select>
         </el-form-item>
         <el-form-item label="章节" prop="chapterId">
-          <el-select v-model="form.chapterId" clearable>
+          <el-select v-model="form.chapterId" clearable :disabled="!form.kechengId">
             <el-option v-for="item in chapterOptions" :key="item.id" :label="item.chapterName" :value="item.id" />
           </el-select>
         </el-form-item>
-        <el-form-item label="截止时间" prop="deadlineTime" required>
-          <el-date-picker v-model="form.deadlineTime" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" />
+        <el-form-item label="开始时间" prop="startTime" required>
+          <el-date-picker v-model="form.startTime" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" />
+        </el-form-item>
+        <el-form-item label="结束时间" prop="endTime" required>
+          <el-date-picker v-model="form.endTime" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" />
         </el-form-item>
         <el-form-item label="作业附件">
           <input type="file" @change="handleUpload($event, 'zuoyeFile')" />
-          <p class="upload-tip">{{ form.zuoyeFile || "未上传" }}</p>
-        </el-form-item>
-        <el-form-item label="封面图">
-          <input type="file" accept="image/*" @change="handleUpload($event, 'zuoyePhoto')" />
-          <p class="upload-tip">{{ form.zuoyePhoto || "未上传" }}</p>
+          <p class="upload-tip">{{ form.zuoyeFile || '未上传' }}</p>
         </el-form-item>
         <el-form-item label="作业说明">
           <el-input v-model="form.zuoyeContent" type="textarea" :rows="4" />
@@ -102,7 +102,7 @@
         <div class="panel-header panel-header--spread">
           <div>
             <h3>从题库中选择题目</h3>
-            <p class="panel-note">作业和考试使用同一套题库，课程切换后自动只显示该课程题目。</p>
+            <p class="panel-note">作业和考试共用同一题库，课程切换后只显示当前课程题目。</p>
           </div>
           <span class="panel-note">已选 {{ selectedQuestionIds.length }} 题</span>
         </div>
@@ -125,10 +125,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref } from "vue";
-import { ElMessage, type FormInstance, type FormRules } from "element-plus";
-import type { ExamQuestionItem, HomeworkItem } from "@shared/index";
-import { fetchHomeworks, fetchExamQuestionPage } from "@/api/dashboard";
+import { computed, reactive, ref } from 'vue';
+import { ElMessage, type FormInstance, type FormRules } from 'element-plus';
+import type { ExamQuestionItem, HomeworkItem } from '@shared/index';
+import { fetchHomeworks, fetchExamQuestionPage } from '@/api/dashboard';
 import {
   deleteEntities,
   fetchCourseChaptersForSelect,
@@ -139,8 +139,8 @@ import {
   postModuleAction,
   saveEntity,
   uploadAdminFile
-} from "@/api/manage";
-import { useAdminSessionStore } from "@/stores/session";
+} from '@/api/manage';
+import { useAdminSessionStore } from '@/stores/session';
 
 type TransferItem = {
   key: number;
@@ -149,7 +149,7 @@ type TransferItem = {
 };
 
 const store = useAdminSessionStore();
-const isTeacher = computed(() => store.session?.tableName === "jiaoshi");
+const isTeacher = computed(() => store.session?.tableName === 'jiaoshi');
 const loading = ref(false);
 const saving = ref(false);
 const dialogVisible = ref(false);
@@ -158,59 +158,61 @@ const items = ref<HomeworkItem[]>([]);
 const teacherOptions = ref<Array<{ id: number; jiaoshiName: string }>>([]);
 const typeOptions = ref<Array<{ codeIndex: number; indexName: string }>>([]);
 const courseOptions = ref<Array<{ id: number; kechengName: string }>>([]);
-const chapterOptions = ref<Array<{ id: number; chapterName: string }>>([]);
+const chapterOptions = ref<Array<{ id: number; chapterName: string; kechengId?: number }>>([]);
 const questionPool = ref<ExamQuestionItem[]>([]);
 const selectedQuestionIds = ref<number[]>([]);
 const pagination = reactive({ page: 1, limit: 10, total: 0 });
 const filters = reactive({
-  zuoyeName: "",
+  zuoyeName: '',
   kechengId: undefined as number | undefined,
-  publishStatus: ""
+  publishStatus: ''
 });
 
 const createForm = () => ({
   id: undefined as number | undefined,
-  zuoyeName: "",
+  zuoyeName: '',
   zuoyeTypes: undefined as number | undefined,
-  zuoyePhoto: "",
-  zuoyeFile: "",
+  zuoyeFile: '',
   jiaoshiId: isTeacher.value ? store.session?.userId : undefined,
   kechengId: undefined as number | undefined,
   chapterId: undefined as number | undefined,
-  deadlineTime: "",
-  publishStatus: "draft",
-  questionIds: "",
-  zuoyeContent: "",
+  startTime: '',
+  endTime: '',
+  publishStatus: 'draft',
+  questionIds: '',
+  zuoyeContent: '',
   scoreTotal: 100,
   zuoyeDelete: 1
 });
 const form = reactive(createForm());
 
 const rules: FormRules = {
-  zuoyeName: [{ required: true, message: "请输入作业标题", trigger: "blur" }],
-  zuoyeTypes: [{ required: true, message: "请选择作业类型", trigger: "change" }],
-  jiaoshiId: [{ required: true, message: "请选择教师", trigger: "change" }],
-  kechengId: [{ required: true, message: "请选择课程", trigger: "change" }],
-  deadlineTime: [{ required: true, message: "请选择截止时间", trigger: "change" }]
+  zuoyeName: [{ required: true, message: '请输入作业标题', trigger: 'blur' }],
+  zuoyeTypes: [{ required: true, message: '请选择作业类型', trigger: 'change' }],
+  jiaoshiId: [{ required: true, message: '请选择教师', trigger: 'change' }],
+  kechengId: [{ required: true, message: '请选择课程', trigger: 'change' }],
+  chapterId: [{ required: true, message: '请选择章节', trigger: 'change' }],
+  startTime: [{ required: true, message: '请选择开始时间', trigger: 'change' }],
+  endTime: [{ required: true, message: '请选择结束时间', trigger: 'change' }]
 };
 
 function formatQuestionType(value?: string) {
-  const text = value || "";
-  if (text.includes("判断")) return "判断题";
-  if (text.includes("填空")) return "填空题";
-  if (text.includes("简答") || text.includes("问答")) return "简答题";
-  return "选择题";
+  const text = value || '';
+  if (text.includes('判断')) return '判断题';
+  if (text.includes('填空')) return '填空题';
+  if (text.includes('简答') || text.includes('问答')) return '简答题';
+  return '选择题';
 }
 
 function formatStatus(value?: string) {
-  if (value === "published") return "已发布";
-  if (value === "draft") return "草稿";
-  return value || "草稿";
+  if (value === 'published') return '已发布';
+  if (value === 'draft') return '草稿';
+  return value || '草稿';
 }
 
 function countQuestionIds(value?: string) {
   if (!value) return 0;
-  return value.split(",").filter(Boolean).length;
+  return value.split(',').filter(Boolean).length;
 }
 
 const transferData = computed<TransferItem[]>(() =>
@@ -218,18 +220,18 @@ const transferData = computed<TransferItem[]>(() =>
     .filter((item) => !form.kechengId || !item.kechengId || item.kechengId === form.kechengId)
     .map((item) => ({
       key: item.id,
-      label: `${item.kechengName || "题库"} | ${formatQuestionType(item.questionType)} | ${item.questionTitle}`
+      label: `${item.kechengName || '题库'} | ${formatQuestionType(item.questionType)} | ${item.questionTitle}`
     }))
 );
 
 async function loadOptions() {
   const teacherTask = isTeacher.value
-    ? Promise.resolve([{ id: store.session?.userId ?? 0, jiaoshiName: store.session?.username || "当前教师" }])
+    ? Promise.resolve([{ id: store.session?.userId ?? 0, jiaoshiName: store.session?.username || '当前教师' }])
     : fetchTeachersForSelect();
   const [courses, teachers, types] = await Promise.all([
     fetchCoursesForSelect(),
     teacherTask,
-    fetchDictionaryOptions("zuoye_types")
+    fetchDictionaryOptions('zuoye_types')
   ]);
   courseOptions.value = courses;
   teacherOptions.value = teachers as Array<{ id: number; jiaoshiName: string }>;
@@ -239,6 +241,11 @@ async function loadOptions() {
 async function loadQuestionPool() {
   const page = await fetchExamQuestionPage({ page: 1, limit: 500 });
   questionPool.value = page.list;
+}
+
+async function handleCourseChange() {
+  form.chapterId = undefined;
+  chapterOptions.value = form.kechengId ? await fetchCourseChaptersForSelect(form.kechengId) : [];
 }
 
 async function loadItems() {
@@ -264,9 +271,9 @@ function handleSearch() {
 }
 
 async function resetFilters() {
-  filters.zuoyeName = "";
+  filters.zuoyeName = '';
   filters.kechengId = undefined;
-  filters.publishStatus = "";
+  filters.publishStatus = '';
   pagination.page = 1;
   await loadOptions();
   loadItems();
@@ -275,11 +282,6 @@ async function resetFilters() {
 function handleSizeChange() {
   pagination.page = 1;
   loadItems();
-}
-
-async function handleCourseChange() {
-  form.chapterId = undefined;
-  chapterOptions.value = await fetchCourseChaptersForSelect(form.kechengId);
 }
 
 function resetForm() {
@@ -297,23 +299,23 @@ async function openCreate() {
 async function openEdit(id: number) {
   resetForm();
   await Promise.all([loadOptions(), loadQuestionPool()]);
-  Object.assign(form, await fetchEntityDetail("zuoye", id));
-  chapterOptions.value = await fetchCourseChaptersForSelect(form.kechengId);
-  selectedQuestionIds.value = (form.questionIds || "")
-    .split(",")
+  Object.assign(form, await fetchEntityDetail('zuoye', id));
+  chapterOptions.value = form.kechengId ? await fetchCourseChaptersForSelect(form.kechengId) : [];
+  selectedQuestionIds.value = (form.questionIds || '')
+    .split(',')
     .map((item) => Number(item))
     .filter((item) => Number.isFinite(item) && item > 0);
   dialogVisible.value = true;
 }
 
-async function handleUpload(event: Event, field: "zuoyePhoto" | "zuoyeFile") {
+async function handleUpload(event: Event, field: 'zuoyeFile') {
   const file = (event.target as HTMLInputElement).files?.[0];
   if (!file) return;
   try {
     form[field] = await uploadAdminFile(file);
-    ElMessage.success(field === "zuoyePhoto" ? "封面图已上传" : "作业附件已上传");
+    ElMessage.success('作业附件已上传');
   } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : "上传失败");
+    ElMessage.error(error instanceof Error ? error.message : '上传失败');
   }
 }
 
@@ -324,40 +326,40 @@ async function submitForm() {
   }
   saving.value = true;
   try {
-    form.questionIds = selectedQuestionIds.value.join(",");
-    const result = await saveEntity("zuoye", form as unknown as Record<string, unknown>);
+    form.questionIds = selectedQuestionIds.value.join(',');
+    const result = await saveEntity('zuoye', form as unknown as Record<string, unknown>);
     const savedHomework = result?.data as { id?: number } | undefined;
     const zuoyeId = savedHomework?.id || form.id;
     if (zuoyeId) {
       form.id = zuoyeId;
-      await postModuleAction("zuoye", "bindQuestions", {
+      await postModuleAction('zuoye', 'bindQuestions', {
         zuoyeId,
         questionIds: selectedQuestionIds.value
       });
     }
-    ElMessage.success("作业已保存");
+    ElMessage.success('作业已保存');
     dialogVisible.value = false;
     await loadItems();
   } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : "保存失败");
+    ElMessage.error(error instanceof Error ? error.message : '保存失败');
   } finally {
     saving.value = false;
   }
 }
 
 async function publishHomework(id: number) {
-  const detail = await fetchEntityDetail<HomeworkItem>("zuoye", id);
-  await saveEntity("zuoye", {
+  const detail = await fetchEntityDetail<HomeworkItem>('zuoye', id);
+  await saveEntity('zuoye', {
     ...detail,
-    publishStatus: "published"
+    publishStatus: 'published'
   } as unknown as Record<string, unknown>);
-  ElMessage.success("作业已发布");
+  ElMessage.success('作业已发布');
   await loadItems();
 }
 
 async function removeItem(id: number) {
-  await deleteEntities("zuoye", [id]);
-  ElMessage.success("作业已删除");
+  await deleteEntities('zuoye', [id]);
+  ElMessage.success('作业已删除');
   await loadItems();
 }
 

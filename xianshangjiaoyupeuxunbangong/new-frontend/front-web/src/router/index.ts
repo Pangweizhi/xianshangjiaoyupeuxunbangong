@@ -31,21 +31,21 @@ const router = createRouter({
       children: [
         { path: "", name: "home", component: HomeView },
         { path: "courses", name: "courses", component: CoursesView },
-        { path: "courses/:id", name: "course-detail", component: CourseDetailView },
+        { path: "courses/:id", name: "course-detail", component: CourseDetailView, meta: { requiresAuth: true } },
         { path: "courses/:courseId/video/:resourceId", name: "course-video", component: CourseVideoView, meta: { requiresAuth: true } },
         { path: "my-courses", name: "my-courses", component: MyCoursesView, meta: { requiresAuth: true } },
         { path: "notices", name: "notices", component: NoticesView },
         { path: "homeworks", name: "homeworks", component: HomeworksView },
-        { path: "homeworks/:id", name: "homework-detail", component: HomeworkDetailView },
+        { path: "homeworks/:id", name: "homework-detail", component: HomeworkDetailView, meta: { requiresAuth: true } },
         { path: "exams", name: "exams", component: ExamsView },
         { path: "exams/:id", name: "exam-detail", component: ExamDetailView, meta: { requiresAuth: true } },
         { path: "my-scores", name: "my-scores", component: MyScoresView, meta: { requiresAuth: true } },
         { path: "forum", name: "forum", component: ForumView },
-        { path: "forum/:id", name: "forum-detail", component: ForumDetailView },
+        { path: "forum/:id", name: "forum-detail", component: ForumDetailView, meta: { requiresAuth: true } },
         { path: "materials", name: "materials", component: MaterialsView },
-        { path: "materials/:id", name: "material-detail", component: MaterialDetailView },
+        { path: "materials/:id", name: "material-detail", component: MaterialDetailView, meta: { requiresAuth: true } },
         { path: "meetings", name: "meetings", component: MeetingsView },
-        { path: "meetings/:id", name: "meeting-detail", component: MeetingDetailView },
+        { path: "meetings/:id", name: "meeting-detail", component: MeetingDetailView, meta: { requiresAuth: true } },
         {
           path: "center",
           name: "center",
@@ -59,8 +59,11 @@ const router = createRouter({
   ]
 });
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   const session = useSessionStore();
+  if (session.session) {
+    await session.ensureSessionValid();
+  }
   if (to.meta.requiresAuth && !session.isLoggedIn) {
     return { name: "login", query: { redirect: to.fullPath } };
   }

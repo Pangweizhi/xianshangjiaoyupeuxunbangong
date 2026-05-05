@@ -12,6 +12,8 @@
         a.kecheng_id as kechengId,
         a.chapter_id as chapterId,
         a.deadline_time as deadlineTime,
+        a.start_time as startTime,
+        a.end_time as endTime,
         a.score_total as scoreTotal,
         a.publish_status as publishStatus,
         a.question_ids as questionIds,

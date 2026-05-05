@@ -93,8 +93,11 @@ const router = createRouter({
   ]
 });
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   const session = useAdminSessionStore();
+  if (session.session) {
+    await session.ensureSessionValid();
+  }
   if (to.meta.requiresAuth && !session.isLoggedIn) {
     return { name: "login" };
   }

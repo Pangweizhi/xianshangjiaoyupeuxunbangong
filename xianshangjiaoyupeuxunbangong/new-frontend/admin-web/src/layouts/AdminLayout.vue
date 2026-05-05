@@ -18,7 +18,7 @@
         <RouterLink
           v-for="item in group.items"
           :key="item.to"
-          :class="item.className"
+          :class="[item.className, { 'is-active': isActive(item.to) }]"
           :to="item.to"
         >
           {{ item.label }}
@@ -201,6 +201,10 @@ function handleLogout() {
   store.logout();
   router.push({ name: "login" });
 }
+
+function isActive(path: string) {
+  return route.path === path || route.path.startsWith(`${path}/`);
+}
 </script>
 
 <style scoped>
@@ -292,6 +296,13 @@ function handleLogout() {
 
 .admin-subnav__link {
   margin-left: 12px;
+}
+
+.admin-nav-group a.is-active {
+  background: linear-gradient(135deg, rgba(255, 122, 26, 0.14), rgba(47, 101, 217, 0.14));
+  border-radius: 14px;
+  color: #1f2937;
+  font-weight: 700;
 }
 
 .admin-header__intro {

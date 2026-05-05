@@ -1,13 +1,24 @@
 <template>
-  <section class="section section--tight">
+  <section class="section section--tight" v-loading="loading">
     <RouterLink class="paper-back" to="/exams">返回考试列表</RouterLink>
-    <div v-if="detail" class="paper-layout">
+
+    <div v-if="blocked" class="blocked-panel">
+      <h2>暂时无法进入考试</h2>
+      <p>{{ blockedMessage }}</p>
+    </div>
+
+    <div v-else-if="detail" class="paper-layout">
       <section class="paper-main">
         <header class="paper-main__header">
           <div>
             <p class="paper-eyebrow">{{ detail.kechengName || "课程考试" }}</p>
-            <h1>{{ detail.examName }}</h1>
-            <p class="paper-summary">{{ detail.examSummary || "请在规定时间内完成本次考试并提交试卷。" }}</p>
+            <div class="title-row">
+              <h1>{{ detail.examName }}</h1>
+              <span v-if="isAttemptRunning" class="status-badge status-badge--danger">进行中</span>
+            </div>
+            <p class="paper-summary">
+              {{ detail.examSummary || "点击开始考试后才会显示题目。离开页面时，考试仍会继续计时。" }}
+            </p>
           </div>
           <div class="paper-main__meta">
             <span>{{ questions.length }} 题</span>
@@ -16,7 +27,22 @@
           </div>
         </header>
 
-        <div class="question-list">
+        <section v-if="!showQuestions" class="start-panel">
+          <div>
+            <p class="paper-eyebrow">考试已就绪</p>
+            <h2>{{ isAttemptRunning ? "继续当前考试" : "开始本场考试" }}</h2>
+            <p>进入后题目才会显示。考试进行中退出页面，计时不会停止。</p>
+          </div>
+          <button
+            class="primary-button"
+            :disabled="starting || submitting"
+            @click="isAttemptRunning ? restoreCurrentAttempt() : startNewAttempt()"
+          >
+            {{ startButtonText }}
+          </button>
+        </section>
+
+        <div v-else class="question-list">
           <article v-for="(question, index) in questions" :key="question.id" class="question-card">
             <div class="question-card__header">
               <strong>{{ index + 1 }}. {{ question.questionTitle }}</strong>
@@ -49,7 +75,7 @@
               v-model="answers[String(question.id)]"
               class="field field--textarea answer-textarea"
               :disabled="!canEditAnswers"
-              placeholder="请输入你的答案"
+              placeholder="请输入答案"
             ></textarea>
           </article>
         </div>
@@ -63,9 +89,9 @@
             <span>开始时间：{{ detail.startTime || "待定" }}</span>
             <span>结束时间：{{ detail.endTime || "待定" }}</span>
             <span>考试时长：{{ detail.durationMinutes ?? 0 }} 分钟</span>
-            <span>重考次数：最多 {{ detail.maxAttemptCount ?? 1 }} 次</span>
-            <span>当前状态：{{ latestRecord?.recordStatus || "未开始" }}</span>
-            <span v-if="recordId && remainingText">剩余时间：{{ remainingText }}</span>
+            <span>最多重考：{{ detail.maxAttemptCount ?? 1 }} 次</span>
+            <span>当前状态：{{ currentStatusText }}</span>
+            <span v-if="remainingText">剩余时间：{{ remainingText }}</span>
           </div>
         </article>
 
@@ -89,22 +115,27 @@
           <p class="paper-eyebrow">考试操作</p>
           <div class="side-actions">
             <button
-              v-if="!recordId || latestRecord?.recordStatus !== 'started'"
+              v-if="!isAttemptRunning"
               class="primary-button primary-button--full"
               :disabled="starting || submitting"
               @click="startNewAttempt"
             >
-              {{ starting ? "正在准备..." : latestRecord ? "重新开始考试" : "开始考试" }}
+              {{ startButtonText }}
             </button>
             <button
-              v-else-if="detail.allowResume === 1"
+              v-else-if="!showQuestions"
               class="ghost-button ghost-button--full"
               :disabled="starting || submitting"
               @click="restoreCurrentAttempt"
             >
-              恢复上次作答
+              继续考试
             </button>
-            <button class="primary-button primary-button--full" :disabled="!recordId || !canSubmit" @click="handleSubmitClick">
+            <button
+              v-else
+              class="primary-button primary-button--full"
+              :disabled="submitting || !canSubmit"
+              @click="handleSubmitClick"
+            >
               {{ submitting ? "提交中..." : "提交试卷" }}
             </button>
           </div>
@@ -115,20 +146,32 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, reactive, ref } from "vue";
-import { RouterLink, useRoute } from "vue-router";
+import { computed, onBeforeUnmount, onMounted, reactive, ref } from "vue";
+import { onBeforeRouteLeave, RouterLink, useRoute, useRouter } from "vue-router";
 import type { ExamItem, ExamQuestionItem, ExamRecordItem } from "@shared/index";
-import { fetchExamDetail, fetchExamQuestionPage, fetchMyExamRecordPage, startExam, submitExam } from "@/api/content";
+import {
+  fetchExamDetail,
+  fetchExamQuestionPage,
+  fetchMyCoursePage,
+  fetchMyExamRecordPage,
+  startExam,
+  submitExam
+} from "@/api/content";
 
 const route = useRoute();
+const router = useRouter();
 const detail = ref<ExamItem | null>(null);
 const questions = ref<ExamQuestionItem[]>([]);
 const latestRecord = ref<ExamRecordItem | null>(null);
 const recordId = ref<number | null>(null);
+const showQuestions = ref(false);
+const loading = ref(false);
+const blocked = ref(false);
 const starting = ref(false);
 const submitting = ref(false);
 const message = ref("");
 const messageType = ref<"success" | "error">("success");
+const blockedMessage = ref("");
 const answers = reactive<Record<string, string>>({});
 const remainingSeconds = ref<number | null>(null);
 const restoredFromHistory = ref(false);
@@ -140,13 +183,17 @@ const answeredCount = computed(() =>
     return Boolean(value && value.trim());
   }).length
 );
-const canEditAnswers = computed(
-  () => latestRecord.value?.recordStatus === "started" && (detail.value?.allowResume === 1 || !hasRecoveredStartedRecord.value)
-);
+
+const isAttemptRunning = computed(() => latestRecord.value?.recordStatus === "started" && Boolean(recordId.value));
+const canEditAnswers = computed(() => isAttemptRunning.value);
 const canSubmit = computed(
   () => canEditAnswers.value && !submitting.value && (remainingSeconds.value === null || remainingSeconds.value > 0)
 );
-const hasRecoveredStartedRecord = computed(() => Boolean(latestRecord.value?.recordStatus === "started" && restoredFromHistory.value));
+const startButtonText = computed(() => {
+  if (isAttemptRunning.value) return "继续考试";
+  if (latestRecord.value) return "重新开始考试";
+  return "开始考试";
+});
 const remainingText = computed(() => {
   if (remainingSeconds.value === null) return "";
   const safe = Math.max(remainingSeconds.value, 0);
@@ -154,18 +201,24 @@ const remainingText = computed(() => {
   const seconds = safe % 60;
   return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 });
+const currentStatusText = computed(() => {
+  if (isAttemptRunning.value) return "进行中";
+  if (latestRecord.value?.recordStatus === "pending_check") return "已提交，待批改";
+  if (latestRecord.value?.recordStatus === "checked") return "已批改";
+  return "未开始";
+});
 const recordSummary = computed(() => {
   if (!latestRecord.value) return "";
   if (latestRecord.value.recordStatus === "started") {
     return detail.value?.allowResume === 1
-      ? `已进入第 ${latestRecord.value.attemptNo || 1} 次作答，可继续完成并提交。`
-      : "当前考试退出后不可恢复，请一次性完成作答。";
+      ? `当前第 ${latestRecord.value.attemptNo || 1} 次作答，可继续完成后再提交。`
+      : "考试进行中，离开页面仍继续计时。";
   }
   if (latestRecord.value.recordStatus === "pending_check") {
-    return "最近一次试卷已提交，正在等待教师阅卷。";
+    return "最近一次试卷已提交，正在等待教师批改。";
   }
   if (latestRecord.value.recordStatus === "checked") {
-    return `最近一次成绩 ${latestRecord.value.finalScore ?? 0} 分，结果为 ${latestRecord.value.passStatus || "pending"}。`;
+    return `最近一次成绩为 ${latestRecord.value.finalScore ?? 0} 分。`;
   }
   return "";
 });
@@ -287,24 +340,63 @@ function startTimer(record: ExamRecordItem) {
 function applyRecord(record: ExamRecordItem | null, fromHistory = false) {
   latestRecord.value = record;
   restoredFromHistory.value = fromHistory;
-  recordId.value = record?.recordStatus === "started" ? record.id : null;
-  if (record?.recordStatus === "started" && detail.value?.allowResume === 1) {
-    restoreAnswers(record.answerSnapshot);
+  const active = record?.recordStatus === "started";
+  recordId.value = active ? record.id : null;
+  if (active && detail.value?.allowResume === 1) {
+    restoreAnswers(record?.answerSnapshot);
   } else if (!fromHistory) {
     clearAnswers();
   }
-  if (record) {
-    startTimer(record);
+  if (active) {
+    startTimer(record as ExamRecordItem);
   } else {
     stopTimer();
     remainingSeconds.value = null;
-    clearAnswers();
+    if (!fromHistory) {
+      clearAnswers();
+    }
+    showQuestions.value = false;
   }
 }
 
 async function loadLatestRecord() {
   const page = await fetchMyExamRecordPage({ examId: route.params.id, limit: 1 });
   return page.list[0] || null;
+}
+
+async function verifyCourseProgress(exam: ExamItem) {
+  const page = await fetchMyCoursePage({ kechengId: exam.kechengId, limit: 1 });
+  const enroll = page.list[0];
+  const progressPercent = Number(enroll?.progressPercent ?? 0);
+  if (!enroll || progressPercent < 100) {
+    blocked.value = true;
+    blockedMessage.value = "当前课程学习进度未达到 100%，暂时无法进入考试。";
+    window.alert(blockedMessage.value);
+    router.replace("/exams");
+    return false;
+  }
+  return true;
+}
+
+async function loadPage() {
+  loading.value = true;
+  try {
+    const exam = await fetchExamDetail(route.params.id as string);
+    detail.value = exam;
+    const allowed = await verifyCourseProgress(exam);
+    if (!allowed) return;
+    const [questionPage, latest] = await Promise.all([
+      fetchExamQuestionPage({ examId: route.params.id }),
+      loadLatestRecord()
+    ]);
+    questions.value = questionPage.list;
+    applyRecord(latest, true);
+  } catch (error) {
+    messageType.value = "error";
+    message.value = error instanceof Error ? error.message : "加载考试失败";
+  } finally {
+    loading.value = false;
+  }
 }
 
 async function startNewAttempt() {
@@ -314,8 +406,9 @@ async function startNewAttempt() {
     const result = await startExam({ examId: Number(route.params.id) });
     if (result.code !== 0) throw new Error(result.msg || "开始考试失败");
     applyRecord(result.data, false);
+    showQuestions.value = true;
     messageType.value = "success";
-    message.value = result.data.answerSnapshot && detail.value?.allowResume === 1 ? "已恢复上次未提交答案。" : "考试已开始，可以开始作答。";
+    message.value = "考试已开始，请在规定时间内完成作答。";
   } catch (error) {
     messageType.value = "error";
     message.value = error instanceof Error ? error.message : "开始考试失败";
@@ -327,8 +420,9 @@ async function startNewAttempt() {
 function restoreCurrentAttempt() {
   if (!latestRecord.value || detail.value?.allowResume !== 1) return;
   applyRecord(latestRecord.value, true);
+  showQuestions.value = true;
   messageType.value = "success";
-  message.value = "已恢复最近一次未提交试卷。";
+  message.value = "已恢复上一次未提交的作答。";
 }
 
 async function submitCurrentExam(byTimeout = false) {
@@ -359,17 +453,24 @@ function handleSubmitClick() {
   submitCurrentExam(false);
 }
 
-Promise.all([
-  fetchExamDetail(route.params.id as string),
-  fetchExamQuestionPage({ examId: route.params.id }),
-  loadLatestRecord()
-]).then(([exam, questionPage, latest]) => {
-  detail.value = exam;
-  questions.value = questionPage.list;
-  applyRecord(latest, true);
+function handleBeforeUnload(event: BeforeUnloadEvent) {
+  if (!isAttemptRunning.value) return;
+  event.preventDefault();
+  event.returnValue = "";
+}
+
+onMounted(() => {
+  window.addEventListener("beforeunload", handleBeforeUnload);
+  loadPage();
+});
+
+onBeforeRouteLeave(async () => {
+  if (!isAttemptRunning.value) return true;
+  return window.confirm("考试正在进行中，退出仍继续计时");
 });
 
 onBeforeUnmount(() => {
+  window.removeEventListener("beforeunload", handleBeforeUnload);
   stopTimer();
 });
 </script>
@@ -385,11 +486,20 @@ onBeforeUnmount(() => {
   background: rgba(255, 251, 245, 0.92);
 }
 
+.blocked-panel {
+  padding: 28px;
+  border-radius: 24px;
+  border: 1px solid rgba(226, 213, 199, 0.78);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 22px 50px rgba(24, 32, 48, 0.08);
+}
+
 .paper-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.75fr) minmax(300px, 0.9fr);
   gap: 24px;
   align-items: start;
+  height: calc(100vh - 180px);
 }
 
 .paper-main,
@@ -402,6 +512,8 @@ onBeforeUnmount(() => {
 .paper-main {
   border-radius: 28px;
   padding: 28px;
+  max-height: 100%;
+  overflow: auto;
 }
 
 .paper-main__header {
@@ -409,6 +521,27 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   gap: 18px;
   margin-bottom: 24px;
+}
+
+.title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  color: #8a3412;
+  background: #fff1e7;
+}
+
+.status-badge--danger {
+  color: #9d1c1c;
+  background: #ffe7e7;
 }
 
 .paper-eyebrow {
@@ -420,7 +553,9 @@ onBeforeUnmount(() => {
 }
 
 .paper-main h1,
-.paper-side h2 {
+.paper-side h2,
+.blocked-panel h2,
+.start-panel h2 {
   margin: 0;
   color: #1f2937;
 }
@@ -444,6 +579,17 @@ onBeforeUnmount(() => {
   background: #fff7ef;
   color: #874913;
   font-size: 13px;
+}
+
+.start-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 22px;
+  border-radius: 22px;
+  border: 1px dashed rgba(226, 213, 199, 0.95);
+  background: linear-gradient(180deg, #fffaf2 0%, #ffffff 100%);
 }
 
 .question-list {
@@ -488,8 +634,8 @@ onBeforeUnmount(() => {
 .paper-side {
   display: grid;
   gap: 16px;
-  position: sticky;
-  top: 24px;
+  max-height: 100%;
+  overflow: auto;
 }
 
 .side-card {
@@ -521,27 +667,33 @@ onBeforeUnmount(() => {
 
 .side-progress strong {
   display: block;
-  font-size: 24px;
-  color: #111827;
+  margin-bottom: 6px;
+  font-size: 22px;
+  color: #1f2937;
 }
 
-.ghost-button--full,
-.primary-button--full {
-  width: 100%;
+.side-progress span {
+  color: #64748b;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1100px) {
   .paper-layout {
     grid-template-columns: 1fr;
+    height: auto;
   }
 
+  .paper-main,
   .paper-side {
-    position: static;
+    max-height: none;
+    overflow: visible;
   }
+}
 
+@media (max-width: 720px) {
   .paper-main__header,
-  .question-card__header {
+  .start-panel {
     flex-direction: column;
+    align-items: flex-start;
   }
 }
 </style>

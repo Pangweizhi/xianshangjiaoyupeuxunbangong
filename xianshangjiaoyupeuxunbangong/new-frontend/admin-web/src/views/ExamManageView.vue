@@ -20,7 +20,6 @@
     <el-table :data="rows" stripe empty-text="暂无考试数据">
       <el-table-column prop="examName" label="考试名称" min-width="220" />
       <el-table-column prop="kechengName" label="课程" min-width="180" />
-      <el-table-column prop="chapterName" label="章节" min-width="160" />
       <el-table-column prop="totalScore" label="总分" min-width="90" />
       <el-table-column prop="passScore" label="及格分" min-width="90" />
       <el-table-column label="状态" min-width="120">
@@ -58,13 +57,8 @@
           <el-input v-model="form.examName" />
         </el-form-item>
         <el-form-item label="课程" prop="kechengId" required>
-          <el-select v-model="form.kechengId" @change="handleCourseChange">
+          <el-select v-model="form.kechengId">
             <el-option v-for="item in courseOptions" :key="item.id" :label="item.kechengName" :value="item.id" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="章节" prop="chapterId">
-          <el-select v-model="form.chapterId" clearable>
-            <el-option v-for="item in chapterOptions" :key="item.id" :label="item.chapterName" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="考试时长（分）" prop="durationMinutes" required>
@@ -129,7 +123,7 @@
 import { computed, reactive, ref } from "vue";
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
 import type { ExamItem, ExamQuestionItem } from "@shared/index";
-import { fetchCoursesForSelect, fetchCourseChaptersForSelect, deleteEntities, fetchEntityDetail, saveEntity, postModuleAction } from "@/api/manage";
+import { fetchCoursesForSelect, deleteEntities, fetchEntityDetail, saveEntity, postModuleAction } from "@/api/manage";
 import { fetchExamPage, fetchExamQuestionPage } from "@/api/dashboard";
 
 type TransferItem = {
@@ -144,7 +138,6 @@ const dialogVisible = ref(false);
 const formRef = ref<FormInstance>();
 const rows = ref<ExamItem[]>([]);
 const courseOptions = ref<Array<{ id: number; kechengName: string }>>([]);
-const chapterOptions = ref<Array<{ id: number; chapterName: string; kechengId: number }>>([]);
 const questionPool = ref<ExamQuestionItem[]>([]);
 const selectedQuestionIds = ref<number[]>([]);
 const pagination = reactive({ page: 1, limit: 10, total: 0 });
@@ -154,7 +147,6 @@ const createForm = () => ({
   id: undefined as number | undefined,
   examName: "",
   kechengId: undefined as number | undefined,
-  chapterId: undefined as number | undefined,
   durationMinutes: 60,
   passScore: 60,
   allowRetake: 0,
@@ -253,14 +245,8 @@ function handleSizeChange() {
   loadRows();
 }
 
-async function handleCourseChange() {
-  form.chapterId = undefined;
-  chapterOptions.value = await fetchCourseChaptersForSelect(form.kechengId);
-}
-
 function resetForm() {
   Object.assign(form, createForm());
-  chapterOptions.value = [];
   selectedQuestionIds.value = [];
 }
 
@@ -274,7 +260,6 @@ async function openEdit(id: number) {
   resetForm();
   await Promise.all([loadOptions(), loadQuestionPool()]);
   Object.assign(form, await fetchEntityDetail("exam", id));
-  chapterOptions.value = await fetchCourseChaptersForSelect(form.kechengId);
   selectedQuestionIds.value = questionPool.value
     .filter((item) => item.examId === form.id)
     .filter((item) => !form.kechengId || !item.kechengId || item.kechengId === form.kechengId)

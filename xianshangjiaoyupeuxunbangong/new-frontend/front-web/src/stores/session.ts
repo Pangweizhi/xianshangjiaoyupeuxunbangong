@@ -17,6 +17,7 @@ const STORAGE_KEY = "front-web-session";
 export const useSessionStore = defineStore("front-session", () => {
   const session = ref<AuthSession | null>(readSession(STORAGE_KEY));
   const pending = ref(false);
+  let validationPromise: Promise<boolean> | null = null;
 
   const isLoggedIn = computed(() => Boolean(session.value?.token));
   const displayRole = computed(() =>
@@ -71,6 +72,25 @@ export const useSessionStore = defineStore("front-session", () => {
     return data.data;
   }
 
+  async function ensureSessionValid() {
+    if (!session.value) {
+      return false;
+    }
+    if (validationPromise) {
+      return validationPromise;
+    }
+    validationPromise = hydrateProfile()
+      .then(() => true)
+      .catch(() => {
+        setSession(null);
+        return false;
+      })
+      .finally(() => {
+        validationPromise = null;
+      });
+    return validationPromise;
+  }
+
   function logout() {
     setSession(null);
   }
@@ -82,6 +102,7 @@ export const useSessionStore = defineStore("front-session", () => {
     displayRole,
     login,
     hydrateProfile,
+    ensureSessionValid,
     logout
   };
 });

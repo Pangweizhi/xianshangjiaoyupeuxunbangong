@@ -72,6 +72,10 @@ public class ExamController {
             entity.setJiaoshiId(Integer.valueOf(String.valueOf(request.getSession().getAttribute("userId"))));
         }
         fillRuleDefaults(entity);
+        R courseExamCheck = ensureSingleExamPerCourse(entity, null);
+        if (courseExamCheck != null) {
+            return courseExamCheck;
+        }
         entity.setExamStatus("draft");
         entity.setPublishTime(null);
         entity.setIsDeleted(1);
@@ -92,6 +96,10 @@ public class ExamController {
             return R.error(511, "查不到数据");
         }
         fillRuleDefaults(entity);
+        R courseExamCheck = ensureSingleExamPerCourse(entity, entity.getId());
+        if (courseExamCheck != null) {
+            return courseExamCheck;
+        }
         if (old.getPublishTime() != null && "published".equals(old.getExamStatus())) {
             entity.setPublishTime(old.getPublishTime());
             entity.setExamStatus(old.getExamStatus());
@@ -162,5 +170,22 @@ public class ExamController {
         if (entity.getPassScore() == null) {
             entity.setPassScore(60);
         }
+    }
+
+    private R ensureSingleExamPerCourse(ExamEntity entity, Integer currentId) {
+        if (entity == null || entity.getKechengId() == null) {
+            return null;
+        }
+        EntityWrapper<ExamEntity> wrapper = new EntityWrapper<ExamEntity>()
+            .eq("kecheng_id", entity.getKechengId())
+            .eq("is_deleted", 1);
+        if (currentId != null) {
+            wrapper.notIn("id", currentId);
+        }
+        ExamEntity exists = examService.selectOne(wrapper);
+        if (exists != null) {
+            return R.error(511, "该课程已经存在考试，请先删除旧考试后再新增。");
+        }
+        return null;
     }
 }

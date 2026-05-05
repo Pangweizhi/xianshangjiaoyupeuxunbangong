@@ -12,7 +12,8 @@
           <div class="paper-main__meta">
             <span>{{ questions.length }} 题</span>
             <span>{{ detail.scoreTotal ?? 0 }} 分</span>
-            <span>截止 {{ detail.deadlineTime || "待定" }}</span>
+            <span>开始 {{ detail.startTime || "待定" }}</span>
+            <span>结束 {{ detail.endTime || detail.deadlineTime || "待定" }}</span>
           </div>
         </header>
 
@@ -61,7 +62,8 @@
           <h2>{{ detail.chapterName || "不限章节" }}</h2>
           <div class="side-stats">
             <span>授课教师：{{ detail.jiaoshiName || "待补充" }}</span>
-            <span>截止时间：{{ detail.deadlineTime || "待定" }}</span>
+            <span>开始时间：{{ detail.startTime || "待定" }}</span>
+            <span>结束时间：{{ detail.endTime || detail.deadlineTime || "待定" }}</span>
             <span>总分：{{ detail.scoreTotal ?? 100 }}</span>
             <span>当前状态：{{ submissionRecord?.submitStatus || "未开始" }}</span>
           </div>
@@ -100,7 +102,7 @@
             <button
               v-if="!recordId"
               class="primary-button primary-button--full"
-              :disabled="expired || !session.isLoggedIn || starting"
+              :disabled="!canStartHomework || !session.isLoggedIn || starting"
               @click="startCurrentHomework"
             >
               {{ starting ? "正在进入..." : "开始写作业" }}
@@ -152,9 +154,15 @@ const submissionMessageType = ref<"success" | "error">("success");
 const answers = reactive<Record<string, string>>({});
 
 const expired = computed(() => {
-  if (!detail.value?.deadlineTime) return false;
-  return new Date(detail.value.deadlineTime).getTime() < Date.now();
+  const endTime = detail.value?.endTime || detail.value?.deadlineTime;
+  if (!endTime) return false;
+  return new Date(endTime).getTime() < Date.now();
 });
+const notStarted = computed(() => {
+  if (!detail.value?.startTime) return false;
+  return new Date(detail.value.startTime).getTime() > Date.now();
+});
+const canStartHomework = computed(() => !notStarted.value && !expired.value);
 const canEditAnswers = computed(() => submissionRecord.value?.submitStatus === "作答中");
 const answeredCount = computed(() =>
   questions.value.filter((question) => {
@@ -270,6 +278,11 @@ async function loadLatestSubmission() {
 }
 
 async function startCurrentHomework() {
+  if (notStarted.value) {
+    submissionMessageType.value = "error";
+    submissionMessage.value = "该作业尚未开始，暂时不能作答。";
+    return;
+  }
   if (expired.value) {
     submissionMessageType.value = "error";
     submissionMessage.value = "该作业已截止，不能继续作答。";
