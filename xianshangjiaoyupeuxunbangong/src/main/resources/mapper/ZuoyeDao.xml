@@ -2,60 +2,55 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dao.ZuoyeDao">
 
-    <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        a.id as id
-        ,a.zuoye_name as zuoyeName
-        ,a.zuoye_photo as zuoyePhoto
-        ,a.zuoye_types as zuoyeTypes
-        ,a.zuoye_file as zuoyeFile
-        ,a.jiaoshi_id as jiaoshiId
-        ,a.kecheng_id as kechengId
-        ,a.chapter_id as chapterId
-        ,a.deadline_time as deadlineTime
-        ,a.score_total as scoreTotal
-        ,a.publish_status as publishStatus
-        ,a.zuoye_content as zuoyeContent
-        ,a.zuoye_delete as zuoyeDelete
-        ,a.insert_time as insertTime
-        ,a.create_time as createTime
+        a.id as id,
+        a.zuoye_name as zuoyeName,
+        a.zuoye_photo as zuoyePhoto,
+        a.zuoye_types as zuoyeTypes,
+        a.zuoye_file as zuoyeFile,
+        a.jiaoshi_id as jiaoshiId,
+        a.kecheng_id as kechengId,
+        a.chapter_id as chapterId,
+        a.deadline_time as deadlineTime,
+        a.score_total as scoreTotal,
+        a.publish_status as publishStatus,
+        a.question_ids as questionIds,
+        a.zuoye_content as zuoyeContent,
+        a.zuoye_delete as zuoyeDelete,
+        a.insert_time as insertTime,
+        a.create_time as createTime
     </sql>
-    <select id="selectListView" parameterType="map" resultType="com.entity.view.ZuoyeView" >
+
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.ZuoyeView">
         SELECT
-        <include refid="Base_Column_List" />
-
---         级联表的字段
-        ,jiaoshi.jiaoshi_name as jiaoshiName
-        ,jiaoshi.jiaoshi_photo as jiaoshiPhoto
-        ,jiaoshi.jiaoshi_id_number as jiaoshiIdNumber
-        ,jiaoshi.jiaoshi_phone as jiaoshiPhone
-        ,jiaoshi.jiaoshi_email as jiaoshiEmail
-        ,jiaoshi.jiaoshi_delete as jiaoshiDelete
-        ,kecheng.kecheng_name as kechengName
-        ,chapter.chapter_name as chapterName
-
-        FROM zuoye  a
-        left JOIN jiaoshi jiaoshi ON a.jiaoshi_id = jiaoshi.id
-        left join kecheng kecheng on a.kecheng_id = kecheng.id
-        left join course_chapter chapter on a.chapter_id = chapter.id
-
+        <include refid="Base_Column_List" />,
+        jiaoshi.jiaoshi_name as jiaoshiName,
+        jiaoshi.jiaoshi_photo as jiaoshiPhoto,
+        jiaoshi.jiaoshi_id_number as jiaoshiIdNumber,
+        jiaoshi.jiaoshi_phone as jiaoshiPhone,
+        jiaoshi.jiaoshi_email as jiaoshiEmail,
+        jiaoshi.jiaoshi_delete as jiaoshiDelete,
+        kecheng.kecheng_name as kechengName,
+        chapter.chapter_name as chapterName
+        FROM zuoye a
+        LEFT JOIN jiaoshi jiaoshi ON a.jiaoshi_id = jiaoshi.id
+        LEFT JOIN kecheng kecheng ON a.kecheng_id = kecheng.id
+        LEFT JOIN course_chapter chapter ON a.chapter_id = chapter.id
         <where>
             <if test="params.ids != null">
                 and a.id in
                 <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
-                #{item}
+                    #{item}
                 </foreach>
             </if>
-            <if test=" params.zuoyeName != '' and params.zuoyeName != null and params.zuoyeName != 'null' ">
+            <if test="params.zuoyeName != null and params.zuoyeName != '' and params.zuoyeName != 'null'">
                 and a.zuoye_name like CONCAT('%',#{params.zuoyeName},'%')
             </if>
             <if test="params.zuoyeTypes != null and params.zuoyeTypes != ''">
                 and a.zuoye_types = #{params.zuoyeTypes}
             </if>
             <if test="params.jiaoshiId != null and params.jiaoshiId != ''">
-                and (
-                    a.jiaoshi_id = #{params.jiaoshiId}
-                )
+                and a.jiaoshi_id = #{params.jiaoshiId}
             </if>
             <if test="params.kechengId != null and params.kechengId != ''">
                 and a.kecheng_id = #{params.kechengId}
@@ -66,54 +61,55 @@
             <if test="params.publishStatus != null and params.publishStatus != '' and params.publishStatus != 'null'">
                 and a.publish_status = #{params.publishStatus}
             </if>
-            <if test=" params.zuoyeContent != '' and params.zuoyeContent != null and params.zuoyeContent != 'null' ">
+            <if test="params.questionIds != null and params.questionIds != '' and params.questionIds != 'null'">
+                and a.question_ids = #{params.questionIds}
+            </if>
+            <if test="params.zuoyeContent != null and params.zuoyeContent != '' and params.zuoyeContent != 'null'">
                 and a.zuoye_content like CONCAT('%',#{params.zuoyeContent},'%')
             </if>
             <if test="params.zuoyeDeleteStart != null and params.zuoyeDeleteStart != ''">
-                <![CDATA[  and a.zuoye_delete >= #{params.zuoyeDeleteStart}   ]]>
+                <![CDATA[ and a.zuoye_delete >= #{params.zuoyeDeleteStart} ]]>
             </if>
             <if test="params.zuoyeDeleteEnd != null and params.zuoyeDeleteEnd != ''">
-                <![CDATA[  and a.zuoye_delete <= #{params.zuoyeDeleteEnd}   ]]>
+                <![CDATA[ and a.zuoye_delete <= #{params.zuoyeDeleteEnd} ]]>
             </if>
-             <if test="params.zuoyeDelete != null and params.zuoyeDelete != ''">
+            <if test="params.zuoyeDelete != null and params.zuoyeDelete != ''">
                 and a.zuoye_delete = #{params.zuoyeDelete}
-             </if>
-            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
-                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
             </if>
-            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
-                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            <if test="params.insertTimeStart != null and params.insertTimeStart != ''">
+                <![CDATA[ and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
             </if>
-            <if test=" params.deadlineTimeStart != '' and params.deadlineTimeStart != null ">
-                <![CDATA[  and UNIX_TIMESTAMP(a.deadline_time) >= UNIX_TIMESTAMP(#{params.deadlineTimeStart}) ]]>
+            <if test="params.insertTimeEnd != null and params.insertTimeEnd != ''">
+                <![CDATA[ and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
             </if>
-            <if test=" params.deadlineTimeEnd != '' and params.deadlineTimeEnd != null ">
-                <![CDATA[  and UNIX_TIMESTAMP(a.deadline_time) <= UNIX_TIMESTAMP(#{params.deadlineTimeEnd}) ]]>
+            <if test="params.deadlineTimeStart != null and params.deadlineTimeStart != ''">
+                <![CDATA[ and UNIX_TIMESTAMP(a.deadline_time) >= UNIX_TIMESTAMP(#{params.deadlineTimeStart}) ]]>
             </if>
-
-                <!-- 判断教师的id不为空 -->
-            <if test=" params.jiaoshiIdNotNull != '' and params.jiaoshiIdNotNull != null and params.jiaoshiIdNotNull != 'null' ">
+            <if test="params.deadlineTimeEnd != null and params.deadlineTimeEnd != ''">
+                <![CDATA[ and UNIX_TIMESTAMP(a.deadline_time) <= UNIX_TIMESTAMP(#{params.deadlineTimeEnd}) ]]>
+            </if>
+            <if test="params.jiaoshiIdNotNull != null and params.jiaoshiIdNotNull != '' and params.jiaoshiIdNotNull != 'null'">
                 and a.jiaoshi_id IS NOT NULL
             </if>
-            <if test=" params.jiaoshiName != '' and params.jiaoshiName != null and params.jiaoshiName != 'null' ">
+            <if test="params.jiaoshiName != null and params.jiaoshiName != '' and params.jiaoshiName != 'null'">
                 and jiaoshi.jiaoshi_name like CONCAT('%',#{params.jiaoshiName},'%')
             </if>
-            <if test=" params.jiaoshiIdNumber != '' and params.jiaoshiIdNumber != null and params.jiaoshiIdNumber != 'null' ">
+            <if test="params.jiaoshiIdNumber != null and params.jiaoshiIdNumber != '' and params.jiaoshiIdNumber != 'null'">
                 and jiaoshi.jiaoshi_id_number like CONCAT('%',#{params.jiaoshiIdNumber},'%')
             </if>
-            <if test=" params.jiaoshiPhone != '' and params.jiaoshiPhone != null and params.jiaoshiPhone != 'null' ">
+            <if test="params.jiaoshiPhone != null and params.jiaoshiPhone != '' and params.jiaoshiPhone != 'null'">
                 and jiaoshi.jiaoshi_phone like CONCAT('%',#{params.jiaoshiPhone},'%')
             </if>
-            <if test=" params.jiaoshiEmail != '' and params.jiaoshiEmail != null and params.jiaoshiEmail != 'null' ">
+            <if test="params.jiaoshiEmail != null and params.jiaoshiEmail != '' and params.jiaoshiEmail != 'null'">
                 and jiaoshi.jiaoshi_email like CONCAT('%',#{params.jiaoshiEmail},'%')
             </if>
-            <if test="params.jiaoshiDeleteStart != null  and params.jiaoshiDeleteStart != '' ">
-                <![CDATA[  and jiaoshi.jiaoshi_delete >= #{params.jiaoshiDeleteStart}   ]]>
+            <if test="params.jiaoshiDeleteStart != null and params.jiaoshiDeleteStart != ''">
+                <![CDATA[ and jiaoshi.jiaoshi_delete >= #{params.jiaoshiDeleteStart} ]]>
             </if>
-            <if test="params.jiaoshiDeleteEnd != null  and params.jiaoshiDeleteEnd != '' ">
-                <![CDATA[  and jiaoshi.jiaoshi_delete <= #{params.jiaoshiDeleteEnd}   ]]>
+            <if test="params.jiaoshiDeleteEnd != null and params.jiaoshiDeleteEnd != ''">
+                <![CDATA[ and jiaoshi.jiaoshi_delete <= #{params.jiaoshiDeleteEnd} ]]>
             </if>
-            <if test="params.jiaoshiDelete != null  and params.jiaoshiDelete != '' ">
+            <if test="params.jiaoshiDelete != null and params.jiaoshiDelete != ''">
                 and jiaoshi.jiaoshi_delete = #{params.jiaoshiDelete}
             </if>
         </where>

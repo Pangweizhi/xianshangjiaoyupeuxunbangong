@@ -68,6 +68,13 @@
                 order by
                 case when k.kecheng_name is null or k.kecheng_name = '' then 1 else 0 end asc,
                 k.kecheng_name asc,
+                case
+                    when a.question_type = '选择题' or a.question_type = 'Choice' then 1
+                    when a.question_type = '判断题' or a.question_type = 'True/False' then 2
+                    when a.question_type = '填空题' or a.question_type = 'Fill in' then 3
+                    when a.question_type = '简答题' or a.question_type = 'Short answer' then 4
+                    else 5
+                end asc,
                 a.sort_no asc,
                 a.id asc
             </otherwise>

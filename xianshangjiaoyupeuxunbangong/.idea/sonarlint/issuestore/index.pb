@@ -1,6 +1,4 @@
 
-[
-+new-frontend/admin-web/src/api/dashboard.ts,8\b\8b2167bf62a9568b6a30267a8850d52cb16a071c
 a
 1new-frontend/front-web/src/views/MyScoresView.vue,e\d\ed4ee0f360af0829ab4bc34b9aa022c6a511a78e
 W
@@ -75,10 +73,6 @@ i
 .new-frontend/front-web/src/views/ExamsView.vue,9\4\944b792f89f8a6a788d13c002ed9035a680f4345
 ^
 .new-frontend/front-web/src/views/ForumView.vue,0\a\0a6b88405b85a53e1c75557f9ec4da8d66862a8c
-g
-7new-frontend/admin-web/src/views/HomeworkManageView.vue,2\8\2826a86f8954bc2b3b19106d421ca932ce5be48f
-q
-Anew-frontend/admin-web/src/views/HomeworkSubmissionManageView.vue,e\0\e0c2b70a5aaa8d3dc72f7349c1d1d230e6f5cfc0
 b
 2new-frontend/front-web/src/views/HomeworksView.vue,b\e\be3fddb3832ae762fb7a9d751978d2747bc1dc78
 _
@@ -95,8 +89,6 @@ f
 6new-frontend/admin-web/src/views/MeetingManageView.vue,a\1\a13b83cd1043713ddb14ba48a0b6cb5de436b5d5
 a
 1new-frontend/front-web/src/views/MeetingsView.vue,f\9\f9fd6558877bdcb408c6a80c909031552e80932c
-`
-0new-frontend/front-web/src/views/NoticesView.vue,c\9\c9b9f2376e3fa17ad07894b276eb361d34dfd251
 g
 7new-frontend/admin-web/src/views/StudentsManageView.vue,b\f\bfd2064cce5118dd9092fe1a823ab1e499490f02
 a
@@ -121,10 +113,6 @@ d
 0new-frontend/front-web/src/views/CoursesView.vue,f\4\f4b23659b31306d28fb2ed05751d319b2210f08b
 d
 4new-frontend/admin-web/src/views/ForumManageView.vue,a\d\ad00ef68fd3c4abc1526b8d4d9807e7b1d6095b1
-V
-&new-frontend/admin-web/dist/index.html,9\3\931d916d13c5815e5d553d886659f7b3becdf9de
-V
-&new-frontend/front-web/dist/index.html,4\2\42e8c09dbddf1d4664b07767aa5dda5a0d474455
 c
 3src/main/java/com/controller/JiaoshiController.java,f\2\f2ff6020d4c295880d5d0e8c6a53d45fe98d7cd4
 X
@@ -143,16 +131,12 @@ _
 /new-frontend/admin-web/src/views/AiChatView.vue,a\f\af3ce05bb8d30c1caf74a03f4f9a66f10312f38b
 R
 "new-frontend/front-web/src/App.vue,9\c\9c4ce4f6dc50965ff9234c7e9a3ff3e34bc5ab30
-Y
-)new-frontend/front-web/src/api/content.ts,0\0\00f4d446c75a18857487000dbfa46958dc6a9367
 o
 ?src/main/java/com/service/impl/CourseSettlementServiceImpl.java,7\c\7c2ab5617aadabd7a31772ca80f291fdaa3af150
 i
 9new-frontend/admin-web/src/views/DictionaryManageView.vue,0\b\0b04075cffc91b267df0da1af5137f1b8742471e
 `
 0src/main/java/com/controller/ExamController.java,2\8\283b1f02c08f4a1d10ec1dc3ff65f391faea6bc2
-c
-3new-frontend/front-web/src/views/ExamDetailView.vue,d\b\db8276172a1465b30623f4a622dfa72d370dd00f
 f
 6src/main/java/com/controller/ExamRecordController.java,3\6\36009caa27b924d4fca6170ce6aa4914971cf34f
 ]

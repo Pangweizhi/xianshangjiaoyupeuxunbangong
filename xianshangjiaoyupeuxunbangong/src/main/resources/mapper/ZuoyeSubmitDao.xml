@@ -3,32 +3,35 @@
 <mapper namespace="com.dao.ZuoyeSubmitDao">
 
     <sql id="Base_Column_List">
-        a.id as id
-        ,a.zuoye_id as zuoyeId
-        ,a.yonghu_id as yonghuId
-        ,a.submit_file as submitFile
-        ,a.submit_content as submitContent
-        ,a.submit_status as submitStatus
-        ,a.submit_score as submitScore
-        ,a.submit_remark as submitRemark
-        ,a.submit_delete as submitDelete
-        ,a.check_time as checkTime
-        ,a.insert_time as insertTime
-        ,a.create_time as createTime
+        a.id as id,
+        a.zuoye_id as zuoyeId,
+        a.yonghu_id as yonghuId,
+        a.submit_file as submitFile,
+        a.submit_content as submitContent,
+        a.submit_status as submitStatus,
+        a.answer_snapshot as answerSnapshot,
+        a.question_snapshot as questionSnapshot,
+        a.auto_score as autoScore,
+        a.submit_score as submitScore,
+        a.submit_remark as submitRemark,
+        a.submit_delete as submitDelete,
+        a.check_time as checkTime,
+        a.insert_time as insertTime,
+        a.create_time as createTime
     </sql>
 
     <select id="selectListView" parameterType="map" resultType="com.entity.view.ZuoyeSubmitView">
         SELECT
-        <include refid="Base_Column_List" />
-        ,zuoye.zuoye_name as zuoyeName
-        ,yonghu.yonghu_name as yonghuName
-        ,yonghu.yonghu_photo as yonghuPhoto
-        ,jiaoshi.jiaoshi_name as jiaoshiName
-        ,jiaoshi.jiaoshi_uuid_number as jiaoshiUuidNumber
+        <include refid="Base_Column_List" />,
+        zuoye.zuoye_name as zuoyeName,
+        yonghu.yonghu_name as yonghuName,
+        yonghu.yonghu_photo as yonghuPhoto,
+        jiaoshi.jiaoshi_name as jiaoshiName,
+        jiaoshi.jiaoshi_uuid_number as jiaoshiUuidNumber
         FROM zuoye_submit a
-        left join zuoye zuoye on a.zuoye_id = zuoye.id
-        left join yonghu yonghu on a.yonghu_id = yonghu.id
-        left join jiaoshi jiaoshi on zuoye.jiaoshi_id = jiaoshi.id
+        LEFT JOIN zuoye zuoye ON a.zuoye_id = zuoye.id
+        LEFT JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+        LEFT JOIN jiaoshi jiaoshi ON zuoye.jiaoshi_id = jiaoshi.id
         <where>
             <if test="params.ids != null">
                 and a.id in
@@ -39,7 +42,7 @@
             <if test="params.zuoyeId != null and params.zuoyeId != ''">
                 and a.zuoye_id = #{params.zuoyeId}
             </if>
-            <if test=" params.zuoyeName != '' and params.zuoyeName != null and params.zuoyeName != 'null' ">
+            <if test="params.zuoyeName != null and params.zuoyeName != '' and params.zuoyeName != 'null'">
                 and zuoye.zuoye_name like CONCAT('%',#{params.zuoyeName},'%')
             </if>
             <if test="params.yonghuId != null and params.yonghuId != ''">
@@ -48,13 +51,13 @@
             <if test="params.jiaoshiId != null and params.jiaoshiId != ''">
                 and jiaoshi.id = #{params.jiaoshiId}
             </if>
-            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+            <if test="params.yonghuName != null and params.yonghuName != '' and params.yonghuName != 'null'">
                 and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
             </if>
-            <if test=" params.submitContent != '' and params.submitContent != null and params.submitContent != 'null' ">
+            <if test="params.submitContent != null and params.submitContent != '' and params.submitContent != 'null'">
                 and a.submit_content like CONCAT('%',#{params.submitContent},'%')
             </if>
-            <if test=" params.submitStatus != '' and params.submitStatus != null and params.submitStatus != 'null' ">
+            <if test="params.submitStatus != null and params.submitStatus != '' and params.submitStatus != 'null'">
                 and a.submit_status = #{params.submitStatus}
             </if>
             <if test="params.submitDeleteStart != null and params.submitDeleteStart != ''">

@@ -174,7 +174,7 @@ export async function fetchExamPage(params?: Record<string, unknown>) {
 export async function fetchExamQuestionPage(params?: Record<string, unknown>) {
   const http = useAdminHttp();
   const { data } = await http.get("/examQuestion/page", {
-    params: { page: 1, limit: 10, sort: "sort_no", order: "asc", ...params }
+    params: { page: 1, limit: 500, ...params }
   });
   return unwrap<PagePayload<ExamQuestionItem>>(data);
 }

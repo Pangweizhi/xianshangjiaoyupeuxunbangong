@@ -1,366 +1,232 @@
 package com.entity;
 
 import com.annotation.ColumnInfo;
-import javax.validation.constraints.*;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import java.lang.reflect.InvocationTargetException;
-import java.io.Serializable;
-import java.util.*;
-import org.apache.tools.ant.util.DateUtils;
-import org.springframework.format.annotation.DateTimeFormat;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import org.apache.commons.beanutils.BeanUtils;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
-import com.baomidou.mybatisplus.enums.IdType;
 import com.baomidou.mybatisplus.enums.FieldFill;
+import com.baomidou.mybatisplus.enums.IdType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.utils.DateUtil;
+import org.apache.commons.beanutils.BeanUtils;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
 
 /**
  * 作业
- *
- * @author 
- * @email
  */
 @TableName("zuoye")
 public class ZuoyeEntity<T> implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    public ZuoyeEntity() {
+    }
 
-	public ZuoyeEntity() {
+    public ZuoyeEntity(T t) {
+        try {
+            BeanUtils.copyProperties(this, t);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
 
-	}
-
-	public ZuoyeEntity(T t) {
-		try {
-			BeanUtils.copyProperties(this, t);
-		} catch (IllegalAccessException | InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-
-    /**
-     * 主键
-     */
     @TableId(type = IdType.AUTO)
-    @ColumnInfo(comment="主键",type="int(11)")
+    @ColumnInfo(comment = "主键", type = "int(11)")
     @TableField(value = "id")
-
     private Integer id;
 
-
-    /**
-     * 作业标题
-     */
-    @ColumnInfo(comment="作业标题",type="varchar(200)")
+    @ColumnInfo(comment = "作业标题", type = "varchar(200)")
     @TableField(value = "zuoye_name")
-
     private String zuoyeName;
 
-
-    /**
-     * 作业照片
-     */
-    @ColumnInfo(comment="作业照片",type="varchar(200)")
+    @ColumnInfo(comment = "作业图片", type = "varchar(200)")
     @TableField(value = "zuoye_photo")
-
     private String zuoyePhoto;
 
-
-    /**
-     * 作业类型
-     */
-    @ColumnInfo(comment="作业类型",type="int(11)")
+    @ColumnInfo(comment = "作业类型", type = "int(11)")
     @TableField(value = "zuoye_types")
-
     private Integer zuoyeTypes;
 
-
-    /**
-     * 作业
-     */
-    @ColumnInfo(comment="作业",type="varchar(200)")
+    @ColumnInfo(comment = "作业附件", type = "varchar(200)")
     @TableField(value = "zuoye_file")
-
     private String zuoyeFile;
 
-
-    /**
-     * 教师
-     */
-    @ColumnInfo(comment="教师",type="int(11)")
+    @ColumnInfo(comment = "教师", type = "int(11)")
     @TableField(value = "jiaoshi_id")
-
     private Integer jiaoshiId;
 
-    /**
-     * 课程
-     */
-    @ColumnInfo(comment="课程",type="int(11)")
+    @ColumnInfo(comment = "课程", type = "int(11)")
     @TableField(value = "kecheng_id")
     private Integer kechengId;
 
-    /**
-     * 章节
-     */
-    @ColumnInfo(comment="章节",type="int(11)")
+    @ColumnInfo(comment = "章节", type = "int(11)")
     @TableField(value = "chapter_id")
     private Integer chapterId;
 
-    /**
-     * 截止时间
-     */
-    @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
-	@DateTimeFormat
-    @ColumnInfo(comment="截止时间",type="timestamp")
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat
+    @ColumnInfo(comment = "截止时间", type = "timestamp")
     @TableField(value = "deadline_time")
     private Date deadlineTime;
 
-    /**
-     * 总分
-     */
-    @ColumnInfo(comment="总分",type="int(11)")
+    @ColumnInfo(comment = "总分", type = "int(11)")
     @TableField(value = "score_total")
     private Integer scoreTotal;
 
-    /**
-     * 发布状态
-     */
-    @ColumnInfo(comment="发布状态",type="varchar(50)")
+    @ColumnInfo(comment = "发布状态", type = "varchar(50)")
     @TableField(value = "publish_status")
     private String publishStatus;
 
+    @ColumnInfo(comment = "题目ID集合", type = "text")
+    @TableField(value = "question_ids")
+    private String questionIds;
 
-    /**
-     * 作业详情
-     */
-    @ColumnInfo(comment="作业详情",type="text")
+    @ColumnInfo(comment = "作业说明", type = "text")
     @TableField(value = "zuoye_content")
-
     private String zuoyeContent;
 
-
-    /**
-     * 逻辑删除
-     */
-    @ColumnInfo(comment="逻辑删除",type="int(11)")
+    @ColumnInfo(comment = "逻辑删除", type = "int(11)")
     @TableField(value = "zuoye_delete")
-
     private Integer zuoyeDelete;
 
-
-    /**
-     * 添加时间
-     */
-    @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
-	@DateTimeFormat
-    @ColumnInfo(comment="添加时间",type="timestamp")
-    @TableField(value = "insert_time",fill = FieldFill.INSERT)
-
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat
+    @ColumnInfo(comment = "添加时间", type = "timestamp")
+    @TableField(value = "insert_time", fill = FieldFill.INSERT)
     private Date insertTime;
 
-
-    /**
-     * 创建时间
-     */
-    @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
-	@DateTimeFormat
-    @ColumnInfo(comment="创建时间",type="timestamp")
-    @TableField(value = "create_time",fill = FieldFill.INSERT)
-
+    @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat
+    @ColumnInfo(comment = "创建时间", type = "timestamp")
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
 
-
-    /**
-	 * 获取：主键
-	 */
     public Integer getId() {
         return id;
     }
-    /**
-	 * 设置：主键
-	 */
 
     public void setId(Integer id) {
         this.id = id;
     }
-    /**
-	 * 获取：作业标题
-	 */
+
     public String getZuoyeName() {
         return zuoyeName;
     }
-    /**
-	 * 设置：作业标题
-	 */
 
     public void setZuoyeName(String zuoyeName) {
         this.zuoyeName = zuoyeName;
     }
-    /**
-	 * 获取：作业照片
-	 */
+
     public String getZuoyePhoto() {
         return zuoyePhoto;
     }
-    /**
-	 * 设置：作业照片
-	 */
 
     public void setZuoyePhoto(String zuoyePhoto) {
         this.zuoyePhoto = zuoyePhoto;
     }
-    /**
-	 * 获取：作业类型
-	 */
+
     public Integer getZuoyeTypes() {
         return zuoyeTypes;
     }
-    /**
-	 * 设置：作业类型
-	 */
 
     public void setZuoyeTypes(Integer zuoyeTypes) {
         this.zuoyeTypes = zuoyeTypes;
     }
-    /**
-	 * 获取：作业
-	 */
+
     public String getZuoyeFile() {
         return zuoyeFile;
     }
-    /**
-	 * 设置：作业
-	 */
 
     public void setZuoyeFile(String zuoyeFile) {
         this.zuoyeFile = zuoyeFile;
     }
-    /**
-	 * 获取：教师
-	 */
+
     public Integer getJiaoshiId() {
         return jiaoshiId;
     }
-    /**
-	 * 设置：教师
-	 */
 
     public void setJiaoshiId(Integer jiaoshiId) {
         this.jiaoshiId = jiaoshiId;
     }
-    /**
-	 * 获取：课程
-	 */
+
     public Integer getKechengId() {
         return kechengId;
     }
-    /**
-	 * 设置：课程
-	 */
+
     public void setKechengId(Integer kechengId) {
         this.kechengId = kechengId;
     }
-    /**
-	 * 获取：章节
-	 */
+
     public Integer getChapterId() {
         return chapterId;
     }
-    /**
-	 * 设置：章节
-	 */
+
     public void setChapterId(Integer chapterId) {
         this.chapterId = chapterId;
     }
-    /**
-	 * 获取：截止时间
-	 */
+
     public Date getDeadlineTime() {
         return deadlineTime;
     }
-    /**
-	 * 设置：截止时间
-	 */
+
     public void setDeadlineTime(Date deadlineTime) {
         this.deadlineTime = deadlineTime;
     }
-    /**
-	 * 获取：总分
-	 */
+
     public Integer getScoreTotal() {
         return scoreTotal;
     }
-    /**
-	 * 设置：总分
-	 */
+
     public void setScoreTotal(Integer scoreTotal) {
         this.scoreTotal = scoreTotal;
     }
-    /**
-	 * 获取：发布状态
-	 */
+
     public String getPublishStatus() {
         return publishStatus;
     }
-    /**
-	 * 设置：发布状态
-	 */
+
     public void setPublishStatus(String publishStatus) {
         this.publishStatus = publishStatus;
     }
-    /**
-	 * 获取：作业详情
-	 */
+
+    public String getQuestionIds() {
+        return questionIds;
+    }
+
+    public void setQuestionIds(String questionIds) {
+        this.questionIds = questionIds;
+    }
+
     public String getZuoyeContent() {
         return zuoyeContent;
     }
-    /**
-	 * 设置：作业详情
-	 */
 
     public void setZuoyeContent(String zuoyeContent) {
         this.zuoyeContent = zuoyeContent;
     }
-    /**
-	 * 获取：逻辑删除
-	 */
+
     public Integer getZuoyeDelete() {
         return zuoyeDelete;
     }
-    /**
-	 * 设置：逻辑删除
-	 */
 
     public void setZuoyeDelete(Integer zuoyeDelete) {
         this.zuoyeDelete = zuoyeDelete;
     }
-    /**
-	 * 获取：添加时间
-	 */
+
     public Date getInsertTime() {
         return insertTime;
     }
-    /**
-	 * 设置：添加时间
-	 */
 
     public void setInsertTime(Date insertTime) {
         this.insertTime = insertTime;
     }
-    /**
-	 * 获取：创建时间
-	 */
+
     public Date getCreateTime() {
         return createTime;
     }
-    /**
-	 * 设置：创建时间
-	 */
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
@@ -369,21 +235,22 @@ public class ZuoyeEntity<T> implements Serializable {
     @Override
     public String toString() {
         return "Zuoye{" +
-            ", id=" + id +
-            ", zuoyeName=" + zuoyeName +
-            ", zuoyePhoto=" + zuoyePhoto +
+            "id=" + id +
+            ", zuoyeName='" + zuoyeName + '\'' +
+            ", zuoyePhoto='" + zuoyePhoto + '\'' +
             ", zuoyeTypes=" + zuoyeTypes +
-            ", zuoyeFile=" + zuoyeFile +
+            ", zuoyeFile='" + zuoyeFile + '\'' +
             ", jiaoshiId=" + jiaoshiId +
             ", kechengId=" + kechengId +
             ", chapterId=" + chapterId +
-            ", deadlineTime=" + DateUtil.convertString(deadlineTime,"yyyy-MM-dd") +
+            ", deadlineTime=" + DateUtil.convertString(deadlineTime, "yyyy-MM-dd HH:mm:ss") +
             ", scoreTotal=" + scoreTotal +
-            ", publishStatus=" + publishStatus +
-            ", zuoyeContent=" + zuoyeContent +
+            ", publishStatus='" + publishStatus + '\'' +
+            ", questionIds='" + questionIds + '\'' +
+            ", zuoyeContent='" + zuoyeContent + '\'' +
             ", zuoyeDelete=" + zuoyeDelete +
-            ", insertTime=" + DateUtil.convertString(insertTime,"yyyy-MM-dd") +
-            ", createTime=" + DateUtil.convertString(createTime,"yyyy-MM-dd") +
-        "}";
+            ", insertTime=" + DateUtil.convertString(insertTime, "yyyy-MM-dd HH:mm:ss") +
+            ", createTime=" + DateUtil.convertString(createTime, "yyyy-MM-dd HH:mm:ss") +
+            '}';
     }
 }

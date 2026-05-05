@@ -206,6 +206,12 @@ export async function fetchHomeworkDetail(id: number | string) {
   return unwrap<HomeworkItem>(data);
 }
 
+export async function fetchHomeworkQuestions(id: number | string) {
+  const http = useHttp();
+  const { data } = await http.get(`/zuoye/questionList/${id}`);
+  return unwrap<ExamQuestionItem[]>(data);
+}
+
 export async function fetchForumDetail(id: number | string) {
   const http = useHttp();
   const { data } = await http.get(`/forum/detail/${id}`);
@@ -249,9 +255,29 @@ export async function createHomeworkSubmission(payload: Record<string, unknown>)
   return data as ApiResponse<unknown>;
 }
 
+export async function startHomework(payload: Record<string, unknown>) {
+  const http = useHttp();
+  const { data } = await http.post("/zuoyeSubmit/start", payload);
+  return data as ApiResponse<HomeworkSubmissionItem>;
+}
+
+export async function submitHomework(payload: Record<string, unknown>) {
+  const http = useHttp();
+  const { data } = await http.post("/zuoyeSubmit/submit", payload);
+  return data as ApiResponse<HomeworkSubmissionItem>;
+}
+
 export async function fetchHomeworkSubmissions(params?: Record<string, unknown>) {
   const http = useHttp();
   const { data } = await http.get("/zuoyeSubmit/page", {
+    params: { page: 1, limit: 10, sort: "id", order: "desc", ...params }
+  });
+  return unwrap<PagePayload<HomeworkSubmissionItem>>(data);
+}
+
+export async function fetchMyHomeworkSubmissions(params?: Record<string, unknown>) {
+  const http = useHttp();
+  const { data } = await http.get("/zuoyeSubmit/myPage", {
     params: { page: 1, limit: 10, sort: "id", order: "desc", ...params }
   });
   return unwrap<PagePayload<HomeworkSubmissionItem>>(data);

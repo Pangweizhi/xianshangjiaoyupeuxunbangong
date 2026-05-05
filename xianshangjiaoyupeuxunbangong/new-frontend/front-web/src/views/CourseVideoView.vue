@@ -1,7 +1,5 @@
 <template>
   <section class="video-course-page section section--tight">
-    <RouterLink class="text-link" :to="`/courses/${route.params.courseId}`">返回课程详情</RouterLink>
-
     <div v-if="course && resource" class="video-course-layout">
       <article class="video-stage">
         <div class="video-player-shell">
@@ -35,53 +33,55 @@
       </article>
 
       <aside class="video-sidebar">
+        <div class="video-sidebar__topbar">
+          <RouterLink class="video-back-button" :to="`/courses/${route.params.courseId}`">返回课程详情</RouterLink>
+        </div>
+
         <section class="sidebar-card sidebar-card--summary">
           <p class="eyebrow">视频播放</p>
-          <h1>{{ resource.resourceName }}</h1>
-          <p class="sidebar-card__subtitle">{{ course.kechengName }}</p>
-          <div class="stack-inline">
+          <div class="summary-inline">
+            <h1>{{ resource.resourceName }}</h1>
+            <p class="sidebar-card__subtitle">{{ course.kechengName }}</p>
             <span class="tag">{{ resource.resourceType || "视频" }}</span>
-            <span class="meta">{{ chapterNameMap[resource.chapterId] || "章节" }}</span>
+            <span class="meta meta--pill">{{ chapterNameMap[resource.chapterId] || "章节" }}</span>
           </div>
-          <div class="status-list status-list--compact">
-            <span>当前进度：{{ displayProgressText }}</span>
-            <span>章节：{{ chapterNameMap[resource.chapterId] || "Uncategorized" }}</span>
-            <span>课时：{{ resource.durationSeconds || 0 }} 秒</span>
+          <div class="info-grid info-grid--compact">
+            <div class="info-grid__item">
+              <span class="info-grid__label">当前进度</span>
+              <strong>{{ displayProgressText }}</strong>
+            </div>
+            <div class="info-grid__item">
+              <span class="info-grid__label">视频时长</span>
+              <strong>{{ resource.durationSeconds || 0 }} 秒</strong>
+            </div>
           </div>
         </section>
 
         <section class="sidebar-card">
           <p class="eyebrow">课程信息</p>
-          <h2>{{ course.kechengName }}</h2>
-          <p>{{ stripHtml(course.kechengContent) }}</p>
-          <div class="status-list">
-            <span>学分 {{ course.creditScore ?? 0 }}</span>
-            <span>教师 {{ course.jiaoshiName || "Teacher pending" }}</span>
+          <div class="course-inline">
+            <h2>{{ course.kechengName }}</h2>
+            <p class="course-inline__summary">{{ stripHtml(course.kechengContent) }}</p>
+          </div>
+          <div class="info-grid">
+            <div class="info-grid__item">
+              <span class="info-grid__label">课程学分</span>
+              <strong>{{ course.creditScore ?? 0 }}</strong>
+            </div>
+            <div class="info-grid__item">
+              <span class="info-grid__label">授课教师</span>
+              <strong>{{ course.jiaoshiName || "待分配" }}</strong>
+            </div>
           </div>
         </section>
 
-        <section class="sidebar-card">
+        <section class="sidebar-card sidebar-card--notes">
           <p class="eyebrow">学习说明</p>
           <ul class="info-list">
             <li>视频播放过程中会自动记录学习进度。</li>
             <li>播放完成后再次进入会默认暂停并提示已完成。</li>
             <li>压缩包资源仅支持下载，不影响学习进度。</li>
           </ul>
-        </section>
-
-        <section class="sidebar-card">
-          <p class="eyebrow">相关资源</p>
-          <div class="mini-list mini-list--dense">
-            <article v-for="item in relatedResources" :key="item.id" class="mini-list__row">
-              <div>
-                <strong>{{ item.resourceName }}</strong>
-                <p>{{ chapterNameMap[item.chapterId] || "章节" }}</p>
-              </div>
-              <button class="ghost-button ghost-button--compact" @click="jumpToResource(item.id)">
-                {{ item.id === resource.id ? "当前播放" : isVideoResource(item) ? "切换播放" : "下载" }}
-              </button>
-            </article>
-          </div>
         </section>
       </aside>
     </div>
@@ -449,20 +449,20 @@ loadPage();
 <style scoped>
 .video-course-page {
   display: grid;
-  gap: 18px;
+  gap: 0;
 }
 
 .video-course-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.7fr) minmax(340px, 0.8fr);
-  gap: 18px;
-  align-items: stretch;
+  grid-template-columns: minmax(0, 1.62fr) minmax(320px, 0.82fr);
+  gap: 16px;
+  align-items: start;
 }
 
 .video-stage,
 .video-sidebar {
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 
 .video-stage {
@@ -477,14 +477,14 @@ loadPage();
   border-radius: 28px;
   overflow: hidden;
   background: #0c1117;
-  min-height: 420px;
-  height: 100%;
+  min-height: clamp(500px, 60vh, 600px);
+  height: clamp(500px, 60vh, 600px);
 }
 
 .video-player {
   width: 100%;
   height: 100%;
-  min-height: 420px;
+  min-height: clamp(500px, 60vh, 600px);
   object-fit: contain;
   background: #000;
 }
@@ -511,69 +511,190 @@ loadPage();
 
 .video-sidebar {
   align-self: stretch;
-  height: 100%;
+  height: clamp(500px, 60vh, 600px);
   grid-template-rows: auto auto auto minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.video-sidebar__topbar {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 36px;
+}
+
+.video-back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--primary-deep);
+  font-size: 0.88rem;
+  font-weight: 700;
+  box-shadow: var(--shadow-soft);
 }
 
 .sidebar-card {
-  padding: 18px;
+  padding: 13px 14px;
   border-radius: 24px;
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 18px 50px rgba(24, 27, 34, 0.1);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 251, 246, 0.96));
+  border: 1px solid rgba(255, 255, 255, 0.88);
+  box-shadow: 0 16px 34px rgba(24, 27, 34, 0.07);
 }
 
 .sidebar-card--summary {
   display: grid;
-  gap: 8px;
+  gap: 6px;
+}
+
+.summary-inline,
+.course-inline {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 10px;
 }
 
 .sidebar-card__subtitle {
   margin: 0;
   color: var(--muted-strong);
+  font-size: 0.82rem;
+  line-height: 1.3;
 }
 
 .sidebar-card h1,
 .sidebar-card h2 {
-  margin-bottom: 8px;
+  margin: 0;
+  line-height: 1.18;
+}
+
+.sidebar-card h1 {
+  font-size: 1rem;
+}
+
+.sidebar-card h2 {
+  font-size: 0.96rem;
 }
 
 .sidebar-card p {
   margin: 0;
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+
+.course-inline__summary {
+  flex: 1 1 180px;
+  min-width: 0;
+  color: var(--muted-strong);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .status-list {
-  gap: 8px;
+  gap: 6px;
+  font-size: 0.88rem;
 }
 
 .status-list--compact {
-  gap: 6px;
+  gap: 4px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 10px;
+  margin-top: 8px;
+}
+
+.info-grid--compact {
+  margin-top: 8px;
+}
+
+.info-grid__item {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 8px 10px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255, 252, 248, 0.96), rgba(255, 247, 240, 0.9));
+  border: 1px solid rgba(15, 23, 42, 0.05);
+}
+
+.info-grid__label {
+  color: var(--muted);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.info-grid__item strong {
+  min-width: 0;
+  font-size: 0.84rem;
+  line-height: 1.35;
+  color: var(--text);
+  word-break: break-word;
 }
 
 .info-list {
   margin: 0;
   padding-left: 18px;
   color: var(--muted);
+  font-size: 0.94rem;
+  line-height: 1.72;
 }
 
 .info-list li + li {
-  margin-top: 6px;
+  margin-top: 10px;
 }
 
 .mini-list--dense {
-  gap: 8px;
+  gap: 6px;
 }
 
 .mini-list__row p {
-  margin-top: 4px;
+  margin-top: 3px;
+  font-size: 0.84rem;
 }
 
-.video-sidebar .sidebar-card:last-child {
+.video-sidebar .tag,
+.video-sidebar .ghost-button,
+.video-sidebar .primary-button {
+  font-size: 0.84rem;
+}
+
+.video-sidebar .tag,
+.meta--pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+}
+
+.meta--pill {
+  background: rgba(26, 78, 216, 0.08);
+  color: var(--accent);
+  letter-spacing: normal;
+  text-transform: none;
+  font-size: 0.78rem;
+}
+
+.sidebar-card--notes {
+  min-height: 0;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
+  height: 100%;
+  align-content: stretch;
 }
 
-.video-sidebar .sidebar-card:last-child .mini-list {
-  align-content: start;
+.sidebar-card--notes .info-list {
+  height: 100%;
+  display: grid;
+  align-content: space-between;
 }
 
 @media (max-width: 1024px) {
@@ -581,9 +702,20 @@ loadPage();
     grid-template-columns: 1fr;
   }
 
+  .video-player-shell,
+  .video-player {
+    min-height: 320px;
+    height: 320px;
+  }
+
   .video-sidebar {
     height: auto;
     grid-template-rows: none;
+    overflow: visible;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>

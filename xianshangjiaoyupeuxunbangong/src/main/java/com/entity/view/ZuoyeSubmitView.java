@@ -13,19 +13,19 @@ import java.io.Serializable;
 public class ZuoyeSubmitView extends ZuoyeSubmitEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @ColumnInfo(comment="作业标题",type="varchar(200)")
+    @ColumnInfo(comment = "作业标题", type = "varchar(200)")
     private String zuoyeName;
 
-    @ColumnInfo(comment="学生姓名",type="varchar(200)")
+    @ColumnInfo(comment = "学生姓名", type = "varchar(200)")
     private String yonghuName;
 
-    @ColumnInfo(comment="学生头像",type="varchar(200)")
+    @ColumnInfo(comment = "学生头像", type = "varchar(200)")
     private String yonghuPhoto;
 
-    @ColumnInfo(comment="教师姓名",type="varchar(200)")
+    @ColumnInfo(comment = "教师姓名", type = "varchar(200)")
     private String jiaoshiName;
 
-    @ColumnInfo(comment="教师账号",type="varchar(200)")
+    @ColumnInfo(comment = "教师账号", type = "varchar(200)")
     private String jiaoshiUuidNumber;
 
     public String getZuoyeName() {

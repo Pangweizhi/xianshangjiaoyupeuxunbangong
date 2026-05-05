@@ -197,6 +197,7 @@ export interface HomeworkItem {
   deadlineTime?: string;
   scoreTotal?: number;
   publishStatus?: string;
+  questionIds?: string;
   jiaoshiName?: string;
   kechengName?: string;
   chapterName?: string;
@@ -230,6 +231,9 @@ export interface HomeworkSubmissionItem {
   submitFile?: string;
   submitContent?: string;
   submitStatus?: string;
+  answerSnapshot?: string;
+  questionSnapshot?: string;
+  autoScore?: number | null;
   submitScore?: number | null;
   submitRemark?: string;
   submitDelete?: number;

@@ -1,94 +1,114 @@
 <template>
   <section class="section section--tight">
-    <RouterLink class="text-link" to="/exams">返回考试列表</RouterLink>
-    <div v-if="detail" class="detail-shell">
-      <article class="detail-card">
-        <div class="detail-card__body">
-          <div class="stack-inline">
-            <span class="tag">{{ detail.kechengName || "课程考试" }}</span>
-            <span class="meta">{{ detail.chapterName || "不限章节" }}</span>
-            <span class="meta">{{ latestRecord?.recordStatus || "未开始" }}</span>
+    <RouterLink class="paper-back" to="/exams">返回考试列表</RouterLink>
+    <div v-if="detail" class="paper-layout">
+      <section class="paper-main">
+        <header class="paper-main__header">
+          <div>
+            <p class="paper-eyebrow">{{ detail.kechengName || "课程考试" }}</p>
+            <h1>{{ detail.examName }}</h1>
+            <p class="paper-summary">{{ detail.examSummary || "请在规定时间内完成本次考试并提交试卷。" }}</p>
           </div>
-          <h1>{{ detail.examName }}</h1>
-          <p>{{ detail.examSummary || "暂无考试说明" }}</p>
-          <div class="status-list">
+          <div class="paper-main__meta">
+            <span>{{ questions.length }} 题</span>
+            <span>{{ detail.totalScore ?? 0 }} 分</span>
+            <span>{{ detail.passScore ?? 60 }} 分及格</span>
+          </div>
+        </header>
+
+        <div class="question-list">
+          <article v-for="(question, index) in questions" :key="question.id" class="question-card">
+            <div class="question-card__header">
+              <strong>{{ index + 1 }}. {{ question.questionTitle }}</strong>
+              <span>{{ question.questionType || "题目" }} / {{ question.questionScore ?? 0 }} 分</span>
+            </div>
+
+            <div v-if="hasChoices(question)" class="choice-group">
+              <label v-for="option in parsedOptions(question)" :key="option.value" class="choice-item">
+                <input
+                  v-if="multiChoiceQuestion(question)"
+                  :checked="selectedMulti(question.id, option.value)"
+                  :disabled="!canEditAnswers"
+                  type="checkbox"
+                  @change="handleMultiChange(question.id, option.value, $event)"
+                />
+                <input
+                  v-else
+                  v-model="answers[String(question.id)]"
+                  :disabled="!canEditAnswers"
+                  type="radio"
+                  :name="`q-${question.id}`"
+                  :value="option.value"
+                />
+                <span>{{ option.value }}. {{ option.label }}</span>
+              </label>
+            </div>
+
+            <textarea
+              v-else
+              v-model="answers[String(question.id)]"
+              class="field field--textarea answer-textarea"
+              :disabled="!canEditAnswers"
+              placeholder="请输入你的答案"
+            ></textarea>
+          </article>
+        </div>
+      </section>
+
+      <aside class="paper-side">
+        <article class="side-card side-card--accent">
+          <p class="paper-eyebrow">考试信息</p>
+          <h2>{{ detail.chapterName || "不限章节" }}</h2>
+          <div class="side-stats">
             <span>开始时间：{{ detail.startTime || "待定" }}</span>
             <span>结束时间：{{ detail.endTime || "待定" }}</span>
             <span>考试时长：{{ detail.durationMinutes ?? 0 }} 分钟</span>
-            <span>总分：{{ detail.totalScore ?? 0 }}</span>
-            <span>及格线：{{ detail.passScore ?? 60 }}</span>
-            <span>重考：{{ detail.allowRetake === 1 ? "允许" : "不允许" }}</span>
-            <span>次数：最多 {{ detail.maxAttemptCount ?? 1 }} 次</span>
-            <span>恢复：{{ detail.allowResume === 1 ? "允许" : "不允许" }}</span>
+            <span>重考次数：最多 {{ detail.maxAttemptCount ?? 1 }} 次</span>
+            <span>当前状态：{{ latestRecord?.recordStatus || "未开始" }}</span>
             <span v-if="recordId && remainingText">剩余时间：{{ remainingText }}</span>
           </div>
-          <div class="stack-inline">
+        </article>
+
+        <article class="side-card">
+          <p class="paper-eyebrow">作答进度</p>
+          <div class="side-progress">
+            <div>
+              <strong>{{ answeredCount }}</strong>
+              <span>已作答</span>
+            </div>
+            <div>
+              <strong>{{ questions.length - answeredCount }}</strong>
+              <span>未作答</span>
+            </div>
+          </div>
+          <p v-if="recordSummary" class="field-help">{{ recordSummary }}</p>
+          <p v-if="message" :class="messageType === 'error' ? 'field-error' : 'field-help'">{{ message }}</p>
+        </article>
+
+        <article class="side-card">
+          <p class="paper-eyebrow">考试操作</p>
+          <div class="side-actions">
             <button
               v-if="!recordId || latestRecord?.recordStatus !== 'started'"
-              class="primary-button"
+              class="primary-button primary-button--full"
               :disabled="starting || submitting"
               @click="startNewAttempt"
             >
-              {{ starting ? "准备中..." : latestRecord ? "重新开始考试" : "开始考试" }}
+              {{ starting ? "正在准备..." : latestRecord ? "重新开始考试" : "开始考试" }}
             </button>
             <button
               v-else-if="detail.allowResume === 1"
-              class="ghost-button"
+              class="ghost-button ghost-button--full"
               :disabled="starting || submitting"
               @click="restoreCurrentAttempt"
             >
               恢复上次作答
             </button>
+            <button class="primary-button primary-button--full" :disabled="!recordId || !canSubmit" @click="handleSubmitClick">
+              {{ submitting ? "提交中..." : "提交试卷" }}
+            </button>
           </div>
-          <p v-if="recordSummary" class="field-help">{{ recordSummary }}</p>
-          <p v-if="message" :class="messageType === 'error' ? 'field-error' : 'field-help'">{{ message }}</p>
-        </div>
-      </article>
-
-      <aside class="action-panel">
-        <p class="eyebrow">在线答题</p>
-        <h2>{{ detail.allowResume === 1 ? "支持刷新后恢复作答" : "退出后不能恢复本次作答" }}</h2>
-        <p class="hero__lead">
-          系统会按考试规则控制重考次数、是否允许恢复，以及超时自动提交。
-        </p>
-        <div class="mini-list">
-          <article v-for="question in questions" :key="question.id" class="mini-list__row">
-            <div>
-              <strong>{{ question.sortNo }}. {{ question.questionTitle }}</strong>
-              <p class="meta">{{ question.questionType }} / {{ question.questionScore }} 分</p>
-              <div v-if="hasChoices(question)" class="mini-list">
-                <label v-for="option in parsedOptions(question)" :key="option.value" class="stack-inline">
-                  <input
-                    v-if="multiChoiceQuestion(question)"
-                    :checked="selectedMulti(question.id, option.value)"
-                    :disabled="!canEditAnswers"
-                    type="checkbox"
-                    @change="handleMultiChange(question.id, option.value, $event)"
-                  />
-                  <input
-                    v-else
-                    v-model="answers[String(question.id)]"
-                    :disabled="!canEditAnswers"
-                    type="radio"
-                    :name="`q-${question.id}`"
-                    :value="option.value"
-                  />
-                  <span>{{ option.value }}. {{ option.label }}</span>
-                </label>
-              </div>
-              <textarea
-                v-else
-                v-model="answers[String(question.id)]"
-                class="field field--textarea"
-                :disabled="!canEditAnswers"
-                placeholder="请输入答案"
-              ></textarea>
-            </div>
-          </article>
-        </div>
-        <button class="primary-button primary-button--full" :disabled="!recordId || !canSubmit" @click="handleSubmitClick">
-          {{ submitting ? "提交中..." : "提交试卷" }}
-        </button>
+        </article>
       </aside>
     </div>
   </section>
@@ -111,8 +131,15 @@ const message = ref("");
 const messageType = ref<"success" | "error">("success");
 const answers = reactive<Record<string, string>>({});
 const remainingSeconds = ref<number | null>(null);
+const restoredFromHistory = ref(false);
 let timer: ReturnType<typeof setInterval> | null = null;
 
+const answeredCount = computed(() =>
+  questions.value.filter((question) => {
+    const value = answers[String(question.id)];
+    return Boolean(value && value.trim());
+  }).length
+);
 const canEditAnswers = computed(
   () => latestRecord.value?.recordStatus === "started" && (detail.value?.allowResume === 1 || !hasRecoveredStartedRecord.value)
 );
@@ -127,20 +154,18 @@ const remainingText = computed(() => {
   const seconds = safe % 60;
   return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 });
-const restoredFromHistory = ref(false);
 const recordSummary = computed(() => {
   if (!latestRecord.value) return "";
   if (latestRecord.value.recordStatus === "started") {
-    if (detail.value?.allowResume === 1) {
-      return `已进入第 ${latestRecord.value.attemptNo || 1} 次作答，可继续完成并提交。`;
-    }
-    return `当前考试不允许退出后恢复。若你已离开作答页，本次记录不能继续恢复。`;
+    return detail.value?.allowResume === 1
+      ? `已进入第 ${latestRecord.value.attemptNo || 1} 次作答，可继续完成并提交。`
+      : "当前考试退出后不可恢复，请一次性完成作答。";
   }
   if (latestRecord.value.recordStatus === "pending_check") {
-    return "最近一次答卷已提交，正在等待教师阅卷。";
+    return "最近一次试卷已提交，正在等待教师阅卷。";
   }
   if (latestRecord.value.recordStatus === "checked") {
-    return `最近一次成绩 ${latestRecord.value.finalScore ?? 0} 分，结果：${latestRecord.value.passStatus || "pending"}。`;
+    return `最近一次成绩 ${latestRecord.value.finalScore ?? 0} 分，结果为 ${latestRecord.value.passStatus || "pending"}。`;
   }
   return "";
 });
@@ -180,16 +205,6 @@ function multiChoiceQuestion(question: ExamQuestionItem) {
 function judgementQuestion(question: ExamQuestionItem) {
   const type = questionTypeText(question);
   return type === "判断题" || type === "判断";
-}
-
-function fillQuestion(question: ExamQuestionItem) {
-  const type = questionTypeText(question);
-  return type === "填空题" || type === "填空";
-}
-
-function subjectiveQuestion(question: ExamQuestionItem) {
-  const type = questionTypeText(question);
-  return type === "简答题" || type === "简答" || type === "问答";
 }
 
 function hasChoices(question: ExamQuestionItem) {
@@ -313,7 +328,7 @@ function restoreCurrentAttempt() {
   if (!latestRecord.value || detail.value?.allowResume !== 1) return;
   applyRecord(latestRecord.value, true);
   messageType.value = "success";
-  message.value = "已恢复最近一次未提交的答卷。";
+  message.value = "已恢复最近一次未提交试卷。";
 }
 
 async function submitCurrentExam(byTimeout = false) {
@@ -358,3 +373,175 @@ onBeforeUnmount(() => {
   stopTimer();
 });
 </script>
+
+<style scoped>
+.paper-back {
+  display: inline-flex;
+  margin-bottom: 18px;
+  padding: 10px 16px;
+  border: 1px solid rgba(241, 159, 84, 0.38);
+  border-radius: 999px;
+  color: #b86724;
+  background: rgba(255, 251, 245, 0.92);
+}
+
+.paper-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.75fr) minmax(300px, 0.9fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.paper-main,
+.side-card {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(226, 213, 199, 0.78);
+  box-shadow: 0 22px 50px rgba(24, 32, 48, 0.08);
+}
+
+.paper-main {
+  border-radius: 28px;
+  padding: 28px;
+}
+
+.paper-main__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.paper-eyebrow {
+  margin: 0 0 8px;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #c36e29;
+}
+
+.paper-main h1,
+.paper-side h2 {
+  margin: 0;
+  color: #1f2937;
+}
+
+.paper-summary {
+  margin: 12px 0 0;
+  color: #5b6472;
+  line-height: 1.75;
+}
+
+.paper-main__meta {
+  display: grid;
+  gap: 10px;
+  min-width: 140px;
+}
+
+.paper-main__meta span,
+.side-stats span {
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: #fff7ef;
+  color: #874913;
+  font-size: 13px;
+}
+
+.question-list {
+  display: grid;
+  gap: 16px;
+}
+
+.question-card {
+  padding: 18px;
+  border-radius: 22px;
+  background: #fffdfa;
+  border: 1px solid rgba(231, 223, 213, 0.85);
+}
+
+.question-card__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+  color: #1f2937;
+}
+
+.choice-group {
+  display: grid;
+  gap: 10px;
+}
+
+.choice-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: #f9fbff;
+  color: #334155;
+}
+
+.answer-textarea {
+  min-height: 120px;
+}
+
+.paper-side {
+  display: grid;
+  gap: 16px;
+  position: sticky;
+  top: 24px;
+}
+
+.side-card {
+  border-radius: 24px;
+  padding: 20px;
+}
+
+.side-card--accent {
+  background: linear-gradient(180deg, #fffaf2 0%, #ffffff 100%);
+}
+
+.side-stats,
+.side-actions {
+  display: grid;
+  gap: 10px;
+}
+
+.side-progress {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.side-progress div {
+  padding: 16px;
+  border-radius: 18px;
+  background: #f8fafc;
+}
+
+.side-progress strong {
+  display: block;
+  font-size: 24px;
+  color: #111827;
+}
+
+.ghost-button--full,
+.primary-button--full {
+  width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .paper-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .paper-side {
+    position: static;
+  }
+
+  .paper-main__header,
+  .question-card__header {
+    flex-direction: column;
+  }
+}
+</style>

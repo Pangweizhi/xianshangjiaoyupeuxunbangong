@@ -1,212 +1,127 @@
 package com.entity.view;
 
-import org.apache.tools.ant.util.DateUtils;
 import com.annotation.ColumnInfo;
-import com.entity.ZuoyeEntity;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.entity.ZuoyeEntity;
 import org.apache.commons.beanutils.BeanUtils;
-import java.lang.reflect.InvocationTargetException;
-import org.springframework.format.annotation.DateTimeFormat;
-import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.io.Serializable;
-import java.util.Date;
-import com.utils.DateUtil;
+import java.lang.reflect.InvocationTargetException;
 
 /**
-* 作业
-* 后端返回视图实体辅助类
-* （通常后端关联的表或者自定义的字段需要返回使用）
-*/
+ * 作业视图
+ */
 @TableName("zuoye")
 public class ZuoyeView extends ZuoyeEntity implements Serializable {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	//当前表
-	/**
-	* 作业类型的值
-	*/
-	@ColumnInfo(comment="作业类型的字典表值",type="varchar(200)")
-	private String zuoyeValue;
-	@ColumnInfo(comment="课程标题",type="varchar(200)")
-	private String kechengName;
-	@ColumnInfo(comment="章节标题",type="varchar(200)")
-	private String chapterName;
+    @ColumnInfo(comment = "作业类型值", type = "varchar(200)")
+    private String zuoyeValue;
 
-	//级联表 教师
-		/**
-		* 教师姓名
-		*/
+    @ColumnInfo(comment = "课程标题", type = "varchar(200)")
+    private String kechengName;
 
-		@ColumnInfo(comment="教师姓名",type="varchar(200)")
-		private String jiaoshiName;
-		/**
-		* 教师头像
-		*/
+    @ColumnInfo(comment = "章节标题", type = "varchar(200)")
+    private String chapterName;
 
-		@ColumnInfo(comment="教师头像",type="varchar(200)")
-		private String jiaoshiPhoto;
-		/**
-		* 身份证号
-		*/
+    @ColumnInfo(comment = "教师姓名", type = "varchar(200)")
+    private String jiaoshiName;
 
-		@ColumnInfo(comment="身份证号",type="varchar(200)")
-		private String jiaoshiIdNumber;
-		/**
-		* 联系方式
-		*/
+    @ColumnInfo(comment = "教师头像", type = "varchar(200)")
+    private String jiaoshiPhoto;
 
-		@ColumnInfo(comment="联系方式",type="varchar(200)")
-		private String jiaoshiPhone;
-		/**
-		* 电子邮箱
-		*/
+    @ColumnInfo(comment = "教师身份证号", type = "varchar(200)")
+    private String jiaoshiIdNumber;
 
-		@ColumnInfo(comment="电子邮箱",type="varchar(200)")
-		private String jiaoshiEmail;
-		/**
-		* 逻辑删除
-		*/
+    @ColumnInfo(comment = "教师电话", type = "varchar(200)")
+    private String jiaoshiPhone;
 
-		@ColumnInfo(comment="逻辑删除",type="int(11)")
-		private Integer jiaoshiDelete;
+    @ColumnInfo(comment = "教师邮箱", type = "varchar(200)")
+    private String jiaoshiEmail;
 
+    @ColumnInfo(comment = "教师删除状态", type = "int(11)")
+    private Integer jiaoshiDelete;
 
+    public ZuoyeView() {
+    }
 
-	public ZuoyeView() {
+    public ZuoyeView(ZuoyeEntity entity) {
+        try {
+            BeanUtils.copyProperties(this, entity);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
 
-	}
+    public String getZuoyeValue() {
+        return zuoyeValue;
+    }
 
-	public ZuoyeView(ZuoyeEntity zuoyeEntity) {
-		try {
-			BeanUtils.copyProperties(this, zuoyeEntity);
-		} catch (IllegalAccessException | InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+    public void setZuoyeValue(String zuoyeValue) {
+        this.zuoyeValue = zuoyeValue;
+    }
 
+    public String getKechengName() {
+        return kechengName;
+    }
 
+    public void setKechengName(String kechengName) {
+        this.kechengName = kechengName;
+    }
 
-	//当前表的
-	/**
-	* 获取： 作业类型的值
-	*/
-	public String getZuoyeValue() {
-		return zuoyeValue;
-	}
-	/**
-	* 设置： 作业类型的值
-	*/
-	public void setZuoyeValue(String zuoyeValue) {
-		this.zuoyeValue = zuoyeValue;
-	}
-	public String getKechengName() {
-		return kechengName;
-	}
-	public void setKechengName(String kechengName) {
-		this.kechengName = kechengName;
-	}
-	public String getChapterName() {
-		return chapterName;
-	}
-	public void setChapterName(String chapterName) {
-		this.chapterName = chapterName;
-	}
+    public String getChapterName() {
+        return chapterName;
+    }
 
+    public void setChapterName(String chapterName) {
+        this.chapterName = chapterName;
+    }
 
-	//级联表的get和set 教师
+    public String getJiaoshiName() {
+        return jiaoshiName;
+    }
 
-		/**
-		* 获取： 教师姓名
-		*/
-		public String getJiaoshiName() {
-			return jiaoshiName;
-		}
-		/**
-		* 设置： 教师姓名
-		*/
-		public void setJiaoshiName(String jiaoshiName) {
-			this.jiaoshiName = jiaoshiName;
-		}
+    public void setJiaoshiName(String jiaoshiName) {
+        this.jiaoshiName = jiaoshiName;
+    }
 
-		/**
-		* 获取： 教师头像
-		*/
-		public String getJiaoshiPhoto() {
-			return jiaoshiPhoto;
-		}
-		/**
-		* 设置： 教师头像
-		*/
-		public void setJiaoshiPhoto(String jiaoshiPhoto) {
-			this.jiaoshiPhoto = jiaoshiPhoto;
-		}
+    public String getJiaoshiPhoto() {
+        return jiaoshiPhoto;
+    }
 
-		/**
-		* 获取： 身份证号
-		*/
-		public String getJiaoshiIdNumber() {
-			return jiaoshiIdNumber;
-		}
-		/**
-		* 设置： 身份证号
-		*/
-		public void setJiaoshiIdNumber(String jiaoshiIdNumber) {
-			this.jiaoshiIdNumber = jiaoshiIdNumber;
-		}
+    public void setJiaoshiPhoto(String jiaoshiPhoto) {
+        this.jiaoshiPhoto = jiaoshiPhoto;
+    }
 
-		/**
-		* 获取： 联系方式
-		*/
-		public String getJiaoshiPhone() {
-			return jiaoshiPhone;
-		}
-		/**
-		* 设置： 联系方式
-		*/
-		public void setJiaoshiPhone(String jiaoshiPhone) {
-			this.jiaoshiPhone = jiaoshiPhone;
-		}
+    public String getJiaoshiIdNumber() {
+        return jiaoshiIdNumber;
+    }
 
-		/**
-		* 获取： 电子邮箱
-		*/
-		public String getJiaoshiEmail() {
-			return jiaoshiEmail;
-		}
-		/**
-		* 设置： 电子邮箱
-		*/
-		public void setJiaoshiEmail(String jiaoshiEmail) {
-			this.jiaoshiEmail = jiaoshiEmail;
-		}
+    public void setJiaoshiIdNumber(String jiaoshiIdNumber) {
+        this.jiaoshiIdNumber = jiaoshiIdNumber;
+    }
 
-		/**
-		* 获取： 逻辑删除
-		*/
-		public Integer getJiaoshiDelete() {
-			return jiaoshiDelete;
-		}
-		/**
-		* 设置： 逻辑删除
-		*/
-		public void setJiaoshiDelete(Integer jiaoshiDelete) {
-			this.jiaoshiDelete = jiaoshiDelete;
-		}
+    public String getJiaoshiPhone() {
+        return jiaoshiPhone;
+    }
 
+    public void setJiaoshiPhone(String jiaoshiPhone) {
+        this.jiaoshiPhone = jiaoshiPhone;
+    }
 
-	@Override
-	public String toString() {
-		return "ZuoyeView{" +
-			", zuoyeValue=" + zuoyeValue +
-			", kechengName=" + kechengName +
-			", chapterName=" + chapterName +
-			", jiaoshiName=" + jiaoshiName +
-			", jiaoshiPhoto=" + jiaoshiPhoto +
-			", jiaoshiIdNumber=" + jiaoshiIdNumber +
-			", jiaoshiPhone=" + jiaoshiPhone +
-			", jiaoshiEmail=" + jiaoshiEmail +
-			", jiaoshiDelete=" + jiaoshiDelete +
-			"} " + super.toString();
-	}
+    public String getJiaoshiEmail() {
+        return jiaoshiEmail;
+    }
+
+    public void setJiaoshiEmail(String jiaoshiEmail) {
+        this.jiaoshiEmail = jiaoshiEmail;
+    }
+
+    public Integer getJiaoshiDelete() {
+        return jiaoshiDelete;
+    }
+
+    public void setJiaoshiDelete(Integer jiaoshiDelete) {
+        this.jiaoshiDelete = jiaoshiDelete;
+    }
 }
