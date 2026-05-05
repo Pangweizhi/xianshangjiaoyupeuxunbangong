@@ -89,7 +89,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
 import {
   DEFAULT_BASE_URL,
@@ -244,6 +244,7 @@ function buildMediaCandidates(path?: string) {
 }
 
 async function loadPage() {
+  window.scrollTo({ top: 0, behavior: "auto" });
   sourceIndex.value = 0;
   overlayDismissed.value = false;
   pendingSeekSeconds.value = 0;
@@ -430,6 +431,10 @@ onBeforeUnmount(() => {
   void ensureSaved(completedMode.value);
 });
 
+onMounted(() => {
+  window.scrollTo({ top: 0, behavior: "auto" });
+});
+
 watch(
   () => [route.params.courseId, route.params.resourceId],
   async () => {
@@ -451,13 +456,13 @@ loadPage();
   display: grid;
   grid-template-columns: minmax(0, 1.7fr) minmax(340px, 0.8fr);
   gap: 18px;
-  align-items: start;
+  align-items: stretch;
 }
 
 .video-stage,
 .video-sidebar {
   display: grid;
-  gap: 16px;
+  gap: 12px;
 }
 
 .video-stage {
@@ -473,6 +478,7 @@ loadPage();
   overflow: hidden;
   background: #0c1117;
   min-height: 420px;
+  height: 100%;
 }
 
 .video-player {
@@ -504,13 +510,13 @@ loadPage();
 }
 
 .video-sidebar {
-  position: sticky;
-  top: 18px;
-  align-self: start;
+  align-self: stretch;
+  height: 100%;
+  grid-template-rows: auto auto auto minmax(0, 1fr);
 }
 
 .sidebar-card {
-  padding: 22px;
+  padding: 18px;
   border-radius: 24px;
   background: rgba(255, 255, 255, 0.92);
   box-shadow: 0 18px 50px rgba(24, 27, 34, 0.1);
@@ -518,7 +524,7 @@ loadPage();
 
 .sidebar-card--summary {
   display: grid;
-  gap: 12px;
+  gap: 8px;
 }
 
 .sidebar-card__subtitle {
@@ -526,8 +532,21 @@ loadPage();
   color: var(--muted-strong);
 }
 
-.status-list--compact {
+.sidebar-card h1,
+.sidebar-card h2 {
+  margin-bottom: 8px;
+}
+
+.sidebar-card p {
+  margin: 0;
+}
+
+.status-list {
   gap: 8px;
+}
+
+.status-list--compact {
+  gap: 6px;
 }
 
 .info-list {
@@ -536,8 +555,25 @@ loadPage();
   color: var(--muted);
 }
 
+.info-list li + li {
+  margin-top: 6px;
+}
+
 .mini-list--dense {
-  gap: 10px;
+  gap: 8px;
+}
+
+.mini-list__row p {
+  margin-top: 4px;
+}
+
+.video-sidebar .sidebar-card:last-child {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.video-sidebar .sidebar-card:last-child .mini-list {
+  align-content: start;
 }
 
 @media (max-width: 1024px) {
@@ -546,7 +582,8 @@ loadPage();
   }
 
   .video-sidebar {
-    position: static;
+    height: auto;
+    grid-template-rows: none;
   }
 }
 </style>

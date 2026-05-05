@@ -56,6 +56,22 @@
                         </el-form-item>
                     </div>
                 </el-col>
+                <el-col :span="12">
+                    <el-form-item class="date" v-if="type!='info'" label="鍏憡鏃堕棿" prop="insertTime">
+                        <el-date-picker
+                            v-model="ruleForm.insertTime"
+                            type="datetime"
+                            placeholder="璇烽€夋嫨鍏憡鏃堕棿"
+                            format="yyyy-MM-dd HH:mm:ss"
+                            value-format="yyyy-MM-dd HH:mm:ss">
+                        </el-date-picker>
+                    </el-form-item>
+                    <div v-else-if="type=='info'">
+                        <el-form-item class="input" label="鍏憡鏃堕棿" prop="insertTime">
+                            <el-input v-model="ruleForm.insertTime" placeholder="鍏憡鏃堕棿" readonly></el-input>
+                        </el-form-item>
+                    </div>
+                </el-col>
                 <el-col :span="24">
                     <el-form-item v-if="type!='info'"  label="公告详情" prop="newsContent">
                         <editor style="min-width: 200px; max-width: 600px;"
@@ -194,8 +210,8 @@
                     method: 'get'
                 }).then(({ data }) => {
                     if (data && data.code === 0) {
-                        _this.ruleForm = data.data;
-                        _this.ruleForm.newsContent = _this.ruleForm.newsContent.replaceAll("src=\"upload/","src=\""+this.$base.url+"upload/");
+                        Object.assign(_this.ruleForm, data.data || {});
+                        _this.ruleForm.newsContent = _this.normalizeEditorContent(_this.ruleForm.newsContent);
                     } else {
                         _this.$message.error(data.msg);
                     }
@@ -205,11 +221,14 @@
             onSubmit() {
                 this.$refs["ruleForm"].validate(valid => {
                     if (valid) {
-                        this.ruleForm.newsContent = this.ruleForm.newsContent.replaceAll(this.$base.url,"");
+                        const payload = {
+                            ...this.ruleForm,
+                            newsContent: this.stripBaseUrl(this.ruleForm.newsContent)
+                        };
                         this.$http({
                             url:`news/${!this.ruleForm.id ? "save" : "update"}`,
                             method: "post",
-                            data: this.ruleForm
+                            data: payload
                         }).then(({ data }) => {
                             if (data && data.code === 0) {
                                 this.$message({
@@ -232,6 +251,20 @@
                 });
             },
             // 获取uuid
+            normalizeEditorContent(value) {
+                const content = typeof value === 'string' ? value : '';
+                if (!content) {
+                    return '';
+                }
+                return content.replaceAll("src=\"upload/","src=\""+this.$base.url+"upload/");
+            },
+            stripBaseUrl(value) {
+                const content = typeof value === 'string' ? value : '';
+                if (!content) {
+                    return '';
+                }
+                return content.replaceAll(this.$base.url,"");
+            },
             getUUID () {
                 return new Date().getTime();
             },

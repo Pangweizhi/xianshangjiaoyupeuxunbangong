@@ -17,7 +17,7 @@
           <p>{{ stripHtml(notice.newsContent) }}</p>
         </div>
         <div class="table-actions">
-          <span>{{ notice.insertTime?.slice(0, 10) || "待更新" }}</span>
+          <span>{{ notice.insertTime?.slice(0, 19) || "待更新" }}</span>
           <el-button link type="primary" @click="openEdit(notice.id)">编辑</el-button>
           <el-button link type="danger" @click="removeItem(notice.id)">删除</el-button>
         </div>
@@ -55,6 +55,15 @@
         <p class="upload-tip">{{ form.newsPhoto || "未上传" }}</p>
         <img v-if="assetUrl(form.newsPhoto)" class="upload-preview" :src="assetUrl(form.newsPhoto)" alt="公告图片预览" />
       </el-form-item>
+      <el-form-item label="公告时间" prop="insertTime">
+        <el-date-picker
+          v-model="form.insertTime"
+          type="datetime"
+          placeholder="请选择公告时间"
+          format="YYYY-MM-DD HH:mm:ss"
+          value-format="YYYY-MM-DD HH:mm:ss"
+        />
+      </el-form-item>
       <el-form-item label="公告详情" prop="newsContent">
         <el-input v-model="form.newsContent" type="textarea" :rows="6" />
       </el-form-item>
@@ -88,6 +97,7 @@ const createForm = () => ({
   newsName: "",
   newsTypes: undefined as number | undefined,
   newsPhoto: "",
+  insertTime: "",
   newsContent: ""
 });
 const form = reactive(createForm());
@@ -95,6 +105,7 @@ const form = reactive(createForm());
 const rules: FormRules = {
   newsName: [{ required: true, message: "请输入公告标题", trigger: "blur" }],
   newsTypes: [{ required: true, message: "请选择公告类型", trigger: "change" }],
+  insertTime: [{ required: true, message: "请选择公告时间", trigger: "change" }],
   newsContent: [{ required: true, message: "请输入公告详情", trigger: "blur" }]
 };
 
@@ -104,6 +115,16 @@ function stripHtml(value?: string) {
 
 function assetUrl(path?: string) {
   return createAssetUrl(DEFAULT_BASE_URL, path);
+}
+
+function formatDateTime(date: Date) {
+  const year = date.getFullYear();
+  const month = `${date.getMonth() + 1}`.padStart(2, "0");
+  const day = `${date.getDate()}`.padStart(2, "0");
+  const hours = `${date.getHours()}`.padStart(2, "0");
+  const minutes = `${date.getMinutes()}`.padStart(2, "0");
+  const seconds = `${date.getSeconds()}`.padStart(2, "0");
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
 async function loadNotices() {
@@ -147,6 +168,7 @@ async function loadNewsTypes() {
 
 async function openCreate() {
   resetForm();
+  form.insertTime = formatDateTime(new Date());
   await loadNewsTypes();
   dialogVisible.value = true;
 }

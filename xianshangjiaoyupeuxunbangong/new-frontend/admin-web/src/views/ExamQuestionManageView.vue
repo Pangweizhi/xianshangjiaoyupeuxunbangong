@@ -15,27 +15,36 @@
       </div>
     </div>
 
-    <el-table :data="rows" stripe empty-text="暂无题目">
-      <el-table-column label="课程" min-width="180">
-        <template #default="{ row }">
-          {{ row.kechengName || "未分类" }}
-        </template>
-      </el-table-column>
-      <el-table-column prop="questionType" label="题型" min-width="120">
-        <template #default="{ row }">
-          {{ formatQuestionType(row.questionType) }}
-        </template>
-      </el-table-column>
-      <el-table-column prop="questionTitle" label="题目" min-width="320" show-overflow-tooltip />
-      <el-table-column prop="questionScore" label="分值" min-width="90" />
-      <el-table-column prop="sortNo" label="排序" min-width="90" />
-      <el-table-column label="操作" width="180" fixed="right">
-        <template #default="{ row }">
-          <el-button link type="primary" @click="openEdit(row.id)">编辑</el-button>
-          <el-button link type="danger" @click="removeItem(row.id)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    <div v-if="groupedRows.length" class="question-groups">
+      <section v-for="group in groupedRows" :key="group.courseName" class="question-group">
+        <div class="question-group__header">
+          <div>
+            <h3>{{ group.courseName }}</h3>
+            <p>当前页共 {{ group.items.length }} 道题</p>
+          </div>
+        <el-tag type="info" round>{{ group.items.length }}</el-tag>
+        </div>
+
+        <el-table :data="group.items" stripe>
+          <el-table-column prop="questionType" label="题型" min-width="120">
+            <template #default="{ row }">
+              {{ formatQuestionType(row.questionType) }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="questionTitle" label="题目" min-width="360" show-overflow-tooltip />
+          <el-table-column prop="questionScore" label="分值" min-width="90" />
+          <el-table-column prop="sortNo" label="排序" min-width="90" />
+          <el-table-column label="操作" width="180" fixed="right">
+            <template #default="{ row }">
+              <el-button link type="primary" @click="openEdit(row.id)">编辑</el-button>
+              <el-button link type="danger" @click="removeItem(row.id)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </section>
+    </div>
+
+    <el-empty v-else description="暂无题目数据" />
 
     <div class="pagination-bar">
       <el-pagination
@@ -66,7 +75,7 @@
       <el-form-item label="题目" prop="questionTitle" required>
         <el-input v-model="form.questionTitle" type="textarea" :rows="3" />
       </el-form-item>
-      <el-form-item label="选项JSON">
+      <el-form-item label="选项 JSON">
         <el-input v-model="form.optionJson" type="textarea" :rows="4" />
       </el-form-item>
       <el-form-item label="正确答案">
@@ -91,7 +100,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
 import type { ExamQuestionItem } from "@shared/index";
 import { fetchCoursesForSelect, deleteEntities, fetchEntityDetail, saveEntity } from "@/api/manage";
@@ -105,6 +114,17 @@ const rows = ref<ExamQuestionItem[]>([]);
 const courseOptions = ref<Array<{ id: number; kechengName: string }>>([]);
 const pagination = reactive({ page: 1, limit: 10, total: 0 });
 const filters = reactive({ kechengId: undefined as number | undefined, questionType: "" });
+
+const groupedRows = computed(() => {
+  const groups = new Map<string, ExamQuestionItem[]>();
+  rows.value.forEach((item) => {
+    const courseName = item.kechengName || "未分类";
+    const current = groups.get(courseName) || [];
+    current.push(item);
+    groups.set(courseName, current);
+  });
+  return Array.from(groups.entries()).map(([courseName, items]) => ({ courseName, items }));
+});
 
 const questionTypeOptions = [
   { label: "选择题", value: "选择题" },
@@ -206,7 +226,7 @@ async function openEdit(id: number) {
   resetForm();
   await loadOptions();
   Object.assign(form, await fetchEntityDetail("examQuestion", id));
-  form.questionType = normalizeQuestionType(form.questionType);
+  form.questionType = questionTypeOptions.find((item) => item.value === form.questionType)?.value || "选择题";
   if (form.examId == null) {
     form.examId = 0;
   }
@@ -240,3 +260,37 @@ async function removeItem(id: number) {
 loadOptions();
 loadRows();
 </script>
+
+<style scoped>
+.question-groups {
+  display: grid;
+  gap: 18px;
+}
+
+.question-group {
+  padding: 18px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 18px;
+  background: #fff;
+}
+
+.question-group__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.question-group__header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #0f172a;
+}
+
+.question-group__header p {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: #64748b;
+}
+</style>

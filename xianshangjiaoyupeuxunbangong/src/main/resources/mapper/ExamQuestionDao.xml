@@ -60,6 +60,17 @@
                 and a.is_deleted = #{params.isDeleted}
             </if>
         </where>
-        order by a.${params.sort} ${params.order}
+        <choose>
+            <when test="params.sort != null and params.sort != '' and params.sort != 'sort_no'">
+                order by a.${params.sort} ${params.order}
+            </when>
+            <otherwise>
+                order by
+                case when k.kecheng_name is null or k.kecheng_name = '' then 1 else 0 end asc,
+                k.kecheng_name asc,
+                a.sort_no asc,
+                a.id asc
+            </otherwise>
+        </choose>
     </select>
 </mapper>

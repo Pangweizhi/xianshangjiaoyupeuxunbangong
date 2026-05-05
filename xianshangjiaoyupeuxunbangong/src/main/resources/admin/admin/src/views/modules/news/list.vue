@@ -629,7 +629,7 @@
 
                  
                 if (this.searchForm.newsName!= '' && this.searchForm.newsName!= undefined) {
-                    params['newsName'] = '%' + this.searchForm.newsName + '%'
+                    params['newsName'] = this.searchForm.newsName
                 }
          
                 if (this.searchForm.newsTypes!= '' && this.searchForm.newsTypes!= undefined) {
