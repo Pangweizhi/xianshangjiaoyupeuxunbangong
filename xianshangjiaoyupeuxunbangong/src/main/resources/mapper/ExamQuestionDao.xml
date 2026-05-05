@@ -3,6 +3,7 @@
 <mapper namespace="com.dao.ExamQuestionDao">
     <sql id="Base_Column_List">
         a.id as id
+        ,a.kecheng_id as kechengId
         ,a.exam_id as examId
         ,a.question_type as questionType
         ,a.question_title as questionTitle
@@ -22,13 +23,32 @@
         ,k.kecheng_name as kechengName
         from exam_question a
         left join exam e on a.exam_id = e.id
-        left join kecheng k on e.kecheng_id = k.id
+        left join kecheng k on coalesce(a.kecheng_id, e.kecheng_id) = k.id
         <where>
+            <if test="params.kechengId != null and params.kechengId != ''">
+                and coalesce(a.kecheng_id, e.kecheng_id) = #{params.kechengId}
+            </if>
             <if test="params.examId != null and params.examId != ''">
                 and a.exam_id = #{params.examId}
             </if>
             <if test="params.questionType != null and params.questionType != '' and params.questionType != 'null'">
-                and a.question_type = #{params.questionType}
+                <choose>
+                    <when test="params.questionType == '选择题' or params.questionType == 'Choice'">
+                        and (a.question_type = '选择题' or a.question_type = 'Choice')
+                    </when>
+                    <when test="params.questionType == '判断题' or params.questionType == 'True/False'">
+                        and (a.question_type = '判断题' or a.question_type = 'True/False')
+                    </when>
+                    <when test="params.questionType == '填空题' or params.questionType == 'Fill in'">
+                        and (a.question_type = '填空题' or a.question_type = 'Fill in')
+                    </when>
+                    <when test="params.questionType == '简答题' or params.questionType == 'Short answer'">
+                        and (a.question_type = '简答题' or a.question_type = 'Short answer')
+                    </when>
+                    <otherwise>
+                        and a.question_type = #{params.questionType}
+                    </otherwise>
+                </choose>
             </if>
             <if test="params.questionTitle != null and params.questionTitle != '' and params.questionTitle != 'null'">
                 and a.question_title like concat('%',#{params.questionTitle},'%')

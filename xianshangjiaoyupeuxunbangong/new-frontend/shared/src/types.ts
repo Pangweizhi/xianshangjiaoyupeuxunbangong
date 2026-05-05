@@ -121,6 +121,7 @@ export interface ExamItem {
 
 export interface ExamQuestionItem {
   id: number;
+  kechengId?: number;
   examId: number;
   questionType?: string;
   questionTitle: string;

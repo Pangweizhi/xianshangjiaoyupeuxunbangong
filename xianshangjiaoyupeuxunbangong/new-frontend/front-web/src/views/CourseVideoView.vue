@@ -4,18 +4,6 @@
 
     <div v-if="course && resource" class="video-course-layout">
       <article class="video-stage">
-        <div class="video-stage__header">
-          <div>
-            <p class="eyebrow">视频播放</p>
-            <h1>{{ resource.resourceName }}</h1>
-            <p>{{ course.kechengName }}</p>
-          </div>
-          <div class="stack-inline">
-            <span class="tag">{{ resource.resourceType || "视频" }}</span>
-            <span class="meta">{{ chapterNameMap[resource.chapterId] || "章节" }}</span>
-          </div>
-        </div>
-
         <div class="video-player-shell">
           <video
             v-if="activeVideoUrl"
@@ -39,34 +27,43 @@
             <div class="video-overlay__card">
               <p class="eyebrow">学习完成</p>
               <h3>您已完成{{ resource.resourceName }}的学习</h3>
-              <p>您已完成{{ resource.resourceName }}的学习，可以点击进行播放视频，并且不影响学习进度。</p>
+              <p>您已完成{{ resource.resourceName }}的学习，可以继续播放视频，也不会影响学习进度。</p>
               <button class="primary-button primary-button--compact" @click="resumePlayback">点击播放视频</button>
             </div>
           </div>
         </div>
-
-        <div class="status-list">
-          <span>当前进度：{{ displayProgressText }}</span>
-          <span>章节：{{ chapterNameMap[resource.chapterId] || "未归类" }}</span>
-          <span>课时：{{ resource.durationSeconds || 0 }} 秒</span>
-        </div>
       </article>
 
       <aside class="video-sidebar">
+        <section class="sidebar-card sidebar-card--summary">
+          <p class="eyebrow">视频播放</p>
+          <h1>{{ resource.resourceName }}</h1>
+          <p class="sidebar-card__subtitle">{{ course.kechengName }}</p>
+          <div class="stack-inline">
+            <span class="tag">{{ resource.resourceType || "视频" }}</span>
+            <span class="meta">{{ chapterNameMap[resource.chapterId] || "章节" }}</span>
+          </div>
+          <div class="status-list status-list--compact">
+            <span>当前进度：{{ displayProgressText }}</span>
+            <span>章节：{{ chapterNameMap[resource.chapterId] || "Uncategorized" }}</span>
+            <span>课时：{{ resource.durationSeconds || 0 }} 秒</span>
+          </div>
+        </section>
+
         <section class="sidebar-card">
           <p class="eyebrow">课程信息</p>
           <h2>{{ course.kechengName }}</h2>
           <p>{{ stripHtml(course.kechengContent) }}</p>
           <div class="status-list">
             <span>学分 {{ course.creditScore ?? 0 }}</span>
-            <span>教师 {{ course.jiaoshiName || "待补充" }}</span>
+            <span>教师 {{ course.jiaoshiName || "Teacher pending" }}</span>
           </div>
         </section>
 
         <section class="sidebar-card">
           <p class="eyebrow">学习说明</p>
           <ul class="info-list">
-            <li>视频播放过程会自动记录学习进度。</li>
+            <li>视频播放过程中会自动记录学习进度。</li>
             <li>播放完成后再次进入会默认暂停并提示已完成。</li>
             <li>压缩包资源仅支持下载，不影响学习进度。</li>
           </ul>
@@ -133,17 +130,34 @@ const chapterNameMap = computed(() => Object.fromEntries(chapters.value.map((ite
 const relatedResources = computed(() => resources.value.filter((item) => item.chapterId === resource.value?.chapterId));
 const sourceCandidates = computed(() => buildMediaCandidates(resource.value?.resourceUrl));
 const activeVideoUrl = computed(() => sourceCandidates.value[sourceIndex.value] || "");
-const completedMode = computed(() => Boolean(progress.value?.isCompleted === 1 || Math.round(progress.value?.progressPercent || 0) >= 100));
-const showCompletedOverlay = computed(() => completedMode.value && !overlayDismissed.value);
-const currentProgressPercent = computed(() => {
+const storedProgressPercent = computed(() => {
   if (progress.value?.isCompleted === 1) {
     return 100;
   }
-  const mediaDuration = Number(videoRef.value?.duration || resource.value?.durationSeconds || 0);
-  if (mediaDuration > 0 && videoRef.value) {
-    return Math.min(99, Math.floor((videoRef.value.currentTime * 100) / mediaDuration));
+  const studySeconds = Number(progress.value?.studySeconds || 0);
+  const durationSeconds = Number(resource.value?.durationSeconds || 0);
+  if (durationSeconds > 0 && studySeconds > 0) {
+    return Math.min(100, (studySeconds * 100) / durationSeconds);
   }
-  return Math.min(99, Math.floor(progress.value?.progressPercent || 0));
+  return Math.max(0, Number(progress.value?.progressPercent || 0));
+});
+const completedMode = computed(() => Boolean(progress.value?.isCompleted === 1 || storedProgressPercent.value >= 100));
+const showCompletedOverlay = computed(() => completedMode.value && !overlayDismissed.value);
+const currentProgressPercent = computed(() => {
+  if (completedMode.value) {
+    return 100;
+  }
+  const mediaDuration = Number(resource.value?.durationSeconds || videoRef.value?.duration || 0);
+  const storedPercent = Math.floor(storedProgressPercent.value || 0);
+  if (mediaDuration > 0 && videoRef.value) {
+    const currentTime = Number(videoRef.value.currentTime || 0);
+    const livePercent = Math.floor((currentTime * 100) / mediaDuration);
+    if (videoRef.value.ended || currentTime >= Math.max(0, mediaDuration - 0.25) || livePercent >= 100) {
+      return 100;
+    }
+    return Math.max(storedPercent, Math.min(99, livePercent));
+  }
+  return Math.min(99, storedPercent);
 });
 const displayProgressText = computed(() => `${currentProgressPercent.value}%`);
 
@@ -247,7 +261,7 @@ async function loadPage() {
   resource.value = await fetchCourseResourceDetail(route.params.resourceId as string);
   pendingSeekSeconds.value = progress.value?.isCompleted === 1 ? 0 : Math.max(0, Math.floor(progress.value?.studySeconds || 0));
   lastSavedSeconds.value = pendingSeekSeconds.value;
-  overlayDismissed.value = progress.value?.isCompleted === 1;
+  overlayDismissed.value = completedMode.value;
   await nextTick();
   applyVideoState();
 }
@@ -304,7 +318,7 @@ async function ensureSaved(forceCompleted = false) {
       ...(progress.value || {}),
       resourceId: resource.value.id,
       studySeconds: studySeconds,
-      progressPercent: forceCompleted ? 100 : Math.min(99, Math.floor((studySeconds * 100) / Math.max(1, resource.value.durationSeconds || 1))),
+      progressPercent: forceCompleted ? 100 : Math.min(99.5, Math.max(storedProgressPercent.value, (studySeconds * 100) / Math.max(1, resource.value.durationSeconds || 1))),
       isCompleted: forceCompleted ? 1 : 0
     } as StudyProgressItem;
   } finally {
@@ -346,6 +360,11 @@ async function handleTimeUpdate() {
     return;
   }
   const currentSeconds = Math.floor(videoRef.value.currentTime || 0);
+  const mediaDuration = Number(videoRef.value.duration || resource.value?.durationSeconds || 0);
+  if (mediaDuration > 0 && (videoRef.value.ended || videoRef.value.currentTime >= Math.max(0, mediaDuration - 0.25))) {
+    await handleEnded();
+    return;
+  }
   if (currentSeconds - lastSavedSeconds.value < 5) {
     return;
   }
@@ -376,7 +395,7 @@ async function handleError() {
     applyVideoState();
     return;
   }
-  showUiToast("当前视频地址无法播放，请检查资源文件路径。", "error");
+  showUiToast("Current video URL cannot be played. Please check the resource path.", "error");
 }
 
 function resumePlayback() {
@@ -430,7 +449,7 @@ loadPage();
 
 .video-course-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.7fr) minmax(320px, 0.8fr);
+  grid-template-columns: minmax(0, 1.7fr) minmax(340px, 0.8fr);
   gap: 18px;
   align-items: start;
 }
@@ -442,17 +461,10 @@ loadPage();
 }
 
 .video-stage {
-  padding: 24px;
+  padding: 0;
   border-radius: 28px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(247, 243, 238, 0.96));
-  box-shadow: 0 22px 60px rgba(24, 27, 34, 0.12);
-}
-
-.video-stage__header {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  align-items: start;
+  background: transparent;
+  box-shadow: none;
 }
 
 .video-player-shell {
@@ -494,6 +506,7 @@ loadPage();
 .video-sidebar {
   position: sticky;
   top: 18px;
+  align-self: start;
 }
 
 .sidebar-card {
@@ -501,6 +514,20 @@ loadPage();
   border-radius: 24px;
   background: rgba(255, 255, 255, 0.92);
   box-shadow: 0 18px 50px rgba(24, 27, 34, 0.1);
+}
+
+.sidebar-card--summary {
+  display: grid;
+  gap: 12px;
+}
+
+.sidebar-card__subtitle {
+  margin: 0;
+  color: var(--muted-strong);
+}
+
+.status-list--compact {
+  gap: 8px;
 }
 
 .info-list {

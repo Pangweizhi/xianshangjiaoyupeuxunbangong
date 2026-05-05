@@ -29,7 +29,13 @@
       <RouterLink to="/exam-questions">题库管理</RouterLink>
       <RouterLink to="/exam-records">阅卷管理</RouterLink>
       <RouterLink to="/submissions">作业提交记录</RouterLink>
-      <RouterLink v-if="!isTeacher" to="/notices">公告管理</RouterLink>
+
+      <div v-if="!isTeacher" class="admin-nav-group">
+        <span class="admin-nav-group__label">公告管理</span>
+        <RouterLink to="/notices">公告管理</RouterLink>
+        <RouterLink class="admin-subnav__link" to="/notice-types">公告类型管理</RouterLink>
+      </div>
+
       <RouterLink to="/forums">论坛管理</RouterLink>
       <RouterLink to="/materials">备课管理</RouterLink>
       <RouterLink to="/meetings">会议管理</RouterLink>
@@ -89,13 +95,14 @@ const title = computed(() => {
     "exam-records": "阅卷管理",
     submissions: "作业提交记录",
     notices: "公告管理",
+    "notice-types": "公告类型管理",
     students: "学生管理",
     teachers: "教师管理",
     dictionary: "字典管理",
     config: "轮播图管理",
     forums: "论坛管理",
     materials: "备课管理",
-    meetings: "会议管理",
+    meetings: "会议管理"
   };
   return titleMap[String(route.name ?? "dashboard")] || "仪表盘";
 });

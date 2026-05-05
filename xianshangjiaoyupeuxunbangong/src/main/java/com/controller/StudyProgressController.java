@@ -46,7 +46,7 @@ public class StudyProgressController {
     public R saveOrUpdate(@RequestBody StudyProgressEntity entity, HttpServletRequest request) {
         String role = String.valueOf(request.getSession().getAttribute("role"));
         if (!"学生".equals(role)) {
-            return R.error(511, "仅学生可以记录学习进度");
+            return R.error(511, "Only students can record study progress.");
         }
 
         Integer yonghuId = Integer.valueOf(String.valueOf(request.getSession().getAttribute("userId")));
@@ -54,7 +54,7 @@ public class StudyProgressController {
 
         CourseResourceEntity resource = courseResourceService.selectById(entity.getResourceId());
         if (resource == null) {
-            return R.error(511, "学习资源不存在");
+            return R.error(511, "Study resource not found.");
         }
         if (!isVideoResource(resource)) {
             return R.ok();
@@ -68,9 +68,14 @@ public class StudyProgressController {
 
         boolean forceCompleted = entity.getForceCompleted() != null && entity.getForceCompleted() == 1;
         double percent = entity.getProgressPercent() == null ? 0D : entity.getProgressPercent();
-        if (resource.getDurationSeconds() != null && resource.getDurationSeconds() > 0) {
-            double calculated = entity.getStudySeconds() * 100D / resource.getDurationSeconds();
-            percent = forceCompleted ? 100D : Math.max(percent, Math.min(99.5D, calculated));
+        Integer durationSeconds = resource.getDurationSeconds();
+        if (durationSeconds != null && durationSeconds > 0) {
+            double calculated = entity.getStudySeconds() * 100D / durationSeconds;
+            if (forceCompleted || calculated >= 99.5D || entity.getStudySeconds() >= durationSeconds) {
+                percent = 100D;
+            } else {
+                percent = Math.max(percent, Math.min(99.5D, calculated));
+            }
         } else if (forceCompleted) {
             percent = 100D;
         }
@@ -88,7 +93,9 @@ public class StudyProgressController {
         } else {
             old.setStudySeconds(Math.max(old.getStudySeconds() == null ? 0 : old.getStudySeconds(), entity.getStudySeconds()));
             old.setProgressPercent(Math.max(old.getProgressPercent() == null ? 0D : old.getProgressPercent(), entity.getProgressPercent()));
-            old.setIsCompleted(old.getProgressPercent() != null && old.getProgressPercent() >= 100D ? 1 : entity.getIsCompleted());
+            boolean completed = (old.getProgressPercent() != null && old.getProgressPercent() >= 100D)
+                || (entity.getProgressPercent() != null && entity.getProgressPercent() >= 100D);
+            old.setIsCompleted(completed ? 1 : entity.getIsCompleted());
             old.setLastStudyTime(entity.getLastStudyTime());
             studyProgressService.updateById(old);
         }

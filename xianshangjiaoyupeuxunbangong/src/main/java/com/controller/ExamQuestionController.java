@@ -20,7 +20,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 @Controller
@@ -29,15 +28,12 @@ public class ExamQuestionController {
 
     @Autowired
     private ExamQuestionService examQuestionService;
+
     @Autowired
     private ExamService examService;
 
     @RequestMapping("/page")
     public R page(@RequestParam Map<String, Object> params, HttpServletRequest request) {
-        String role = String.valueOf(request.getSession().getAttribute("role"));
-        if ("教师".equals(role)) {
-            params.put("jiaoshiId", request.getSession().getAttribute("userId"));
-        }
         params.put("isDeleted", 1);
         CommonUtil.checkMap(params);
         PageUtils page = examQuestionService.queryPage(params);
@@ -50,10 +46,12 @@ public class ExamQuestionController {
         params.put("isDeleted", 1);
         CommonUtil.checkMap(params);
         PageUtils page = examQuestionService.queryPage(params);
+
         String role = String.valueOf(request.getSession().getAttribute("role"));
-        if (!"users".equals(request.getSession().getAttribute("tableName")) && !"jiaoshi".equals(request.getSession().getAttribute("tableName")) && !"教师".equals(role)) {
+        String tableName = String.valueOf(request.getSession().getAttribute("tableName"));
+        if (!isTeacher(role, tableName) && !isStudent(role, tableName)) {
             hideAnswer(page);
-        } else if ("学生".equals(role)) {
+        } else if (isStudent(role, tableName)) {
             hideAnswer(page);
         }
         return R.ok().put("data", page);
@@ -62,11 +60,16 @@ public class ExamQuestionController {
     @RequestMapping("/info/{id}")
     public R info(@PathVariable("id") Long id) {
         ExamQuestionEntity entity = examQuestionService.selectById(id);
-        return entity == null ? R.error(511, "查不到数据") : R.ok().put("data", entity);
+        return entity == null ? R.error(511, "鏌ヨ涓嶅埌鏁版嵁") : R.ok().put("data", entity);
     }
 
     @RequestMapping("/save")
     public R save(@RequestBody ExamQuestionEntity entity) {
+        ensureQuestionCourse(entity);
+        entity.setQuestionType(normalizeQuestionType(entity.getQuestionType()));
+        if (entity.getKechengId() == null || entity.getKechengId() <= 0) {
+            return R.error(511, "璇烽€夋嫨璇剧▼");
+        }
         if (entity.getExamId() == null) {
             entity.setExamId(0);
         }
@@ -82,6 +85,11 @@ public class ExamQuestionController {
 
     @RequestMapping("/update")
     public R update(@RequestBody ExamQuestionEntity entity) {
+        ensureQuestionCourse(entity);
+        entity.setQuestionType(normalizeQuestionType(entity.getQuestionType()));
+        if (entity.getKechengId() == null || entity.getKechengId() <= 0) {
+            return R.error(511, "璇烽€夋嫨璇剧▼");
+        }
         if (entity.getExamId() == null) {
             entity.setExamId(0);
         }
@@ -113,7 +121,11 @@ public class ExamQuestionController {
     public R bindToExam(@RequestBody Map<String, Object> payload) {
         Integer examId = payload.get("examId") == null ? null : Integer.valueOf(String.valueOf(payload.get("examId")));
         if (examId == null || examId <= 0) {
-            return R.error(511, "请选择考试");
+            return R.error(511, "璇烽€夋嫨鑰冭瘯");
+        }
+        ExamEntity exam = examService.selectById(examId);
+        if (exam == null) {
+            return R.error(511, "考试不存在");
         }
 
         List<Integer> questionIds = new ArrayList<Integer>();
@@ -141,6 +153,9 @@ public class ExamQuestionController {
             if (question == null || question.getIsDeleted() != null && question.getIsDeleted() != 1) {
                 continue;
             }
+            if (question.getKechengId() != null && !question.getKechengId().equals(exam.getKechengId())) {
+                continue;
+            }
             question.setExamId(examId);
             if (question.getSortNo() == null) {
                 question.setSortNo(1);
@@ -150,6 +165,41 @@ public class ExamQuestionController {
 
         refreshExamScore(examId);
         return R.ok();
+    }
+
+    private void ensureQuestionCourse(ExamQuestionEntity entity) {
+        if (entity == null) {
+            return;
+        }
+        if (entity.getKechengId() != null && entity.getKechengId() > 0) {
+            return;
+        }
+        if (entity.getExamId() != null && entity.getExamId() > 0) {
+            ExamEntity exam = examService.selectById(entity.getExamId());
+            if (exam != null) {
+                entity.setKechengId(exam.getKechengId());
+            }
+        }
+    }
+
+    private String normalizeQuestionType(String value) {
+        if (value == null) {
+            return null;
+        }
+        String text = value.trim();
+        if (text.isEmpty()) {
+            return text;
+        }
+        if (text.contains("判断") || text.contains("True")) {
+            return "判断题";
+        }
+        if (text.contains("填空") || text.contains("Fill")) {
+            return "填空题";
+        }
+        if (text.contains("简答") || text.contains("问答") || text.contains("Short")) {
+            return "简答题";
+        }
+        return "选择题";
     }
 
     private void refreshExamScore(Integer examId) {
@@ -175,10 +225,27 @@ public class ExamQuestionController {
     }
 
     private void hideAnswer(PageUtils page) {
-        List<ExamQuestionView> list = (List<ExamQuestionView>) page.getList();
-        for (ExamQuestionView item : list) {
-            item.setCorrectAnswer(null);
-            item.setAnalysisText(null);
+        if (page == null || page.getList() == null) {
+            return;
         }
+        for (Object item : page.getList()) {
+            if (item instanceof ExamQuestionEntity) {
+                ExamQuestionEntity question = (ExamQuestionEntity) item;
+                question.setCorrectAnswer(null);
+                question.setAnalysisText(null);
+            } else if (item instanceof ExamQuestionView) {
+                ExamQuestionView view = (ExamQuestionView) item;
+                view.setCorrectAnswer(null);
+                view.setAnalysisText(null);
+            }
+        }
+    }
+
+    private boolean isTeacher(String role, String tableName) {
+        return "jiaoshi".equals(tableName) || "\u6559\u5e08".equals(role);
+    }
+
+    private boolean isStudent(String role, String tableName) {
+        return "users".equals(tableName) || "\u5b66\u751f".equals(role);
     }
 }

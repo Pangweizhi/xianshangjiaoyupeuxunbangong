@@ -51,23 +51,23 @@ body {
   display: grid;
   align-content: start;
   gap: 8px;
-  border-right: 1px solid rgba(255, 255, 255, 0.38);
-  box-shadow: inset -1px 0 0 rgba(255, 181, 102, 0.12);
+  border-right: 0;
+  box-shadow: none;
 }
 
 .admin-aside::after {
   content: "";
   position: absolute;
   top: 0;
-  right: -120px;
+  right: -160px;
   bottom: 0;
-  width: 192px;
+  width: 240px;
   background: linear-gradient(
     90deg,
-    rgba(255, 201, 127, 0.96) 0%,
-    rgba(255, 224, 176, 0.72) 26%,
-    rgba(255, 242, 225, 0.82) 52%,
-    rgba(255, 250, 244, 0) 100%
+    rgba(255, 204, 133, 0.98) 0%,
+    rgba(255, 225, 186, 0.8) 22%,
+    rgba(255, 242, 224, 0.84) 46%,
+    rgba(255, 251, 246, 0) 100%
   );
   pointer-events: none;
 }
@@ -121,7 +121,7 @@ body {
   min-width: 0;
   padding: 18px 20px 24px 8px;
   background:
-    linear-gradient(90deg, rgba(255, 244, 231, 0.9) 0%, rgba(255, 248, 240, 0.86) 8%, rgba(255, 252, 248, 0.98) 20%, rgba(255, 250, 243, 0.98) 100%),
+    linear-gradient(90deg, rgba(255, 239, 219, 0.98) 0%, rgba(255, 246, 236, 0.94) 8%, rgba(255, 251, 247, 0.99) 22%, rgba(255, 250, 243, 0.98) 100%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(255, 250, 243, 0.96)),
     radial-gradient(circle at left center, rgba(255, 122, 26, 0.14), transparent 24%);
 }
@@ -307,23 +307,23 @@ body {
 }
 
 .admin-content .el-button--primary {
-  background: linear-gradient(135deg, var(--admin-accent) 0%, var(--admin-accent-deep) 100%);
-  border-color: transparent;
-  color: #fff;
-  box-shadow: 0 10px 24px rgba(255, 122, 26, 0.2);
+  background: linear-gradient(135deg, #ffe1b2 0%, #ffc86d 100%);
+  border-color: #ffbb54;
+  color: #6a3900;
+  box-shadow: 0 10px 22px rgba(255, 184, 88, 0.16);
 }
 
 .admin-content .el-button--primary:hover,
 .admin-content .el-button--primary:focus {
-  background: linear-gradient(135deg, #ff8f3f 0%, var(--admin-accent) 100%);
-  border-color: transparent;
-  color: #fff;
+  background: linear-gradient(135deg, #ffe9c8 0%, #ffd98f 100%);
+  border-color: #ffb83c;
+  color: #5a3000;
 }
 
 .admin-content .el-button--primary.is-plain {
-  background: rgba(255, 255, 255, 0.82);
-  border-color: rgba(255, 122, 26, 0.28);
-  color: var(--admin-accent);
+  background: rgba(255, 235, 205, 0.72);
+  border-color: rgba(255, 195, 91, 0.55);
+  color: #8b4b00;
   box-shadow: none;
 }
 

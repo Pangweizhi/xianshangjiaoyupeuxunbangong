@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS `exam` (
 CREATE TABLE IF NOT EXISTS `exam_question` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `exam_id` int(11) NOT NULL COMMENT '考试',
+  `kecheng_id` int(11) DEFAULT NULL COMMENT '课程',
   `question_type` varchar(50) NOT NULL COMMENT '题型',
   `question_title` text NOT NULL COMMENT '题目',
   `option_json` text COMMENT '选项JSON',

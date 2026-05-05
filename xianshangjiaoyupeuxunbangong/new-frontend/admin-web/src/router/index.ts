@@ -45,6 +45,17 @@ const router = createRouter({
         { path: "exam-questions", name: "exam-questions", component: ExamQuestionManageView },
         { path: "exam-records", name: "exam-records", component: ExamRecordManageView },
         { path: "notices", name: "notices", component: NoticeManageView },
+        {
+          path: "notice-types",
+          name: "notice-types",
+          component: DictionaryManageView,
+          props: {
+            dicCode: "news_types",
+            dicName: "公告类型",
+            pageTitle: "公告类型管理",
+            pageNote: "维护通知公告使用的类型字典。"
+          }
+        },
         { path: "students", name: "students", component: StudentsManageView },
         { path: "teachers", name: "teachers", component: TeachersManageView },
         { path: "dictionary", name: "dictionary", component: DictionaryManageView },

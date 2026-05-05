@@ -100,7 +100,7 @@ function resetFilters() {
 }
 
 function progressDisplay(row: StudyProgressItem) {
-  if (row.isCompleted === 1) {
+  if (row.isCompleted === 1 || (row.progressPercent || 0) >= 100) {
     return 100;
   }
   return Math.min(99, Math.floor(row.progressPercent || 0));

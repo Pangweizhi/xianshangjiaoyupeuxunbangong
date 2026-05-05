@@ -8,7 +8,7 @@
         <div class="detail-card__body">
           <div class="stack-inline">
             <span class="tag">{{ detail.kechengValue || "课程" }}</span>
-            <span class="meta">{{ detail.jiaoshiName || "教师待补充" }}</span>
+            <span class="meta">{{ detail.jiaoshiName || "Teacher pending" }}</span>
             <span class="meta">学分 {{ detail.creditScore ?? 0 }}</span>
           </div>
           <h1>{{ detail.kechengName }}</h1>
@@ -17,7 +17,7 @@
             <span>开始时间：{{ detail.kechengTime || "待定" }}</span>
             <span>结束时间：{{ detail.kechengEndTime || "待定" }}</span>
             <span>课程时长：{{ detail.kechengShichang || 0 }} 分钟</span>
-            <span>班级：{{ detail.banjiValue || "未设置" }}</span>
+            <span>班级：{{ detail.banjiValue || "Unassigned" }}</span>
           </div>
           <button v-if="session.isLoggedIn" class="primary-button" :disabled="enrolling || enrolled" @click="handleEnroll">
             {{ enrolled ? "已选课" : enrolling ? "选课中..." : "立即选课" }}
@@ -71,7 +71,7 @@
               <span>{{ isVideoResource(resource) ? "站内播放" : "直接下载" }}</span>
             </div>
             <button class="primary-button primary-button--compact" @click="handleResourceAction(resource)">
-              {{ isVideoResource(resource) ? "开始播放" : "下载学习" }}
+              {{ isVideoResource(resource) ? "Start playback" : "Download to study" }}
             </button>
           </div>
         </article>
@@ -150,7 +150,7 @@ function isVideoResource(resource: CourseResourceItem) {
 
 function formatProgress(resourceId: number) {
   const progress = progressMap.value[resourceId];
-  const percent = progress?.isCompleted === 1 ? 100 : Math.min(99, Math.floor(progress?.progressPercent || 0));
+  const percent = progress?.isCompleted === 1 || (progress?.progressPercent || 0) >= 100 ? 100 : Math.min(99, Math.floor(progress?.progressPercent || 0));
   return `${percent}%`;
 }
 
@@ -190,7 +190,7 @@ async function handleEnroll() {
 
 function handleResourceAction(resource: CourseResourceItem) {
   if (!session.isLoggedIn) {
-    showUiToast("请先登录后再开始学习", "error");
+    showUiToast("Please log in first", "error");
     return;
   }
 

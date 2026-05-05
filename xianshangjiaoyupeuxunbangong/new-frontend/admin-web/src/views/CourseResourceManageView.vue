@@ -56,31 +56,31 @@
 
   <el-dialog v-model="dialogVisible" :title="form.id ? '编辑资源' : '新增资源'" width="760px">
     <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
-      <el-form-item label="所属课程" prop="kechengId">
+      <el-form-item label="所属课程" prop="kechengId" required>
         <el-select v-model="form.kechengId" placeholder="请选择课程" @change="handleFormCourseChange">
           <el-option v-for="item in courseOptions" :key="item.id" :label="item.kechengName" :value="item.id" />
         </el-select>
       </el-form-item>
-      <el-form-item label="所属章节" prop="chapterId">
+      <el-form-item label="所属章节" prop="chapterId" required>
         <el-select v-model="form.chapterId" placeholder="请选择章节">
           <el-option v-for="item in formChapterOptions" :key="item.id" :label="item.chapterName" :value="item.id" />
         </el-select>
       </el-form-item>
-      <el-form-item label="资源名称" prop="resourceName">
+      <el-form-item label="资源名称" prop="resourceName" required>
         <el-input v-model="form.resourceName" maxlength="100" show-word-limit />
       </el-form-item>
-      <el-form-item label="资源类型" prop="resourceType">
+      <el-form-item label="资源类型" prop="resourceType" required>
         <el-select v-model="form.resourceType" placeholder="请选择类型">
           <el-option label="视频" value="视频" />
           <el-option label="压缩包（PPT、文档等）" value="压缩包" />
         </el-select>
         <p class="panel-note">视频资源会影响学习进度，压缩包（PPT、文档等）仅供下载。</p>
       </el-form-item>
-      <el-form-item label="资源文件">
+      <el-form-item label="资源文件" prop="resourceUrl" required>
         <input type="file" @change="handleUpload($event)" />
         <p class="upload-tip">{{ form.resourceUrl || "未上传" }}</p>
       </el-form-item>
-      <el-form-item label="预估课时" prop="durationSeconds">
+      <el-form-item label="预估课时" prop="durationSeconds" required>
         <el-input-number v-model="form.durationSeconds" :min="0" :max="99999" />
       </el-form-item>
     </el-form>
@@ -146,7 +146,20 @@ const rules: FormRules = {
   kechengId: [{ required: true, message: "请选择课程", trigger: "change" }],
   chapterId: [{ required: true, message: "请选择章节", trigger: "change" }],
   resourceName: [{ required: true, message: "请输入资源名称", trigger: "blur" }],
-  resourceType: [{ required: true, message: "请选择资源类型", trigger: "change" }]
+  resourceType: [{ required: true, message: "请选择资源类型", trigger: "change" }],
+  resourceUrl: [{ required: true, message: "请上传资源文件", trigger: "change" }],
+  durationSeconds: [
+    {
+      validator: (_rule, value, callback) => {
+        if (Number(value) > 0) {
+          callback();
+          return;
+        }
+        callback(new Error("请输入大于 0 的预估课时"));
+      },
+      trigger: "change"
+    }
+  ]
 };
 
 async function loadOptions() {
@@ -240,15 +253,19 @@ async function handleUpload(event: Event) {
   try {
     form.resourceUrl = await uploadAdminFile(file);
     ElMessage.success("资源文件已上传");
+    void formRef.value?.validateField("resourceUrl");
   } catch (error) {
     ElMessage.error(error instanceof Error ? error.message : "上传失败");
   }
 }
 
 async function submitForm() {
-  await formRef.value?.validate();
-  saving.value = true;
   try {
+    const valid = await formRef.value?.validate().catch(() => false);
+    if (!valid) {
+      return;
+    }
+    saving.value = true;
     await saveEntity("courseResource", form as unknown as Record<string, unknown>);
     ElMessage.success("资源已保存");
     dialogVisible.value = false;

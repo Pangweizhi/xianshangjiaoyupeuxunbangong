@@ -81,17 +81,23 @@
             <el-button link type="danger" @click="removeResourceDraft(index)">删除</el-button>
           </div>
           <div class="resource-editor__grid">
-            <el-input v-model="draft.resourceName" placeholder="资源名称" />
-            <el-select v-model="draft.resourceType" placeholder="资源类型">
+            <div class="resource-field">
+              <span class="resource-field__label"><em>*</em>资源名称</span>
+              <el-input v-model="draft.resourceName" placeholder="资源名称" />
+            </div>
+            <div class="resource-field">
+              <span class="resource-field__label"><em>*</em>资源类型</span>
+              <el-select v-model="draft.resourceType" placeholder="资源类型">
               <el-option label="视频" value="视频" />
               <el-option label="压缩包（PPT、文档等）" value="压缩包" />
-            </el-select>
+              </el-select>
+            </div>
             <div class="resource-duration">
-              <span>预估课时</span>
+              <span class="resource-field__label"><em>*</em>预估课时</span>
               <el-input-number v-model="draft.durationSeconds" :min="0" :max="99999" />
             </div>
             <label class="resource-upload">
-              <span>上传资源文件</span>
+              <span class="resource-field__label"><em>*</em>上传资源文件</span>
               <input type="file" @change="handleResourceUpload($event, draft)" />
             </label>
           </div>
@@ -290,15 +296,20 @@ async function handleResourceUpload(event: Event, draft: ResourceDraft) {
 }
 
 async function submitForm() {
-  await formRef.value?.validate();
-  saving.value = true;
   try {
+    const valid = await formRef.value?.validate().catch(() => false);
+    if (!valid) {
+      return;
+    }
+    for (const [index, draft] of resourceDrafts.value.entries()) {
+      if (!draft.resourceName.trim() || !draft.resourceType || !draft.resourceUrl.trim() || Number(draft.durationSeconds) <= 0) {
+        throw new Error(`请补全第 ${index + 1} 个资源的必填项`);
+      }
+    }
+    saving.value = true;
     const response = await saveEntity("courseChapter", form as unknown as Record<string, unknown>);
     const chapterId = Number(response.data?.id || form.id);
     for (const draft of resourceDrafts.value) {
-      if (!draft.resourceName || !draft.resourceType) {
-        continue;
-      }
       await saveEntity("courseResource", {
         id: draft.id,
         kechengId: form.kechengId,
@@ -381,6 +392,24 @@ loadRows();
   gap: 8px;
   align-content: start;
   color: var(--admin-muted);
+}
+
+.resource-field {
+  display: grid;
+  gap: 8px;
+}
+
+.resource-field__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--admin-text);
+  font-size: 13px;
+}
+
+.resource-field__label em {
+  color: #f56c6c;
+  font-style: normal;
 }
 
 .resource-duration {

@@ -31,6 +31,8 @@ public class ExamQuestionEntity<T> implements Serializable {
     @TableId(type = IdType.AUTO)
     @TableField(value = "id")
     private Integer id;
+    @TableField(value = "kecheng_id")
+    private Integer kechengId;
     @TableField(value = "exam_id")
     private Integer examId;
     @TableField(value = "question_type")
@@ -56,6 +58,8 @@ public class ExamQuestionEntity<T> implements Serializable {
 
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
+    public Integer getKechengId() { return kechengId; }
+    public void setKechengId(Integer kechengId) { this.kechengId = kechengId; }
     public Integer getExamId() { return examId; }
     public void setExamId(Integer examId) { this.examId = examId; }
     public String getQuestionType() { return questionType; }
