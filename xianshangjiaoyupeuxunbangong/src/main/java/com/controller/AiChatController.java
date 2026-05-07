@@ -73,6 +73,20 @@ public class AiChatController {
         }
     }
 
+    @RequestMapping("/question/generate")
+    public R generateQuestionDrafts(@RequestBody Map<String, Object> params, HttpServletRequest request) {
+        try {
+            return R.ok().put("data", aiAssistantService.generateQuestionDrafts(
+                currentUserId(request),
+                currentUserTable(request),
+                currentRole(request),
+                params
+            ));
+        } catch (IllegalArgumentException e) {
+            return R.error(511, e.getMessage());
+        }
+    }
+
     @RequestMapping("/recommendQuestions")
     public R recommendQuestions(HttpServletRequest request) {
         String bizScene = request.getParameter("bizScene");

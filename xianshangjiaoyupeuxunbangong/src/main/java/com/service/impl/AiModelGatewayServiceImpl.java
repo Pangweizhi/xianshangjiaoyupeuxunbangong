@@ -7,6 +7,8 @@ import com.service.AiModelGatewayService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -21,6 +23,7 @@ import java.util.Map;
 
 @Service("aiModelGatewayService")
 public class AiModelGatewayServiceImpl implements AiModelGatewayService {
+    private static final Logger logger = LoggerFactory.getLogger(AiModelGatewayServiceImpl.class);
 
     @Value("${qa.ai.enabled:false}")
     private boolean enabled;
@@ -70,20 +73,32 @@ public class AiModelGatewayServiceImpl implements AiModelGatewayService {
             int status = connection.getResponseCode();
             String responseText = readAll(status >= 200 && status < 300 ? connection.getInputStream() : connection.getErrorStream());
             if (StringUtils.isBlank(responseText)) {
+                logger.warn("AI chat returned empty response, status={}", status);
+                return null;
+            }
+            if (status < 200 || status >= 300) {
+                logger.warn("AI chat request failed, status={}, body={}", status, truncate(responseText, 800));
                 return null;
             }
             JSONObject root = JSON.parseObject(responseText);
             JSONArray choices = root.getJSONArray("choices");
             if (choices == null || choices.isEmpty()) {
+                logger.warn("AI chat response missing choices, body={}", truncate(responseText, 800));
                 return null;
             }
             JSONObject first = choices.getJSONObject(0);
             if (first == null) {
+                logger.warn("AI chat response first choice missing, body={}", truncate(responseText, 800));
                 return null;
             }
             JSONObject message = first.getJSONObject("message");
-            return message == null ? null : message.getString("content");
+            String content = message == null ? null : message.getString("content");
+            if (StringUtils.isBlank(content)) {
+                logger.warn("AI chat response content is blank, body={}", truncate(responseText, 800));
+            }
+            return content;
         } catch (Exception e) {
+            logger.warn("AI chat request error", e);
             return null;
         } finally {
             if (connection != null) {
@@ -112,5 +127,12 @@ public class AiModelGatewayServiceImpl implements AiModelGatewayService {
         }
         reader.close();
         return builder.toString();
+    }
+
+    private String truncate(String text, int maxLength) {
+        if (text == null || text.length() <= maxLength) {
+            return text;
+        }
+        return text.substring(0, maxLength) + "...";
     }
 }

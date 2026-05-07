@@ -438,3 +438,36 @@ export interface AiChatSendResponse {
   assistantMessage: AiChatMessageItem;
   recommendQuestions: string[];
 }
+
+export interface GeneratedExamQuestionDraft {
+  kechengId?: number;
+  examId?: number;
+  questionType?: string;
+  questionTitle: string;
+  optionJson?: string;
+  correctAnswer?: string;
+  questionScore?: number;
+  sortNo?: number;
+  analysisText?: string;
+}
+
+export interface QuestionGenerationRequest {
+  courseId: number;
+  chapterId?: number;
+  questionType?: string;
+  questionCount?: number;
+  questionScore?: number;
+  difficulty?: string;
+  requirements?: string;
+  bizScene?: string;
+  pageCode?: string;
+}
+
+export interface QuestionGenerationResponse {
+  course: CourseItem;
+  chapter?: CourseChapterItem;
+  drafts: GeneratedExamQuestionDraft[];
+  questionType: string;
+  questionCount: number;
+  modelEnabled?: boolean;
+}

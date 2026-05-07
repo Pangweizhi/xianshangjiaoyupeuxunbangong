@@ -3,6 +3,8 @@ import type {
   AiChatSendResponse,
   AiChatSessionCreateResponse,
   AiChatSessionItem,
+  QuestionGenerationRequest,
+  QuestionGenerationResponse,
   PagePayload
 } from "@shared/index";
 import { unwrap } from "@shared/index";
@@ -40,4 +42,11 @@ export async function fetchAiRecommendQuestions(params?: Record<string, unknown>
   const http = useAdminHttp();
   const { data } = await http.get("/aiChat/recommendQuestions", { params });
   return unwrap<string[]>(data);
+}
+
+export async function generateExamQuestionDrafts(payload: QuestionGenerationRequest) {
+  const http = useAdminHttp();
+  const { data } = await http.post("/aiChat/question/generate", payload);
+  const result = unwrap<QuestionGenerationResponse>(data) as QuestionGenerationResponse & { data?: QuestionGenerationResponse };
+  return result?.drafts ? result : result?.data ?? result;
 }

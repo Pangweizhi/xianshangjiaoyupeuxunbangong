@@ -1,5 +1,7 @@
 package com.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
@@ -37,8 +39,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service("aiAssistantService")
 @Transactional
@@ -158,6 +162,49 @@ public class AiAssistantServiceImpl implements AiAssistantService {
             return Arrays.asList("帮我总结这一节内容", "这个章节的重点是什么？");
         }
         return Arrays.asList("作业在哪里查看？", "考试入口在哪？");
+    }
+
+    @Override
+    public Map<String, Object> generateQuestionDrafts(Integer userId, String userTable, String role, Map<String, Object> params) {
+        Integer courseId = intValue(params.get("courseId"));
+        if (courseId == null || courseId <= 0) {
+            throw new IllegalArgumentException("请选择课程");
+        }
+        KechengEntity course = kechengService.selectById(courseId);
+        if (course == null) {
+            throw new IllegalArgumentException("课程不存在");
+        }
+
+        Integer chapterId = intValue(params.get("chapterId"));
+        CourseChapterEntity chapter = chapterId == null ? null : courseChapterService.selectById(chapterId);
+        String questionType = normalizeGeneratedQuestionType(stringValue(params.get("questionType")));
+        int questionCount = safeQuestionCount(params.get("questionCount"));
+        Integer questionScore = intValue(params.get("questionScore"));
+        String difficulty = stringValue(params.get("difficulty"));
+        String requirements = stringValue(params.get("requirements"));
+        boolean modelEnabled = aiModelGatewayService.isEnabled();
+
+        if (!modelEnabled) {
+            throw new IllegalArgumentException("AI 功能未启用，请先配置 QA_AI_ENABLED、QA_AI_API_KEY、QA_AI_BASE_URL、QA_AI_MODEL");
+        }
+        String reply = buildQuestionGenerationReply(userTable, role, course, chapter, questionType, questionCount, questionScore, difficulty, requirements);
+        if (StringUtils.isBlank(reply)) {
+            throw new IllegalArgumentException("AI 模型未返回内容，请检查 API 地址、密钥、模型名和网络连通性");
+        }
+        List<Map<String, Object>> drafts = parseQuestionDrafts(reply);
+        if (drafts.isEmpty()) {
+            throw new IllegalArgumentException("AI 返回内容不是可解析的 JSON 题目草稿，请检查模型输出格式");
+        }
+        normalizeQuestionDrafts(drafts, courseId, questionType, questionScore);
+
+        Map<String, Object> result = new LinkedHashMap<String, Object>();
+        result.put("course", course);
+        result.put("chapter", chapter);
+        result.put("drafts", drafts);
+        result.put("questionType", questionType);
+        result.put("questionCount", questionCount);
+        result.put("modelEnabled", true);
+        return result;
     }
 
     @Override
@@ -503,6 +550,327 @@ public class AiAssistantServiceImpl implements AiAssistantService {
             return "成绩查看入口在学生端顶部导航“我的成绩”，这里会按课程展示作业、考试、结课和学分结果。";
         }
         return "你可以从学生端顶部导航进入课程、我的课程、作业、考试、我的成绩、公告、论坛和会议模块。";
+    }
+
+    private String buildQuestionGenerationReply(String userTable, String role, KechengEntity course, CourseChapterEntity chapter,
+        String questionType, int questionCount, Integer questionScore, String difficulty, String requirements) {
+        if (!aiModelGatewayService.isEnabled()) {
+            return null;
+        }
+        List<Map<String, String>> messages = new ArrayList<Map<String, String>>();
+        messages.add(chatMessage("system", buildQuestionGenerationSystemPrompt(userTable, role)));
+        messages.add(chatMessage("user", buildQuestionGenerationUserPrompt(course, chapter, questionType, questionCount, questionScore, difficulty, requirements)));
+        return aiModelGatewayService.chat(messages);
+    }
+
+    private String buildQuestionGenerationSystemPrompt(String userTable, String role) {
+        StringBuilder prompt = new StringBuilder();
+        prompt.append("你是线上教育培训办公系统的教师出题助手。");
+        prompt.append("你的任务是基于当前课程信息生成可直接入题库的题目草稿。");
+        prompt.append("只输出严格 JSON 数组，不要输出解释、前言、markdown、代码块或多余字符。");
+        prompt.append("数组中的每一项必须包含 questionType、questionTitle、optionJson、correctAnswer、questionScore、sortNo、analysisText。");
+        prompt.append("questionType 只能使用：选择题、判断题、填空题、简答题。");
+        prompt.append("选择题和判断题的 optionJson 必须是 JSON 字符串，内容格式为 [{\"value\":\"A\",\"label\":\"...\"}, ...]。");
+        prompt.append("填空题和简答题的 optionJson 为空字符串。");
+        prompt.append("correctAnswer 给出标准答案；简答题的 analysisText 给出评分要点。");
+        prompt.append("题目表述要自然、准确、与课程内容一致，不要编造课程中不存在的知识点。");
+        if ("jiaoshi".equals(userTable) || "users".equals(userTable)) {
+            prompt.append("当前用户是教师或后台角色，优先生成适合题库维护的正式题目草稿。");
+        }
+        if (StringUtils.isNotBlank(role)) {
+            prompt.append("当前角色标识为：").append(role).append("。");
+        }
+        return prompt.toString();
+    }
+
+    private String buildQuestionGenerationUserPrompt(KechengEntity course, CourseChapterEntity chapter, String questionType, int questionCount,
+        Integer questionScore, String difficulty, String requirements) {
+        StringBuilder prompt = new StringBuilder();
+        prompt.append("请根据以下信息生成题目：");
+        prompt.append("课程名称：").append(course == null ? "" : StringUtils.defaultString(course.getKechengName())).append("。");
+        if (course != null && StringUtils.isNotBlank(course.getKechengContent())) {
+            prompt.append("课程简介：").append(truncatePlain(course.getKechengContent(), 220)).append("。");
+        }
+        if (chapter != null) {
+            prompt.append("章节名称：").append(StringUtils.defaultString(chapter.getChapterName())).append("。");
+            if (StringUtils.isNotBlank(chapter.getChapterSummary())) {
+                prompt.append("章节摘要：").append(truncatePlain(chapter.getChapterSummary(), 220)).append("。");
+            }
+        }
+        prompt.append("题型：").append(questionType).append("。");
+        prompt.append("题目数量：").append(questionCount).append("。");
+        prompt.append("单题分值：").append(questionScore == null ? 5 : questionScore).append("。");
+        if (StringUtils.isNotBlank(difficulty)) {
+            prompt.append("难度：").append(difficulty).append("。");
+        }
+        if (StringUtils.isNotBlank(requirements)) {
+            prompt.append("补充要求：").append(requirements).append("。");
+        }
+        prompt.append("请返回 JSON 数组，每个元素格式如下：");
+        prompt.append("{\"questionType\":\"选择题\",\"questionTitle\":\"题干\",\"optionJson\":\"[{\\\"value\\\":\\\"A\\\",\\\"label\\\":\\\"选项A\\\"}]\",\"correctAnswer\":\"A\",\"questionScore\":5,\"sortNo\":1,\"analysisText\":\"解析\"}。");
+        prompt.append("如果题型是判断题，请让 optionJson 为对错选项；如果是填空题或简答题，optionJson 置为空字符串。");
+        prompt.append("题目数量必须与请求一致。");
+        return prompt.toString();
+    }
+
+    private List<Map<String, Object>> parseQuestionDrafts(String reply) {
+        if (StringUtils.isBlank(reply)) {
+            return Collections.emptyList();
+        }
+        String jsonText = extractJsonText(reply);
+        if (StringUtils.isBlank(jsonText)) {
+            return Collections.emptyList();
+        }
+        try {
+            Object parsed = JSON.parse(jsonText);
+            if (parsed instanceof JSONArray) {
+                return convertDraftArray((JSONArray) parsed);
+            }
+            if (parsed instanceof JSONObject) {
+                JSONObject object = (JSONObject) parsed;
+                Object nested = object.get("drafts");
+                if (nested instanceof JSONArray) {
+                    return convertDraftArray((JSONArray) nested);
+                }
+                List<Map<String, Object>> single = new ArrayList<Map<String, Object>>();
+                single.add(object);
+                return single;
+            }
+        } catch (Exception ignored) {
+            return Collections.emptyList();
+        }
+        return Collections.emptyList();
+    }
+
+    private List<Map<String, Object>> convertDraftArray(JSONArray array) {
+        List<Map<String, Object>> drafts = new ArrayList<Map<String, Object>>();
+        for (int i = 0; i < array.size(); i++) {
+            Object item = array.get(i);
+            if (item instanceof JSONObject) {
+                drafts.add((JSONObject) item);
+            } else if (item instanceof Map) {
+                drafts.add(new LinkedHashMap<String, Object>((Map<String, Object>) item));
+            }
+        }
+        return drafts;
+    }
+
+    private String extractJsonText(String reply) {
+        String text = StringUtils.trimToEmpty(reply);
+        if (text.startsWith("```")) {
+            int firstLineBreak = text.indexOf('\n');
+            if (firstLineBreak >= 0 && firstLineBreak + 1 < text.length()) {
+                text = text.substring(firstLineBreak + 1);
+            }
+            int fenceIndex = text.lastIndexOf("```");
+            if (fenceIndex > 0) {
+                text = text.substring(0, fenceIndex).trim();
+            }
+        }
+        int arrayStart = text.indexOf('[');
+        int arrayEnd = text.lastIndexOf(']');
+        if (arrayStart >= 0 && arrayEnd > arrayStart) {
+            return text.substring(arrayStart, arrayEnd + 1);
+        }
+        int objectStart = text.indexOf('{');
+        int objectEnd = text.lastIndexOf('}');
+        if (objectStart >= 0 && objectEnd > objectStart) {
+            return text.substring(objectStart, objectEnd + 1);
+        }
+        return text;
+    }
+
+    private void normalizeQuestionDrafts(List<Map<String, Object>> drafts, Integer courseId, String defaultQuestionType, Integer defaultQuestionScore) {
+        if (drafts == null || drafts.isEmpty()) {
+            return;
+        }
+        Set<String> seenTitles = new HashSet<String>();
+        for (int i = 0; i < drafts.size(); i++) {
+            Map<String, Object> draft = drafts.get(i);
+            if (draft == null) {
+                draft = new LinkedHashMap<String, Object>();
+                drafts.set(i, draft);
+            }
+            draft.put("kechengId", courseId);
+            draft.put("examId", 0);
+            draft.put("questionType", normalizeGeneratedQuestionType(stringValue(draft.get("questionType")), defaultQuestionType));
+            String uniqueTitle = ensureUniqueDraftTitle(buildDraftTitle(draft, i + 1, defaultQuestionType), seenTitles, i + 1);
+            draft.put("questionTitle", uniqueTitle);
+            draft.put("questionScore", safeQuestionScore(draft.get("questionScore"), defaultQuestionScore));
+            draft.put("sortNo", safeSortNo(draft.get("sortNo"), i + 1));
+            draft.put("optionJson", normalizeDraftOptionJson(draft.get("optionJson"), String.valueOf(draft.get("questionType"))));
+            draft.put("correctAnswer", normalizeDraftAnswer(draft.get("correctAnswer"), String.valueOf(draft.get("questionType"))));
+            draft.put("analysisText", StringUtils.defaultString(stringValue(draft.get("analysisText"))));
+        }
+    }
+
+    private List<Map<String, Object>> buildFallbackQuestionDrafts(KechengEntity course, CourseChapterEntity chapter, String questionType, int questionCount,
+        Integer questionScore, String difficulty, String requirements) {
+        List<Map<String, Object>> drafts = new ArrayList<Map<String, Object>>();
+        for (int i = 0; i < questionCount; i++) {
+            Map<String, Object> draft = new LinkedHashMap<String, Object>();
+            draft.put("questionType", questionType);
+            draft.put("questionTitle", buildFallbackTitle(course, chapter, questionType, i + 1, difficulty, requirements));
+            draft.put("questionScore", questionScore == null ? 5 : questionScore);
+            draft.put("sortNo", i + 1);
+            draft.put("optionJson", buildFallbackOptions(questionType));
+            draft.put("correctAnswer", buildFallbackAnswer(questionType, i + 1));
+            draft.put("analysisText", buildFallbackAnalysis(course, chapter, questionType));
+            drafts.add(draft);
+        }
+        return drafts;
+    }
+
+    private String buildFallbackTitle(KechengEntity course, CourseChapterEntity chapter, String questionType, int index, String difficulty, String requirements) {
+        String courseName = course == null ? "当前课程" : StringUtils.defaultString(course.getKechengName(), "当前课程");
+        String chapterName = chapter == null ? "" : StringUtils.defaultString(chapter.getChapterName(), "");
+        StringBuilder title = new StringBuilder();
+        title.append("【").append(courseName).append("】");
+        if (StringUtils.isNotBlank(chapterName)) {
+            title.append("【").append(chapterName).append("】");
+        }
+        title.append("第").append(index).append("题：");
+        if ("判断题".equals(questionType)) {
+            title.append("下列关于").append(courseName).append("的说法是否正确？");
+        } else if ("填空题".equals(questionType)) {
+            title.append("请补全").append(courseName).append("的核心概念：______。");
+        } else if ("简答题".equals(questionType)) {
+            title.append("请简述").append(courseName).append("的关键知识点。");
+        } else {
+            title.append("关于").append(courseName).append("的核心知识，下列说法正确的是？");
+        }
+        if (StringUtils.isNotBlank(difficulty)) {
+            title.append("（").append(difficulty).append("）");
+        }
+        if (StringUtils.isNotBlank(requirements)) {
+            title.append(" ").append(truncatePlain(requirements, 40));
+        }
+        return title.toString();
+    }
+
+    private String buildFallbackOptions(String questionType) {
+        if ("判断题".equals(questionType)) {
+            return "[{\"value\":\"对\",\"label\":\"正确\"},{\"value\":\"错\",\"label\":\"错误\"}]";
+        }
+        if ("选择题".equals(questionType)) {
+            return "[{\"value\":\"A\",\"label\":\"选项A\"},{\"value\":\"B\",\"label\":\"选项B\"},{\"value\":\"C\",\"label\":\"选项C\"},{\"value\":\"D\",\"label\":\"选项D\"}]";
+        }
+        return "";
+    }
+
+    private String buildFallbackAnswer(String questionType, int index) {
+        if ("判断题".equals(questionType)) {
+            return index % 2 == 0 ? "错" : "对";
+        }
+        if ("选择题".equals(questionType)) {
+            return "A";
+        }
+        if ("填空题".equals(questionType)) {
+            return "核心概念";
+        }
+        return "请结合课程内容作答";
+    }
+
+    private String buildFallbackAnalysis(KechengEntity course, CourseChapterEntity chapter, String questionType) {
+        String courseName = course == null ? "当前课程" : StringUtils.defaultString(course.getKechengName(), "当前课程");
+        if ("简答题".equals(questionType)) {
+            return "参考课程《" + courseName + "》的章节内容，回答时应覆盖定义、步骤、结论与示例。";
+        }
+        if ("填空题".equals(questionType)) {
+            return "答案应与课程中的核心概念保持一致，注意关键术语准确。";
+        }
+        if ("判断题".equals(questionType)) {
+            return "判断题重点考查对概念的理解，注意表述是否与课程内容一致。";
+        }
+        return "选择题应确保正确选项与课程知识点一致，干扰项与概念相近但不正确。";
+    }
+
+    private String normalizeGeneratedQuestionType(String value) {
+        String type = StringUtils.defaultString(value, "选择题").trim();
+        if (StringUtils.containsIgnoreCase(type, "判断")) {
+            return "判断题";
+        }
+        if (StringUtils.containsIgnoreCase(type, "填空")) {
+            return "填空题";
+        }
+        if (StringUtils.containsIgnoreCase(type, "简答") || StringUtils.containsIgnoreCase(type, "问答")) {
+            return "简答题";
+        }
+        return "选择题";
+    }
+
+    private String normalizeGeneratedQuestionType(String value, String fallbackType) {
+        String type = normalizeGeneratedQuestionType(value);
+        return StringUtils.isBlank(type) ? normalizeGeneratedQuestionType(fallbackType) : type;
+    }
+
+    private String normalizeDraftOptionJson(Object rawValue, String questionType) {
+        String value = StringUtils.defaultString(stringValue(rawValue));
+        if (StringUtils.isNotBlank(value)) {
+            return value;
+        }
+        if ("判断题".equals(questionType)) {
+            return buildFallbackOptions("判断题");
+        }
+        if ("选择题".equals(questionType)) {
+            return buildFallbackOptions("选择题");
+        }
+        return "";
+    }
+
+    private String normalizeDraftAnswer(Object rawValue, String questionType) {
+        String value = StringUtils.defaultString(stringValue(rawValue));
+        if (StringUtils.isNotBlank(value)) {
+            return value;
+        }
+        return buildFallbackAnswer(questionType, 1);
+    }
+
+    private String buildDraftTitle(Map<String, Object> draft, int index, String fallbackType) {
+        String title = stringValue(draft.get("questionTitle"));
+        if (StringUtils.isNotBlank(title)) {
+            return title;
+        }
+        return "AI生成题目" + index + "（" + normalizeGeneratedQuestionType(stringValue(draft.get("questionType")), fallbackType) + "）";
+    }
+
+    private String ensureUniqueDraftTitle(String title, Set<String> seenTitles, int index) {
+        String base = StringUtils.defaultString(title).trim();
+        if (StringUtils.isBlank(base)) {
+            base = "AI生成题目" + index;
+        }
+        String candidate = base;
+        int suffix = 2;
+        while (seenTitles.contains(candidate)) {
+            candidate = base + "（第" + suffix + "题）";
+            suffix++;
+        }
+        seenTitles.add(candidate);
+        return candidate;
+    }
+
+    private int safeQuestionCount(Object value) {
+        Integer count = intValue(value);
+        if (count == null || count <= 0) {
+            return 1;
+        }
+        return Math.min(count, 10);
+    }
+
+    private int safeQuestionScore(Object value, Integer fallback) {
+        Integer score = intValue(value);
+        if (score == null || score <= 0) {
+            return fallback == null || fallback <= 0 ? 5 : fallback;
+        }
+        return score;
+    }
+
+    private int safeSortNo(Object value, int fallback) {
+        Integer sortNo = intValue(value);
+        if (sortNo == null || sortNo <= 0) {
+            return fallback;
+        }
+        return sortNo;
     }
 
     private String buildGenericAnswer(Integer userId, String userTable, AiChatSessionEntity session) {
