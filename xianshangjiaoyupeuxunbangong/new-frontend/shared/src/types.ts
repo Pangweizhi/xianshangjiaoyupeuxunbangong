@@ -224,6 +224,7 @@ export interface MeetingItem {
   kaihuitongzhiValue?: string;
   kaihuitongzhiContent?: string;
   insertTime?: string;
+  createTime?: string;
 }
 
 export interface HomeworkSubmissionItem {

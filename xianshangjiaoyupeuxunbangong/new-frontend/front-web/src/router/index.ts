@@ -11,11 +11,9 @@ import ExamsView from "@/views/ExamsView.vue";
 import ExamDetailView from "@/views/ExamDetailView.vue";
 import MyScoresView from "@/views/MyScoresView.vue";
 import ForumView from "@/views/ForumView.vue";
-import MaterialsView from "@/views/MaterialsView.vue";
 import MeetingsView from "@/views/MeetingsView.vue";
 import HomeworkDetailView from "@/views/HomeworkDetailView.vue";
 import ForumDetailView from "@/views/ForumDetailView.vue";
-import MaterialDetailView from "@/views/MaterialDetailView.vue";
 import MeetingDetailView from "@/views/MeetingDetailView.vue";
 import CenterView from "@/views/CenterView.vue";
 import MyCoursesView from "@/views/MyCoursesView.vue";
@@ -42,8 +40,6 @@ const router = createRouter({
         { path: "my-scores", name: "my-scores", component: MyScoresView, meta: { requiresAuth: true } },
         { path: "forum", name: "forum", component: ForumView },
         { path: "forum/:id", name: "forum-detail", component: ForumDetailView, meta: { requiresAuth: true } },
-        { path: "materials", name: "materials", component: MaterialsView },
-        { path: "materials/:id", name: "material-detail", component: MaterialDetailView, meta: { requiresAuth: true } },
         { path: "meetings", name: "meetings", component: MeetingsView },
         { path: "meetings/:id", name: "meeting-detail", component: MeetingDetailView, meta: { requiresAuth: true } },
         {

@@ -195,7 +195,15 @@ export async function fetchMaterialPage(params?: Record<string, unknown>) {
 export async function fetchMeetingPage(params?: Record<string, unknown>) {
   const http = useHttp();
   const { data } = await http.get("/kaihuitongzhi/list", {
-    params: { page: 1, limit: 8, sort: "id", order: "desc", ...params }
+    params: {
+      page: 1,
+      limit: 8,
+      sort: "id",
+      order: "desc",
+      kaihuitongzhiDeleteStart: 1,
+      kaihuitongzhiDeleteEnd: 1,
+      ...params
+    }
   });
   return unwrap<PagePayload<MeetingItem>>(data);
 }

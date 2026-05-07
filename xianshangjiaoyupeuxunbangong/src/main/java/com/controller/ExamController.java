@@ -2,6 +2,7 @@ package com.controller;
 
 import com.annotation.IgnoreAuth;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.entity.ExamEntity;
 import com.entity.ExamQuestionEntity;
 import com.service.ExamQuestionService;
@@ -176,7 +177,7 @@ public class ExamController {
         if (entity == null || entity.getKechengId() == null) {
             return null;
         }
-        EntityWrapper<ExamEntity> wrapper = new EntityWrapper<ExamEntity>()
+        Wrapper<ExamEntity> wrapper = new EntityWrapper<ExamEntity>()
             .eq("kecheng_id", entity.getKechengId())
             .eq("is_deleted", 1);
         if (currentId != null) {

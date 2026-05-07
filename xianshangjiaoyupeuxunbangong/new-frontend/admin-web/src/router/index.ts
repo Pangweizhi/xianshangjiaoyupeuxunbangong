@@ -17,7 +17,6 @@ import DictionaryManageView from "@/views/DictionaryManageView.vue";
 import ConfigManageView from "@/views/ConfigManageView.vue";
 import HomeworkManageView from "@/views/HomeworkManageView.vue";
 import ForumManageView from "@/views/ForumManageView.vue";
-import MaterialManageView from "@/views/MaterialManageView.vue";
 import MeetingManageView from "@/views/MeetingManageView.vue";
 import HomeworkSubmissionManageView from "@/views/HomeworkSubmissionManageView.vue";
 import AiChatView from "@/views/AiChatView.vue";
@@ -81,10 +80,20 @@ const router = createRouter({
             pageNote: "维护作业下拉里的作业类型编码和值。"
           }
         },
+        {
+          path: "meeting-types",
+          name: "meeting-types",
+          component: DictionaryManageView,
+          props: {
+            dicCode: "kaihuitongzhi_types",
+            dicName: "会议类型",
+            pageTitle: "会议类型管理",
+            pageNote: "维护会议下拉里的会议类型编码和值。"
+          }
+        },
         { path: "config", name: "config", component: ConfigManageView },
         { path: "homeworks", name: "homeworks", component: HomeworkManageView },
         { path: "forums", name: "forums", component: ForumManageView },
-        { path: "materials", name: "materials", component: MaterialManageView },
         { path: "meetings", name: "meetings", component: MeetingManageView },
         { path: "submissions", name: "submissions", component: HomeworkSubmissionManageView },
         { path: "ai-chat", name: "ai-chat", component: AiChatView }

@@ -130,12 +130,19 @@ const chapterNameMap = computed(() => Object.fromEntries(chapters.value.map((ite
 const relatedResources = computed(() => resources.value.filter((item) => item.chapterId === resource.value?.chapterId));
 const sourceCandidates = computed(() => buildMediaCandidates(resource.value?.resourceUrl));
 const activeVideoUrl = computed(() => sourceCandidates.value[sourceIndex.value] || "");
+const mediaDurationSeconds = computed(() => {
+  const videoDuration = Number(videoRef.value?.duration || 0);
+  if (Number.isFinite(videoDuration) && videoDuration > 0) {
+    return videoDuration;
+  }
+  return Number(resource.value?.durationSeconds || 0);
+});
 const storedProgressPercent = computed(() => {
   if (progress.value?.isCompleted === 1) {
     return 100;
   }
   const studySeconds = Number(progress.value?.studySeconds || 0);
-  const durationSeconds = Number(resource.value?.durationSeconds || 0);
+  const durationSeconds = mediaDurationSeconds.value;
   if (durationSeconds > 0 && studySeconds > 0) {
     return Math.min(100, (studySeconds * 100) / durationSeconds);
   }
@@ -147,7 +154,7 @@ const currentProgressPercent = computed(() => {
   if (completedMode.value) {
     return 100;
   }
-  const mediaDuration = Number(resource.value?.durationSeconds || videoRef.value?.duration || 0);
+  const mediaDuration = mediaDurationSeconds.value;
   const storedPercent = Math.floor(storedProgressPercent.value || 0);
   if (mediaDuration > 0 && videoRef.value) {
     const currentTime = Number(videoRef.value.currentTime || 0);
@@ -304,10 +311,14 @@ async function ensureSaved(forceCompleted = false) {
   }
   saving.value = true;
   try {
+    const durationSeconds = Math.max(1, Math.floor(mediaDurationSeconds.value || resource.value.durationSeconds || 1));
+    const progressPercent = forceCompleted
+      ? 100
+      : Math.min(99.5, (studySeconds * 100) / durationSeconds);
     const payload: Record<string, unknown> = {
       resourceId: resource.value.id,
-      studySeconds: forceCompleted ? Math.floor(videoRef.value.duration || resource.value.durationSeconds || studySeconds) : studySeconds,
-      progressPercent: forceCompleted ? 100 : undefined,
+      studySeconds: forceCompleted ? durationSeconds : studySeconds,
+      progressPercent,
       forceCompleted: forceCompleted ? 1 : 0
     };
     const result = await saveStudyProgress(payload);
@@ -319,7 +330,7 @@ async function ensureSaved(forceCompleted = false) {
       ...(progress.value || {}),
       resourceId: resource.value.id,
       studySeconds: studySeconds,
-      progressPercent: forceCompleted ? 100 : Math.min(99.5, Math.max(storedProgressPercent.value, (studySeconds * 100) / Math.max(1, resource.value.durationSeconds || 1))),
+      progressPercent: progressPercent,
       isCompleted: forceCompleted ? 1 : 0
     } as StudyProgressItem;
   } finally {
@@ -361,7 +372,7 @@ async function handleTimeUpdate() {
     return;
   }
   const currentSeconds = Math.floor(videoRef.value.currentTime || 0);
-  const mediaDuration = Number(videoRef.value.duration || resource.value?.durationSeconds || 0);
+  const mediaDuration = mediaDurationSeconds.value;
   if (mediaDuration > 0 && (videoRef.value.ended || videoRef.value.currentTime >= Math.max(0, mediaDuration - 0.25))) {
     await handleEnded();
     return;

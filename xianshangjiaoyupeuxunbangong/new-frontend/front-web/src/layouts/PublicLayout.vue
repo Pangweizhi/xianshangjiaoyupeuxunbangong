@@ -12,7 +12,6 @@
                 <RouterLink :class="{ 'is-active': isActive('/courses') }" to="/courses">课程</RouterLink>
                 <RouterLink :class="{ 'is-active': isActive('/notices') }" to="/notices">公告</RouterLink>
                 <RouterLink :class="{ 'is-active': isActive('/forum') }" to="/forum">论坛</RouterLink>
-                <RouterLink :class="{ 'is-active': isActive('/materials') }" to="/materials">备课</RouterLink>
               </nav>
             </div>
           </section>

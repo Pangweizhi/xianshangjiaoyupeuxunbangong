@@ -497,12 +497,12 @@ public class AiAssistantServiceImpl implements AiAssistantService {
             return "考试入口在学生端顶部导航“考试”。进入后可以查看考试列表、开始考试、继续作答或查看历史成绩。";
         }
         if (containsAny(content, "ppt", "资料", "下载")) {
-            return "课程资料通常可以在“课程”或“我的课程”进入具体课程详情后查看章节资源；旧资料也可以在顶部导航“备课”里查看。";
+            return "课程资料通常可以在“课程”或“我的课程”进入具体课程详情后查看章节资源。";
         }
         if (containsAny(content, "成绩")) {
             return "成绩查看入口在学生端顶部导航“我的成绩”，这里会按课程展示作业、考试、结课和学分结果。";
         }
-        return "你可以从学生端顶部导航进入课程、我的课程、作业、考试、我的成绩、公告、论坛、备课和会议模块。";
+        return "你可以从学生端顶部导航进入课程、我的课程、作业、考试、我的成绩、公告、论坛和会议模块。";
     }
 
     private String buildGenericAnswer(Integer userId, String userTable, AiChatSessionEntity session) {

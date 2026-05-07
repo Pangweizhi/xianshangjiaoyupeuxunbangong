@@ -1,24 +1,24 @@
 <template>
   <section class="section section--tight">
     <div class="filter-bar filter-bar--surface filter-grid">
-      <input v-model="filters.keyword" class="field" placeholder="搜索会议标题" />
+      <input v-model="filters.keyword" class="field" placeholder="Search meeting title" />
       <select v-model="filters.type" class="field">
-        <option value="">全部类型</option>
+        <option value="">All types</option>
         <option v-for="item in typeOptions" :key="item" :value="item">{{ item }}</option>
       </select>
       <select v-model="filters.order" class="field">
-        <option value="desc">最新优先</option>
-        <option value="asc">最早优先</option>
+        <option value="desc">Newest first</option>
+        <option value="asc">Oldest first</option>
       </select>
-      <button class="primary-button" @click="loadMeetings">查询</button>
+      <button class="primary-button" @click="loadMeetings">Search</button>
     </div>
 
     <div class="notice-list">
       <article v-for="item in meetings" :key="item.id" class="notice-row notice-row--expanded">
         <div>
           <div class="stack-inline">
-            <span class="tag">{{ item.kaihuitongzhiValue || "会议" }}</span>
-            <span class="meta">{{ item.insertTime?.slice(0, 10) || "待更新" }}</span>
+            <span class="tag">{{ item.kaihuitongzhiValue || "Meeting" }}</span>
+            <span class="meta">{{ formatDateTime(item.insertTime || item.createTime) }}</span>
           </div>
           <h3>{{ item.kaihuitongzhiName }}</h3>
           <p>{{ stripHtml(item.kaihuitongzhiContent) }}</p>
@@ -40,6 +40,7 @@ const filters = reactive({
   type: "",
   order: "desc"
 });
+
 const meetings = ref<MeetingItem[]>([]);
 
 const typeOptions = computed(() =>
@@ -47,11 +48,36 @@ const typeOptions = computed(() =>
 );
 
 function stripHtml(value?: string) {
-  return value?.replace(/<[^>]+>/g, "").slice(0, 120) || "暂无会议内容。";
+  const text = value?.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+  if (!text) {
+    return "No meeting content.";
+  }
+  return text.length > 120 ? `${text.slice(0, 120)}...` : text;
+}
+
+function formatDateTime(value?: string) {
+  if (!value) {
+    return "Pending";
+  }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
 async function loadMeetings() {
-  const page = await fetchMeetingPage({ limit: 100, kaihuitongzhiName: filters.keyword || undefined, order: filters.order });
+  const page = await fetchMeetingPage({
+    limit: 100,
+    kaihuitongzhiName: filters.keyword || undefined,
+    order: filters.order
+  });
   meetings.value = page.list.filter((item) => !filters.type || item.kaihuitongzhiValue === filters.type);
 }
 

@@ -67,17 +67,22 @@ public class StudyProgressController {
         }
 
         boolean forceCompleted = entity.getForceCompleted() != null && entity.getForceCompleted() == 1;
-        double percent = entity.getProgressPercent() == null ? 0D : entity.getProgressPercent();
+        Double clientPercent = entity.getProgressPercent();
+        double percent = clientPercent == null ? 0D : clientPercent;
         Integer durationSeconds = resource.getDurationSeconds();
         if (durationSeconds != null && durationSeconds > 0) {
             double calculated = entity.getStudySeconds() * 100D / durationSeconds;
-            if (forceCompleted || calculated >= 99.5D || entity.getStudySeconds() >= durationSeconds) {
+            if (forceCompleted || percent >= 100D || (clientPercent == null && entity.getStudySeconds() >= durationSeconds)) {
                 percent = 100D;
+            } else if (clientPercent == null || clientPercent <= 0D) {
+                percent = Math.min(99.5D, calculated);
             } else {
-                percent = Math.max(percent, Math.min(99.5D, calculated));
+                percent = Math.min(99.5D, Math.max(0D, percent));
             }
         } else if (forceCompleted) {
             percent = 100D;
+        } else if (clientPercent != null) {
+            percent = Math.min(99.5D, Math.max(0D, clientPercent));
         }
 
         entity.setProgressPercent(percent);
@@ -91,10 +96,11 @@ public class StudyProgressController {
             entity.setCreateTime(new Date());
             studyProgressService.insert(entity);
         } else {
+            double nextProgressPercent = entity.getProgressPercent() == null ? 0D : entity.getProgressPercent();
             old.setStudySeconds(Math.max(old.getStudySeconds() == null ? 0 : old.getStudySeconds(), entity.getStudySeconds()));
-            old.setProgressPercent(Math.max(old.getProgressPercent() == null ? 0D : old.getProgressPercent(), entity.getProgressPercent()));
+            old.setProgressPercent(Math.max(old.getProgressPercent() == null ? 0D : old.getProgressPercent(), nextProgressPercent));
             boolean completed = (old.getProgressPercent() != null && old.getProgressPercent() >= 100D)
-                || (entity.getProgressPercent() != null && entity.getProgressPercent() >= 100D);
+                || nextProgressPercent >= 100D;
             old.setIsCompleted(completed ? 1 : entity.getIsCompleted());
             old.setLastStudyTime(entity.getLastStudyTime());
             studyProgressService.updateById(old);

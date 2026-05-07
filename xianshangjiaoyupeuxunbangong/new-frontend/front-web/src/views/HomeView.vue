@@ -74,19 +74,15 @@
         <h2>先看课程，再看公告和作业。</h2>
         <p>首页信息压缩到更短的链路，减少视觉拖沓，保留必要入口。</p>
       </div>
-      <div class="hero__panel-card">
-        <div class="metric-card">
-          <strong>{{ notices.length }}</strong>
-          <span>最新公告</span>
-        </div>
-        <div class="metric-card">
-          <strong>{{ materials.length }}</strong>
-          <span>备课资料</span>
-        </div>
-        <div class="metric-card">
-          <strong>{{ meetings.length }}</strong>
-          <span>会议通知</span>
-        </div>
+        <div class="hero__panel-card">
+          <div class="metric-card">
+            <strong>{{ notices.length }}</strong>
+            <span>最新公告</span>
+          </div>
+          <div class="metric-card">
+            <strong>{{ meetings.length }}</strong>
+            <span>会议通知</span>
+          </div>
       </div>
     </aside>
   </section>
@@ -115,9 +111,6 @@
           </RouterLink>
           <RouterLink class="shortcut-card" to="/forum">
             <strong>论坛</strong>
-          </RouterLink>
-          <RouterLink class="shortcut-card" to="/materials">
-            <strong>备课</strong>
           </RouterLink>
         </div>
       </section>
@@ -206,7 +199,6 @@ import {
   type CourseItem,
   type ForumItem,
   type HomeworkItem,
-  type LessonMaterialItem,
   type MeetingItem,
   type NoticeItem
 } from "@shared/index";
@@ -215,7 +207,6 @@ import {
   fetchCoursePage,
   fetchForumPage,
   fetchHomeworkPage,
-  fetchMaterialPage,
   fetchMeetingPage,
   fetchNoticePage
 } from "@/api/content";
@@ -224,7 +215,6 @@ const courses = ref<CourseItem[]>([]);
 const notices = ref<NoticeItem[]>([]);
 const homeworks = ref<HomeworkItem[]>([]);
 const forums = ref<ForumItem[]>([]);
-const materials = ref<LessonMaterialItem[]>([]);
 const meetings = ref<MeetingItem[]>([]);
 const bannerImages = ref<string[]>([]);
 const activeBanner = ref(0);
@@ -281,14 +271,13 @@ function nextBanner() {
 
 onMounted(async () => {
   try {
-    const [configPage, coursePage, noticePage, homeworkPage, forumPage, materialPage, meetingPage] =
+    const [configPage, coursePage, noticePage, homeworkPage, forumPage, meetingPage] =
       await Promise.all([
         fetchConfigList(),
         fetchCoursePage(),
         fetchNoticePage(),
         fetchHomeworkPage(),
         fetchForumPage(),
-        fetchMaterialPage(),
         fetchMeetingPage()
       ]);
 
@@ -297,7 +286,6 @@ onMounted(async () => {
     notices.value = noticePage.list;
     homeworks.value = homeworkPage.list;
     forums.value = forumPage.list;
-    materials.value = materialPage.list;
     meetings.value = meetingPage.list;
     startBannerLoop();
   } catch (error) {

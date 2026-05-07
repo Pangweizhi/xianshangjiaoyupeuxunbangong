@@ -17,7 +17,7 @@
         <span class="admin-nav-group__label">{{ group.label }}</span>
         <RouterLink
           v-for="item in group.items"
-          :key="item.to"
+          :key="getItemPath(item.to)"
           :class="[item.className, { 'is-active': isActive(item.to) }]"
           :to="item.to"
         >
@@ -55,7 +55,7 @@ type NavGroup = {
   label: string;
   items: Array<{
     label: string;
-    to: string;
+    to: string | { path: string; query?: Record<string, string> };
     className?: string;
     teacherOnly?: boolean;
     adminOnly?: boolean;
@@ -72,6 +72,7 @@ const title = computed(() => {
   const titleMap: Record<string, string> = {
     dashboard: "仪表盘",
     profile: "个人中心",
+    "ai-chat": "智能问答",
     courses: "课程管理",
     "course-types": "课程类型管理",
     chapters: "章节与资源",
@@ -80,6 +81,7 @@ const title = computed(() => {
     progress: "学习进度",
     homeworks: "作业管理",
     "homework-types": "作业类型管理",
+    "meeting-types": "会议类型管理",
     exams: "考试管理",
     "exam-questions": "题库管理",
     "exam-records": "阅卷管理",
@@ -91,7 +93,6 @@ const title = computed(() => {
     dictionary: "字典管理",
     config: "轮播图管理",
     forums: "论坛管理",
-    materials: "备课管理",
     meetings: "会议管理"
   };
   return titleMap[String(route.name ?? "dashboard")] || "仪表盘";
@@ -100,6 +101,7 @@ const title = computed(() => {
 const subtitleMap: Record<string, string> = {
   dashboard: "查看课程运行、学习进度和考试执行的整体面板。",
   profile: "维护登录账号与个人信息。",
+  "ai-chat": "查看和继续历史会话，并按不同场景向 AI 提问。",
   courses: "统一管理课程基础信息、封面与状态。",
   "course-types": "维护课程类型和分类字典。",
   chapters: "按课程管理章节结构，并紧邻处理配套资源。",
@@ -107,6 +109,7 @@ const subtitleMap: Record<string, string> = {
   progress: "追踪视频学习、完成进度和学习记录。",
   homeworks: "发布与维护课程作业内容。",
   "homework-types": "维护作业类型分类。",
+  "meeting-types": "维护会议类型分类。",
   exams: "按课程组织考试与选题。",
   "exam-questions": "题库默认按课程和题型分类浏览，并支持分页筛选。",
   "exam-records": "处理考试记录、得分和阅卷状态。",
@@ -118,7 +121,6 @@ const subtitleMap: Record<string, string> = {
   dictionary: "统一维护系统字典与枚举项。",
   config: "管理轮播图等平台展示配置。",
   forums: "维护论坛主题、回复与内容质量。",
-  materials: "管理备课资料与教学素材。",
   meetings: "发布和维护会议通知。"
 };
 
@@ -140,7 +142,6 @@ const navGroups: NavGroup[] = [
       { label: "章节与资源", to: "/chapters", teacherOnly: true },
       { label: "选课管理", to: "/enrolls" },
       { label: "学习进度", to: "/progress" },
-      { label: "备课管理", to: "/materials" }
     ]
   },
   {
@@ -151,7 +152,8 @@ const navGroups: NavGroup[] = [
       { label: "考试管理", to: "/exams" },
       { label: "题库管理", to: "/exam-questions" },
       { label: "阅卷管理", to: "/exam-records" },
-      { label: "作业提交记录", to: "/submissions" }
+      { label: "作业提交记录", to: "/submissions" },
+      { label: "问AI", to: { path: "/ai-chat", query: { bizScene: "course_manage", pageCode: "admin-ai-chat" } }, className: "admin-subnav__link" }
     ]
   },
   {
@@ -159,6 +161,7 @@ const navGroups: NavGroup[] = [
     items: [
       { label: "论坛管理", to: "/forums" },
       { label: "会议管理", to: "/meetings" },
+      { label: "会议类型管理", to: "/meeting-types", className: "admin-subnav__link" },
       { label: "公告管理", to: "/notices", adminOnly: true },
       { label: "公告类型管理", to: "/notice-types", className: "admin-subnav__link", adminOnly: true }
     ]
@@ -193,7 +196,9 @@ const visibleNavGroups = computed(() =>
 
 const currentSection = computed(() => {
   const currentPath = route.path;
-  const currentGroup = visibleNavGroups.value.find((group) => group.items.some((item) => currentPath.startsWith(item.to)));
+  const currentGroup = visibleNavGroups.value.find((group) =>
+    group.items.some((item) => currentPath.startsWith(getItemPath(item.to)))
+  );
   return currentGroup?.label || "总览";
 });
 
@@ -202,8 +207,13 @@ function handleLogout() {
   router.push({ name: "login" });
 }
 
-function isActive(path: string) {
+function isActive(to: NavGroup["items"][number]["to"]) {
+  const path = getItemPath(to);
   return route.path === path || route.path.startsWith(`${path}/`);
+}
+
+function getItemPath(to: NavGroup["items"][number]["to"]) {
+  return typeof to === "string" ? to : to.path;
 }
 </script>
 
@@ -296,6 +306,21 @@ function isActive(path: string) {
 
 .admin-subnav__link {
   margin-left: 12px;
+}
+
+.admin-ai-link {
+  margin-top: 4px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(255, 122, 26, 0.18), rgba(235, 59, 90, 0.14));
+  color: #b94d15;
+  font-weight: 700;
+  box-shadow: inset 0 0 0 1px rgba(255, 122, 26, 0.12);
+}
+
+.admin-ai-link:hover,
+.admin-ai-link:focus-visible {
+  background: linear-gradient(135deg, rgba(255, 122, 26, 0.26), rgba(235, 59, 90, 0.2));
+  color: #a74211;
 }
 
 .admin-nav-group a.is-active {
