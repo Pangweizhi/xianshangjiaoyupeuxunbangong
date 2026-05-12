@@ -1,0 +1,14 @@
+digraph G {
+  graph [charset="UTF-8", bgcolor="white", labelloc="t", fontname="Microsoft YaHei", fontsize=22, rankdir="LR", splines=line, nodesep=0.35, ranksep=0.70, pad=0.2, margin=0.15];
+  node [fontname="Microsoft YaHei", fontsize=12, color="#444444", penwidth=1.2];
+  edge [fontname="Microsoft YaHei", fontsize=9, color="#666666", penwidth=1.0, arrowsize=0.7];
+
+  actor1 [label="用户", shape=box, style="rounded,filled", fillcolor="#FFFFFF"];
+  uc1 [label="系统登录", shape=ellipse, style="filled", fillcolor="#FFFFFF"];
+  uc2 [label="重置密码", shape=ellipse, style="filled", fillcolor="#FFFFFF"];
+  uc3 [label="退出系统", shape=ellipse, style="filled", fillcolor="#FFFFFF"];
+
+  actor1 -> uc1;
+  actor1 -> uc2;
+  actor1 -> uc3;
+}

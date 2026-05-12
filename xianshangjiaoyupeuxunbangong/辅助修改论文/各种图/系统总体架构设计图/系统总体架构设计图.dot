@@ -1,0 +1,65 @@
+digraph G {
+  graph [charset="UTF-8", bgcolor="white", labelloc="t", label="系统总体架构设计图", fontname="Microsoft YaHei", fontsize=22, rankdir="TB", splines=ortho, nodesep=0.35, ranksep=0.48, pad=0.18, margin=0.12, size="8,8!"];
+  node [fontname="Microsoft YaHei", fontsize=11, shape=box, style="rounded,filled", fillcolor="white", color="#4e79a7", penwidth=1.4, margin="0.11,0.08"];
+  edge [fontname="Microsoft YaHei", fontsize=9, color="#3f3f3f", penwidth=1.05, arrowsize=0.7];
+
+  users [label="用户与访问层\n学生 / 教师 / 管理员", fillcolor="#f8fbff"];
+  ui_student [label="学生端 Web", fillcolor="#f8fbff"];
+  ui_teacher [label="教师端 Web", fillcolor="#f8fbff"];
+  ui_admin [label="管理端 Web", fillcolor="#f8fbff"];
+  auth [label="登录认证", fillcolor="#eef5ff"];
+  course_api [label="课程接口", fillcolor="#eef5ff"];
+  learn_api [label="学习接口", fillcolor="#eef5ff"];
+  exam_api [label="考试接口", fillcolor="#eef5ff"];
+  ai_api [label="AI 接口", fillcolor="#eef5ff"];
+  teach_service [label="教学服务", fillcolor="#effaf2", color="#4f9964"];
+  learn_service [label="学习服务", fillcolor="#effaf2", color="#4f9964"];
+  exam_service [label="考试服务", fillcolor="#effaf2", color="#4f9964"];
+  ai_service [label="AI 服务", fillcolor="#effaf2", color="#4f9964"];
+  dao [label="数据访问层\nMapper / DAO", fillcolor="#f8fbff"];
+  mysql [label="MySQL 数据库", fillcolor="#fff5e8", color="#d78b29"];
+  files [label="文件 / 图片存储", fillcolor="#fff5e8", color="#d78b29"];
+  external [label="第三方 AI 接口", fillcolor="#fff5e8", color="#d78b29"];
+
+  users -> ui_student;
+  users -> ui_teacher;
+  users -> ui_admin;
+
+  ui_student -> auth;
+  ui_student -> course_api;
+  ui_student -> learn_api;
+  ui_student -> exam_api;
+  ui_student -> ai_api;
+
+  ui_teacher -> course_api;
+  ui_teacher -> learn_api;
+  ui_teacher -> exam_api;
+  ui_teacher -> ai_api;
+
+  ui_admin -> auth;
+  ui_admin -> course_api;
+  ui_admin -> exam_api;
+  ui_admin -> ai_api;
+
+  auth -> dao;
+  course_api -> teach_service;
+  learn_api -> learn_service;
+  exam_api -> exam_service;
+  ai_api -> ai_service;
+
+  teach_service -> dao;
+  learn_service -> dao;
+  exam_service -> dao;
+  ai_service -> dao;
+
+  dao -> mysql;
+  dao -> files;
+  dao -> external;
+
+  { rank = same; users; }
+  { rank = same; ui_student; ui_teacher; ui_admin; }
+  { rank = same; auth; course_api; learn_api; exam_api; ai_api; }
+  { rank = same; teach_service; learn_service; exam_service; ai_service; }
+  { rank = same; dao; }
+  { rank = same; mysql; files; external; }
+}

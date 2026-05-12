@@ -1,0 +1,21 @@
+digraph G {
+  graph [rankdir=TB, splines=ortho, nodesep=0.25, ranksep=0.35];
+  node [shape=box, style="rounded,filled", fontname="Microsoft YaHei", fontsize=12, color="#6B9B6B", fillcolor="#EEF7F0"];
+  edge [color="#6F8B72", arrowsize=0.75];
+
+  start [shape=ellipse, label="开始", fillcolor="#DDEEDC"];
+  login [label="管理员登录系统"];
+  courseReview [label="审核教师提交的课程"];
+  resourceReview [label="审核章节资源与发布内容"];
+  userManage [label="维护教师、学生与基础数据"];
+  noticeManage [label="维护公告、会议和论坛内容"];
+  dashboard [label="查看统计概览与运行情况"];
+  optimize [shape=diamond, label="发现异常或配置需求？", fillcolor="#EAF5EA"];
+  adjust [label="调整字典、类型或管理策略"];
+  end [shape=ellipse, label="结束", fillcolor="#DDEEDC"];
+
+  start -> login -> courseReview -> resourceReview -> userManage -> noticeManage -> dashboard -> optimize;
+  optimize -> adjust [label="是"];
+  adjust -> dashboard;
+  optimize -> end [label="否"];
+}

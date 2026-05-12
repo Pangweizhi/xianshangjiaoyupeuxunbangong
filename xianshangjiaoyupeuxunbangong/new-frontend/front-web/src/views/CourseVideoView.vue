@@ -120,6 +120,8 @@ const chapters = ref<CourseChapterItem[]>([]);
 const resources = ref<CourseResourceItem[]>([]);
 const progress = ref<StudyProgressItem | null>(null);
 const videoRef = ref<HTMLVideoElement | null>(null);
+const playbackSeconds = ref(0);
+const playbackDurationSeconds = ref(0);
 const sourceIndex = ref(0);
 const lastSavedSeconds = ref(0);
 const overlayDismissed = ref(false);
@@ -131,7 +133,7 @@ const relatedResources = computed(() => resources.value.filter((item) => item.ch
 const sourceCandidates = computed(() => buildMediaCandidates(resource.value?.resourceUrl));
 const activeVideoUrl = computed(() => sourceCandidates.value[sourceIndex.value] || "");
 const mediaDurationSeconds = computed(() => {
-  const videoDuration = Number(videoRef.value?.duration || 0);
+  const videoDuration = Number(playbackDurationSeconds.value || 0);
   if (Number.isFinite(videoDuration) && videoDuration > 0) {
     return videoDuration;
   }
@@ -156,10 +158,10 @@ const currentProgressPercent = computed(() => {
   }
   const mediaDuration = mediaDurationSeconds.value;
   const storedPercent = Math.floor(storedProgressPercent.value || 0);
-  if (mediaDuration > 0 && videoRef.value) {
-    const currentTime = Number(videoRef.value.currentTime || 0);
+  const currentTime = Number(playbackSeconds.value || 0);
+  if (mediaDuration > 0) {
     const livePercent = Math.floor((currentTime * 100) / mediaDuration);
-    if (videoRef.value.ended || currentTime >= Math.max(0, mediaDuration - 0.25) || livePercent >= 100) {
+    if (currentTime >= Math.max(0, mediaDuration - 0.25) || livePercent >= 100) {
       return 100;
     }
     return Math.max(storedPercent, Math.min(99, livePercent));
@@ -170,6 +172,20 @@ const displayProgressText = computed(() => `${currentProgressPercent.value}%`);
 
 function listOf<T>(value: { list?: T[] } | null | undefined) {
   return Array.isArray(value?.list) ? value.list : [];
+}
+
+function syncPlaybackState() {
+  if (!videoRef.value) {
+    return;
+  }
+  const currentSeconds = Number(videoRef.value.currentTime || 0);
+  if (Number.isFinite(currentSeconds) && currentSeconds >= 0) {
+    playbackSeconds.value = currentSeconds;
+  }
+  const durationSeconds = Number(videoRef.value.duration || 0);
+  if (Number.isFinite(durationSeconds) && durationSeconds > 0) {
+    playbackDurationSeconds.value = durationSeconds;
+  }
 }
 
 function toAsset(path?: string) {
@@ -255,6 +271,8 @@ async function loadPage() {
   sourceIndex.value = 0;
   overlayDismissed.value = false;
   pendingSeekSeconds.value = 0;
+  playbackSeconds.value = 0;
+  playbackDurationSeconds.value = 0;
   progress.value = null;
   const [coursePage, chapterPage, resourcePage, progressPage] = await Promise.all([
     fetchCourseDetail(route.params.courseId as string),
@@ -278,6 +296,7 @@ function applyVideoState() {
   if (!videoRef.value) {
     return;
   }
+  syncPlaybackState();
   if (completedMode.value) {
     videoRef.value.pause();
     try {
@@ -292,6 +311,7 @@ function applyVideoState() {
   } catch {
     // metadata may not be ready yet
   }
+  syncPlaybackState();
   void videoRef.value.play().catch(() => {
     // autoplay may be blocked; the user can press play manually
   });
@@ -304,7 +324,8 @@ async function ensureSaved(forceCompleted = false) {
   if (!videoRef.value) {
     return;
   }
-  const currentSeconds = Math.floor(videoRef.value.currentTime || 0);
+  syncPlaybackState();
+  const currentSeconds = Math.floor(playbackSeconds.value || videoRef.value.currentTime || 0);
   const studySeconds = Math.max(lastSavedSeconds.value, currentSeconds);
   if (!forceCompleted && studySeconds <= lastSavedSeconds.value) {
     return;
@@ -342,6 +363,7 @@ async function handleLoadedMetadata() {
   if (!videoRef.value) {
     return;
   }
+  syncPlaybackState();
   if (completedMode.value) {
     videoRef.value.pause();
     overlayDismissed.value = false;
@@ -358,12 +380,14 @@ async function handleLoadedMetadata() {
     // wait for the browser to finish seeking
   }
   await nextTick();
+  syncPlaybackState();
   void videoRef.value.play().catch(() => {
     // leave the player ready for manual play
   });
 }
 
 function handlePlay() {
+  syncPlaybackState();
   overlayDismissed.value = true;
 }
 
@@ -371,9 +395,10 @@ async function handleTimeUpdate() {
   if (completedMode.value || !videoRef.value) {
     return;
   }
-  const currentSeconds = Math.floor(videoRef.value.currentTime || 0);
+  syncPlaybackState();
+  const currentSeconds = Math.floor(playbackSeconds.value || videoRef.value.currentTime || 0);
   const mediaDuration = mediaDurationSeconds.value;
-  if (mediaDuration > 0 && (videoRef.value.ended || videoRef.value.currentTime >= Math.max(0, mediaDuration - 0.25))) {
+  if (mediaDuration > 0 && currentSeconds >= Math.max(0, mediaDuration - 1)) {
     await handleEnded();
     return;
   }
@@ -385,6 +410,7 @@ async function handleTimeUpdate() {
 }
 
 async function handlePause() {
+  syncPlaybackState();
   await ensureSaved(false);
 }
 
@@ -392,6 +418,7 @@ async function handleEnded() {
   if (!resource.value) {
     return;
   }
+  syncPlaybackState();
   pendingSeekSeconds.value = 0;
   await ensureSaved(true);
   overlayDismissed.value = false;
@@ -439,6 +466,7 @@ function jumpToResource(resourceId: number) {
 }
 
 onBeforeUnmount(() => {
+  syncPlaybackState();
   void ensureSaved(completedMode.value);
 });
 

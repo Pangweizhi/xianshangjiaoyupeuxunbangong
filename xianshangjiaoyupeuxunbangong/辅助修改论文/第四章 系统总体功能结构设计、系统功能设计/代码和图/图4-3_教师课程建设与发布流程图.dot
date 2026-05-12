@@ -1,0 +1,23 @@
+digraph G {
+  graph [rankdir=TB, splines=ortho, nodesep=0.25, ranksep=0.35];
+  node [shape=box, style="rounded,filled", fontname="Microsoft YaHei", fontsize=12, color="#5D8CC0", fillcolor="#EEF5FF"];
+  edge [color="#6C7F93", arrowsize=0.75];
+
+  start [shape=ellipse, label="开始", fillcolor="#DCEBFA"];
+  login [label="教师登录系统"];
+  course [label="创建或编辑课程"];
+  submit [label="提交课程审核"];
+  review [shape=diamond, label="审核通过？", fillcolor="#FFF5E8", color="#D08A3C"];
+  revise [label="根据驳回意见修改课程"];
+  chapter [label="维护课程章节"];
+  resource [label="上传资源并提交资源审核"];
+  publish [label="发布作业、题库与考试"];
+  tracking [label="查看选课、进度、作业和考试结果"];
+  end [shape=ellipse, label="结束", fillcolor="#DCEBFA"];
+
+  start -> login -> course -> submit -> review;
+  review -> revise [label="否"];
+  revise -> course;
+  review -> chapter [label="是"];
+  chapter -> resource -> publish -> tracking -> end;
+}

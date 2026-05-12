@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" agent="ChatGPT" version="24.7.17" type="device">
+  <diagram id="题目-er-diagram" name="题目E-R图">
+    <mxGraphModel dx="1000" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="860" math="0" shadow="0">
+      <root>
+          <mxCell id="0" />
+          <mxCell id="1" parent="0" />
+          <mxCell id="entity" value="题目" style="rounded=0;whiteSpace=wrap;html=1;fontSize=18;fontStyle=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=2;" vertex="1" parent="1"><mxGeometry x="425" y="395" width="150" height="70" as="geometry" /></mxCell>
+          <mxCell id="attr0" value="编号" style="ellipse;whiteSpace=wrap;html=1;fontSize=15;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=1;" vertex="1" parent="1"><mxGeometry x="452" y="126" width="96" height="48" as="geometry" /></mxCell>
+          <mxCell id="edge0" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#666666;strokeWidth=1;" edge="1" parent="1" source="entity" target="attr0"><mxGeometry relative="1" as="geometry" /></mxCell>
+          <mxCell id="attr1" value="考试编号" style="ellipse;whiteSpace=wrap;html=1;fontSize=15;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=1;" vertex="1" parent="1"><mxGeometry x="608" y="170" width="140" height="48" as="geometry" /></mxCell>
+          <mxCell id="edge1" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#666666;strokeWidth=1;" edge="1" parent="1" source="entity" target="attr1"><mxGeometry relative="1" as="geometry" /></mxCell>
+          <mxCell id="attr2" value="课程编号" style="ellipse;whiteSpace=wrap;html=1;fontSize=15;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=1;" vertex="1" parent="1"><mxGeometry x="730" y="290" width="140" height="48" as="geometry" /></mxCell>
+          <mxCell id="edge2" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#666666;strokeWidth=1;" edge="1" parent="1" source="entity" target="attr2"><mxGeometry relative="1" as="geometry" /></mxCell>
+          <mxCell id="attr3" value="题型" style="ellipse;whiteSpace=wrap;html=1;fontSize=15;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=1;" vertex="1" parent="1"><mxGeometry x="779" y="446" width="96" height="48" as="geometry" /></mxCell>
+          <mxCell id="edge3" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#666666;strokeWidth=1;" edge="1" parent="1" source="entity" target="attr3"><mxGeometry relative="1" as="geometry" /></mxCell>
+          <mxCell id="attr4" value="题目内容" style="ellipse;whiteSpace=wrap;html=1;fontSize=15;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=1;" vertex="1" parent="1"><mxGeometry x="679" y="589" width="140" height="48" as="geometry" /></mxCell>
+          <mxCell id="edge4" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#666666;strokeWidth=1;" edge="1" parent="1" source="entity" target="attr4"><mxGeometry relative="1" as="geometry" /></mxCell>
+          <mxCell id="attr5" value="选项A" style="ellipse;whiteSpace=wrap;html=1;fontSize=15;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=1;" vertex="1" parent="1"><mxGeometry x="534" y="675" width="118" height="48" as="geometry" /></mxCell>
+          <mxCell id="edge5" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#666666;strokeWidth=1;" edge="1" parent="1" source="entity" target="attr5"><mxGeometry relative="1" as="geometry" /></mxCell>
+          <mxCell id="attr6" value="选项B" style="ellipse;whiteSpace=wrap;html=1;fontSize=15;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=1;" vertex="1" parent="1"><mxGeometry x="348" y="675" width="118" height="48" as="geometry" /></mxCell>
+          <mxCell id="edge6" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#666666;strokeWidth=1;" edge="1" parent="1" source="entity" target="attr6"><mxGeometry relative="1" as="geometry" /></mxCell>
+          <mxCell id="attr7" value="选项C" style="ellipse;whiteSpace=wrap;html=1;fontSize=15;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=1;" vertex="1" parent="1"><mxGeometry x="192" y="589" width="118" height="48" as="geometry" /></mxCell>
+          <mxCell id="edge7" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#666666;strokeWidth=1;" edge="1" parent="1" source="entity" target="attr7"><mxGeometry relative="1" as="geometry" /></mxCell>
+          <mxCell id="attr8" value="选项D" style="ellipse;whiteSpace=wrap;html=1;fontSize=15;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=1;" vertex="1" parent="1"><mxGeometry x="114" y="446" width="118" height="48" as="geometry" /></mxCell>
+          <mxCell id="edge8" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#666666;strokeWidth=1;" edge="1" parent="1" source="entity" target="attr8"><mxGeometry relative="1" as="geometry" /></mxCell>
+          <mxCell id="attr9" value="答案" style="ellipse;whiteSpace=wrap;html=1;fontSize=15;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=1;" vertex="1" parent="1"><mxGeometry x="152" y="290" width="96" height="48" as="geometry" /></mxCell>
+          <mxCell id="edge9" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#666666;strokeWidth=1;" edge="1" parent="1" source="entity" target="attr9"><mxGeometry relative="1" as="geometry" /></mxCell>
+          <mxCell id="attr10" value="题目分值" style="ellipse;whiteSpace=wrap;html=1;fontSize=15;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=1;" vertex="1" parent="1"><mxGeometry x="252" y="170" width="140" height="48" as="geometry" /></mxCell>
+          <mxCell id="edge10" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#666666;strokeWidth=1;" edge="1" parent="1" source="entity" target="attr10"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

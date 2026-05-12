@@ -8,6 +8,7 @@
         </div>
         <button class="new-session-button" @click="handleNewSession">新建</button>
       </div>
+
       <div class="suggestion-box">
         <span>猜你想问</span>
         <button
@@ -19,6 +20,7 @@
           {{ question }}
         </button>
       </div>
+
       <div class="session-list">
         <button
           v-for="item in sessions"
@@ -40,14 +42,15 @@
           <p class="eyebrow">当前场景</p>
           <h1>{{ sceneTitle }}</h1>
         </div>
-        <p class="scene-tip">当前版本可回答课程学习、作业、考试、成绩和系统导航问题。</p>
+        <p class="scene-tip">可围绕课程学习、作业、考试、成绩和系统操作继续提问。</p>
       </header>
 
       <div class="message-list">
         <div v-if="!messages.length" class="empty-panel">
           <h3>开始一段新对话</h3>
-          <p>可以先从左侧推荐问题开始，或者直接输入你的问题。</p>
+          <p>可以先点左侧推荐问题，或者直接输入你的问题。</p>
         </div>
+
         <article
           v-for="message in messages"
           :key="message.id"
@@ -55,7 +58,12 @@
           :class="message.messageRole === 'user' ? 'message-bubble--user' : 'message-bubble--assistant'"
         >
           <span class="message-role">{{ message.messageRole === "user" ? "我" : "AI" }}</span>
-          <p>{{ message.content }}</p>
+          <div
+            v-if="message.messageRole === 'assistant'"
+            class="message-content message-content--rich"
+            v-html="renderAssistantContent(message.content)"
+          />
+          <p v-else class="message-content">{{ message.content }}</p>
         </article>
       </div>
 
@@ -81,7 +89,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
-import type { AiChatMessageItem, AiChatSessionItem } from "@shared/index";
+import { renderRichText, type AiChatMessageItem, type AiChatSessionItem } from "@shared/index";
 import {
   createAiSession,
   fetchAiMessagePage,
@@ -117,9 +125,115 @@ const sceneTitle = computed(() => {
   return "系统导航助手";
 });
 
+const ALLOWED_TAGS = new Set([
+  "A",
+  "B",
+  "BLOCKQUOTE",
+  "BR",
+  "CODE",
+  "DIV",
+  "EM",
+  "H1",
+  "H2",
+  "H3",
+  "H4",
+  "H5",
+  "H6",
+  "HR",
+  "I",
+  "LI",
+  "OL",
+  "P",
+  "PRE",
+  "SPAN",
+  "STRONG",
+  "SUB",
+  "SUP",
+  "UL"
+]);
+
+const ALLOWED_ATTRS = new Set(["href", "target", "rel", "title", "class"]);
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function normalizeAssistantMarkup(value: string) {
+  return value.replace(/\r\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
+}
+
+function sanitizeHtml(value: string) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(`<div>${value}</div>`, "text/html");
+  const root = doc.body.firstElementChild;
+  if (!root) {
+    return escapeHtml(value).replace(/\n/g, "<br>");
+  }
+
+  const walk = (node: Node): string => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      return escapeHtml(node.textContent || "");
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE) {
+      return "";
+    }
+
+    const element = node as HTMLElement;
+    const tagName = element.tagName.toUpperCase();
+    const children = Array.from(element.childNodes).map((child) => walk(child)).join("");
+
+    if (!ALLOWED_TAGS.has(tagName)) {
+      return children;
+    }
+
+    if (tagName === "BR" || tagName === "HR") {
+      return `<${tagName.toLowerCase()} />`;
+    }
+
+    const attrs: string[] = [];
+    for (const attr of Array.from(element.attributes)) {
+      const name = attr.name.toLowerCase();
+      const rawValue = attr.value;
+      if (name.startsWith("on") || !ALLOWED_ATTRS.has(name)) {
+        continue;
+      }
+      if (name === "href") {
+        const normalized = rawValue.trim();
+        if (!/^(https?:|mailto:|\/)/i.test(normalized)) {
+          continue;
+        }
+        attrs.push(`href="${escapeHtml(normalized)}"`);
+        continue;
+      }
+      if (name === "target") {
+        const normalized = rawValue.trim();
+        if (!["_blank", "_self", "_parent", "_top"].includes(normalized)) {
+          continue;
+        }
+        attrs.push(`target="${escapeHtml(normalized)}"`);
+        continue;
+      }
+      attrs.push(`${name}="${escapeHtml(rawValue)}"`);
+    }
+
+    return `<${tagName.toLowerCase()}${attrs.length ? ` ${attrs.join(" ")}` : ""}>${children}</${tagName.toLowerCase()}>`;
+  };
+
+  return Array.from(root.childNodes).map((child) => walk(child)).join("");
+}
+
+function renderAssistantContent(content?: string) {
+  return renderRichText(content);
+}
+
 async function loadSessions() {
   const page = await fetchAiSessionPage();
-  sessions.value = page.list;
+  sessions.value = Array.isArray(page?.list) ? page.list : [];
   if (!activeSessionId.value && sessions.value.length) {
     await activateSession(sessions.value[0].id);
   }
@@ -136,7 +250,7 @@ async function loadRecommendQuestions() {
 async function activateSession(sessionId: number) {
   activeSessionId.value = sessionId;
   const page = await fetchAiMessagePage(sessionId);
-  messages.value = page.list;
+  messages.value = Array.isArray(page?.list) ? page.list : [];
 }
 
 async function ensureSession() {
@@ -373,9 +487,51 @@ onMounted(async () => {
   opacity: 0.75;
 }
 
-.message-bubble p {
+.message-content {
   margin: 0;
   line-height: 1.7;
+  word-break: break-word;
+}
+
+.message-content--rich :deep(p) {
+  margin: 0 0 0.75rem;
+}
+
+.message-content--rich :deep(p:last-child) {
+  margin-bottom: 0;
+}
+
+.message-content--rich :deep(ul),
+.message-content--rich :deep(ol) {
+  margin: 0.5rem 0 0.75rem;
+  padding-left: 1.4rem;
+}
+
+.message-content--rich :deep(li) {
+  margin: 0.25rem 0;
+}
+
+.message-content--rich :deep(pre) {
+  margin: 0.75rem 0;
+  padding: 0.85rem 1rem;
+  border-radius: 16px;
+  overflow: auto;
+  background: rgba(15, 23, 42, 0.08);
+}
+
+.message-content--rich :deep(code) {
+  padding: 0.12rem 0.34rem;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.08);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+.message-bubble--assistant .message-content--rich :deep(a) {
+  color: #b64a18;
+  text-decoration: underline;
+}
+
+.message-bubble--user .message-content {
   white-space: pre-wrap;
 }
 

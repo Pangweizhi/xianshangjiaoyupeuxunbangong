@@ -58,7 +58,12 @@
           :class="message.messageRole === 'user' ? 'chat-card--user' : 'chat-card--assistant'"
         >
           <span>{{ message.messageRole === "user" ? "我" : "AI" }}</span>
-          <p>{{ message.content }}</p>
+          <div
+            v-if="message.messageRole === 'assistant'"
+            class="chat-card__content chat-card__content--rich"
+            v-html="renderRichText(message.content)"
+          />
+          <p v-else class="chat-card__content">{{ message.content }}</p>
         </article>
       </div>
 
@@ -85,7 +90,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
-import type { AiChatMessageItem, AiChatSessionItem } from "@shared/index";
+import { renderRichText, type AiChatMessageItem, type AiChatSessionItem } from "@shared/index";
 import {
   createAiSession,
   fetchAiMessagePage,
@@ -348,6 +353,50 @@ onMounted(async () => {
   margin: 0;
   line-height: 1.7;
   white-space: pre-wrap;
+}
+
+.chat-card__content {
+  margin: 0;
+  line-height: 1.7;
+  word-break: break-word;
+}
+
+.chat-card__content--rich :deep(p) {
+  margin: 0 0 0.75rem;
+}
+
+.chat-card__content--rich :deep(p:last-child) {
+  margin-bottom: 0;
+}
+
+.chat-card__content--rich :deep(ul),
+.chat-card__content--rich :deep(ol) {
+  margin: 0.5rem 0 0.75rem;
+  padding-left: 1.4rem;
+}
+
+.chat-card__content--rich :deep(li) {
+  margin: 0.25rem 0;
+}
+
+.chat-card__content--rich :deep(pre) {
+  margin: 0.75rem 0;
+  padding: 0.85rem 1rem;
+  border-radius: 16px;
+  overflow: auto;
+  background: rgba(15, 23, 42, 0.08);
+}
+
+.chat-card__content--rich :deep(code) {
+  padding: 0.12rem 0.34rem;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.08);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+.chat-card--assistant .chat-card__content--rich :deep(a) {
+  color: #b64a18;
+  text-decoration: underline;
 }
 
 .chat-card--assistant {

@@ -1,0 +1,171 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="532pt" height="532pt" viewBox="7.00 7.00 525.00 525.00">
+<g id="graph0" class="graph" transform="scale(0.765405 0.765405) rotate(0) translate(22.37 673.21)">
+<title>G</title>
+<polygon fill="white" stroke="none" points="-12.96,12.96 -12.96,-663.81 663.81,-663.81 663.81,12.96 -12.96,12.96"/>
+<!-- start -->
+<g id="node1" class="node">
+<title>start</title>
+<ellipse fill="#f7f7f7" stroke="#444444" stroke-width="1.25" cx="323.97" cy="-634" rx="41.4" ry="16.46"/>
+<text xml:space="preserve" text-anchor="middle" x="323.97" y="-630.7" font-family="Microsoft YaHei" font-size="11.00">开始</text>
+</g>
+<!-- login -->
+<g id="node2" class="node">
+<title>login</title>
+<path fill="white" stroke="#444444" stroke-width="1.25" d="M376.17,-585.2C376.17,-585.2 271.77,-585.2 271.77,-585.2 266.37,-585.2 260.97,-579.8 260.97,-574.4 260.97,-574.4 260.97,-563.6 260.97,-563.6 260.97,-558.2 266.37,-552.8 271.77,-552.8 271.77,-552.8 376.17,-552.8 376.17,-552.8 381.57,-552.8 386.97,-558.2 386.97,-563.6 386.97,-563.6 386.97,-574.4 386.97,-574.4 386.97,-579.8 381.57,-585.2 376.17,-585.2"/>
+<text xml:space="preserve" text-anchor="middle" x="323.97" y="-565.7" font-family="Microsoft YaHei" font-size="11.00">管理员登录</text>
+</g>
+<!-- start&#45;&gt;login -->
+<g id="edge1" class="edge">
+<title>start-&gt;login</title>
+<path fill="none" stroke="#333333" d="M323.97,-616.92C323.97,-616.92 323.97,-593.75 323.97,-593.75"/>
+<polygon fill="#333333" stroke="#333333" points="326.24,-593.75 323.97,-587.25 321.69,-593.75 326.24,-593.75"/>
+</g>
+<!-- check -->
+<g id="node3" class="node">
+<title>check</title>
+<polygon fill="white" stroke="#444444" stroke-width="1.25" points="323.97,-519.6 268.17,-489 323.97,-458.4 379.77,-489 323.97,-519.6"/>
+<text xml:space="preserve" text-anchor="middle" x="323.97" y="-492.3" font-family="Microsoft YaHei" font-size="11.00">管理员</text>
+<text xml:space="preserve" text-anchor="middle" x="323.97" y="-479.1" font-family="Microsoft YaHei" font-size="11.00">是否存在</text>
+</g>
+<!-- login&#45;&gt;check -->
+<g id="edge2" class="edge">
+<title>login-&gt;check</title>
+<path fill="none" stroke="#333333" d="M305.37,-552.42C305.37,-552.42 305.37,-517.84 305.37,-517.84"/>
+<polygon fill="#333333" stroke="#333333" points="307.64,-517.84 305.37,-511.34 303.09,-517.84 307.64,-517.84"/>
+</g>
+<!-- check&#45;&gt;login -->
+<g id="edge4" class="edge">
+<title>check-&gt;login</title>
+<path fill="none" stroke="#333333" d="M342.57,-510.02C342.57,-510.02 342.57,-544.4 342.57,-544.4"/>
+<polygon fill="#333333" stroke="#333333" points="340.29,-544.4 342.57,-550.9 344.84,-544.4 340.29,-544.4"/>
+<text xml:space="preserve" text-anchor="middle" x="332.44" y="-529.91" font-family="Microsoft YaHei" font-size="9.00">不存在</text>
+</g>
+<!-- home -->
+<g id="node4" class="node">
+<title>home</title>
+<path fill="white" stroke="#444444" stroke-width="1.25" d="M376.17,-425.2C376.17,-425.2 271.77,-425.2 271.77,-425.2 266.37,-425.2 260.97,-419.8 260.97,-414.4 260.97,-414.4 260.97,-403.6 260.97,-403.6 260.97,-398.2 266.37,-392.8 271.77,-392.8 271.77,-392.8 376.17,-392.8 376.17,-392.8 381.57,-392.8 386.97,-398.2 386.97,-403.6 386.97,-403.6 386.97,-414.4 386.97,-414.4 386.97,-419.8 381.57,-425.2 376.17,-425.2"/>
+<text xml:space="preserve" text-anchor="middle" x="323.97" y="-405.7" font-family="Microsoft YaHei" font-size="11.00">后台管理系统</text>
+</g>
+<!-- check&#45;&gt;home -->
+<g id="edge3" class="edge">
+<title>check-&gt;home</title>
+<path fill="none" stroke="#333333" d="M323.97,-457.84C323.97,-457.84 323.97,-433.45 323.97,-433.45"/>
+<polygon fill="#333333" stroke="#333333" points="326.24,-433.45 323.97,-426.95 321.69,-433.45 326.24,-433.45"/>
+<text xml:space="preserve" text-anchor="middle" x="317.22" y="-448.35" font-family="Microsoft YaHei" font-size="9.00">存在</text>
+</g>
+<!-- auditCourse -->
+<g id="node5" class="node">
+<title>auditCourse</title>
+<path fill="white" stroke="#444444" stroke-width="1.25" d="M199.17,-360.2C199.17,-360.2 94.77,-360.2 94.77,-360.2 89.37,-360.2 83.97,-354.8 83.97,-349.4 83.97,-349.4 83.97,-338.6 83.97,-338.6 83.97,-333.2 89.37,-327.8 94.77,-327.8 94.77,-327.8 199.17,-327.8 199.17,-327.8 204.57,-327.8 209.97,-333.2 209.97,-338.6 209.97,-338.6 209.97,-349.4 209.97,-349.4 209.97,-354.8 204.57,-360.2 199.17,-360.2"/>
+<text xml:space="preserve" text-anchor="middle" x="146.97" y="-340.7" font-family="Microsoft YaHei" font-size="11.00">审核课程</text>
+</g>
+<!-- home&#45;&gt;auditCourse -->
+<g id="edge5" class="edge">
+<title>home-&gt;auditCourse</title>
+<path fill="none" stroke="#333333" d="M273.27,-392.41C273.27,-371.71 273.27,-339 273.27,-339 273.27,-339 218.5,-339 218.5,-339"/>
+<polygon fill="#333333" stroke="#333333" points="218.5,-336.73 212,-339 218.5,-341.28 218.5,-336.73"/>
+</g>
+<!-- user -->
+<g id="node8" class="node">
+<title>user</title>
+<path fill="white" stroke="#444444" stroke-width="1.25" d="M556.17,-360.2C556.17,-360.2 451.77,-360.2 451.77,-360.2 446.37,-360.2 440.97,-354.8 440.97,-349.4 440.97,-349.4 440.97,-338.6 440.97,-338.6 440.97,-333.2 446.37,-327.8 451.77,-327.8 451.77,-327.8 556.17,-327.8 556.17,-327.8 561.57,-327.8 566.97,-333.2 566.97,-338.6 566.97,-338.6 566.97,-349.4 566.97,-349.4 566.97,-354.8 561.57,-360.2 556.17,-360.2"/>
+<text xml:space="preserve" text-anchor="middle" x="503.97" y="-340.7" font-family="Microsoft YaHei" font-size="11.00">用户 / 教师管理</text>
+</g>
+<!-- home&#45;&gt;user -->
+<g id="edge6" class="edge">
+<title>home-&gt;user</title>
+<path fill="none" stroke="#333333" d="M377.67,-392.29C377.67,-374.53 377.67,-349 377.67,-349 377.67,-349 432.43,-349 432.43,-349"/>
+<polygon fill="#333333" stroke="#333333" points="432.43,-351.28 438.93,-349 432.43,-346.73 432.43,-351.28"/>
+</g>
+<!-- auditChapter -->
+<g id="node6" class="node">
+<title>auditChapter</title>
+<path fill="white" stroke="#444444" stroke-width="1.25" d="M199.17,-294.2C199.17,-294.2 94.77,-294.2 94.77,-294.2 89.37,-294.2 83.97,-288.8 83.97,-283.4 83.97,-283.4 83.97,-272.6 83.97,-272.6 83.97,-267.2 89.37,-261.8 94.77,-261.8 94.77,-261.8 199.17,-261.8 199.17,-261.8 204.57,-261.8 209.97,-267.2 209.97,-272.6 209.97,-272.6 209.97,-283.4 209.97,-283.4 209.97,-288.8 204.57,-294.2 199.17,-294.2"/>
+<text xml:space="preserve" text-anchor="middle" x="146.97" y="-274.7" font-family="Microsoft YaHei" font-size="11.00">审核章节</text>
+</g>
+<!-- auditCourse&#45;&gt;auditChapter -->
+<g id="edge7" class="edge">
+<title>auditCourse-&gt;auditChapter</title>
+<path fill="none" stroke="#333333" d="M146.97,-327.35C146.97,-327.35 146.97,-302.43 146.97,-302.43"/>
+<polygon fill="#333333" stroke="#333333" points="149.24,-302.43 146.97,-295.93 144.69,-302.43 149.24,-302.43"/>
+</g>
+<!-- auditResource -->
+<g id="node7" class="node">
+<title>auditResource</title>
+<path fill="white" stroke="#444444" stroke-width="1.25" d="M199.17,-229.2C199.17,-229.2 94.77,-229.2 94.77,-229.2 89.37,-229.2 83.97,-223.8 83.97,-218.4 83.97,-218.4 83.97,-207.6 83.97,-207.6 83.97,-202.2 89.37,-196.8 94.77,-196.8 94.77,-196.8 199.17,-196.8 199.17,-196.8 204.57,-196.8 209.97,-202.2 209.97,-207.6 209.97,-207.6 209.97,-218.4 209.97,-218.4 209.97,-223.8 204.57,-229.2 199.17,-229.2"/>
+<text xml:space="preserve" text-anchor="middle" x="146.97" y="-209.7" font-family="Microsoft YaHei" font-size="11.00">审核资源</text>
+</g>
+<!-- auditChapter&#45;&gt;auditResource -->
+<g id="edge8" class="edge">
+<title>auditChapter-&gt;auditResource</title>
+<path fill="none" stroke="#333333" d="M146.97,-261.26C146.97,-261.26 146.97,-237.47 146.97,-237.47"/>
+<polygon fill="#333333" stroke="#333333" points="149.24,-237.47 146.97,-230.97 144.69,-237.47 149.24,-237.47"/>
+</g>
+<!-- exit -->
+<g id="node13" class="node">
+<title>exit</title>
+<ellipse fill="#f7f7f7" stroke="#444444" stroke-width="1.25" cx="326.97" cy="-16" rx="41.4" ry="16.46"/>
+<text xml:space="preserve" text-anchor="middle" x="326.97" y="-12.7" font-family="Microsoft YaHei" font-size="11.00">退出系统</text>
+</g>
+<!-- auditResource&#45;&gt;exit -->
+<g id="edge13" class="edge">
+<title>auditResource-&gt;exit</title>
+<path fill="none" stroke="#333333" d="M210.27,-213C257.24,-213 313.17,-213 313.17,-213 313.17,-213 313.17,-40.13 313.17,-40.13"/>
+<polygon fill="#333333" stroke="#333333" points="315.44,-40.13 313.17,-33.63 310.89,-40.13 315.44,-40.13"/>
+</g>
+<!-- dict -->
+<g id="node9" class="node">
+<title>dict</title>
+<path fill="white" stroke="#444444" stroke-width="1.25" d="M556.17,-294.2C556.17,-294.2 451.77,-294.2 451.77,-294.2 446.37,-294.2 440.97,-288.8 440.97,-283.4 440.97,-283.4 440.97,-272.6 440.97,-272.6 440.97,-267.2 446.37,-261.8 451.77,-261.8 451.77,-261.8 556.17,-261.8 556.17,-261.8 561.57,-261.8 566.97,-267.2 566.97,-272.6 566.97,-272.6 566.97,-283.4 566.97,-283.4 566.97,-288.8 561.57,-294.2 556.17,-294.2"/>
+<text xml:space="preserve" text-anchor="middle" x="503.97" y="-274.7" font-family="Microsoft YaHei" font-size="11.00">字典 / 配置维护</text>
+</g>
+<!-- user&#45;&gt;dict -->
+<g id="edge9" class="edge">
+<title>user-&gt;dict</title>
+<path fill="none" stroke="#333333" d="M503.97,-327.35C503.97,-327.35 503.97,-302.43 503.97,-302.43"/>
+<polygon fill="#333333" stroke="#333333" points="506.24,-302.43 503.97,-295.93 501.69,-302.43 506.24,-302.43"/>
+</g>
+<!-- notice -->
+<g id="node10" class="node">
+<title>notice</title>
+<path fill="white" stroke="#444444" stroke-width="1.25" d="M556.17,-229.2C556.17,-229.2 451.77,-229.2 451.77,-229.2 446.37,-229.2 440.97,-223.8 440.97,-218.4 440.97,-218.4 440.97,-207.6 440.97,-207.6 440.97,-202.2 446.37,-196.8 451.77,-196.8 451.77,-196.8 556.17,-196.8 556.17,-196.8 561.57,-196.8 566.97,-202.2 566.97,-207.6 566.97,-207.6 566.97,-218.4 566.97,-218.4 566.97,-223.8 561.57,-229.2 556.17,-229.2"/>
+<text xml:space="preserve" text-anchor="middle" x="503.97" y="-209.7" font-family="Microsoft YaHei" font-size="11.00">公告与新闻维护</text>
+</g>
+<!-- dict&#45;&gt;notice -->
+<g id="edge10" class="edge">
+<title>dict-&gt;notice</title>
+<path fill="none" stroke="#333333" d="M503.97,-261.26C503.97,-261.26 503.97,-237.47 503.97,-237.47"/>
+<polygon fill="#333333" stroke="#333333" points="506.24,-237.47 503.97,-230.97 501.69,-237.47 506.24,-237.47"/>
+</g>
+<!-- exam -->
+<g id="node11" class="node">
+<title>exam</title>
+<path fill="white" stroke="#444444" stroke-width="1.25" d="M556.17,-164.2C556.17,-164.2 451.77,-164.2 451.77,-164.2 446.37,-164.2 440.97,-158.8 440.97,-153.4 440.97,-153.4 440.97,-142.6 440.97,-142.6 440.97,-137.2 446.37,-131.8 451.77,-131.8 451.77,-131.8 556.17,-131.8 556.17,-131.8 561.57,-131.8 566.97,-137.2 566.97,-142.6 566.97,-142.6 566.97,-153.4 566.97,-153.4 566.97,-158.8 561.57,-164.2 556.17,-164.2"/>
+<text xml:space="preserve" text-anchor="middle" x="503.97" y="-144.7" font-family="Microsoft YaHei" font-size="11.00">考试 / 题库维护</text>
+</g>
+<!-- notice&#45;&gt;exam -->
+<g id="edge11" class="edge">
+<title>notice-&gt;exam</title>
+<path fill="none" stroke="#333333" d="M503.97,-196.26C503.97,-196.26 503.97,-172.47 503.97,-172.47"/>
+<polygon fill="#333333" stroke="#333333" points="506.24,-172.47 503.97,-165.97 501.69,-172.47 506.24,-172.47"/>
+</g>
+<!-- ai -->
+<g id="node12" class="node">
+<title>ai</title>
+<path fill="white" stroke="#444444" stroke-width="1.25" d="M556.17,-98.2C556.17,-98.2 451.77,-98.2 451.77,-98.2 446.37,-98.2 440.97,-92.8 440.97,-87.4 440.97,-87.4 440.97,-76.6 440.97,-76.6 440.97,-71.2 446.37,-65.8 451.77,-65.8 451.77,-65.8 556.17,-65.8 556.17,-65.8 561.57,-65.8 566.97,-71.2 566.97,-76.6 566.97,-76.6 566.97,-87.4 566.97,-87.4 566.97,-92.8 561.57,-98.2 556.17,-98.2"/>
+<text xml:space="preserve" text-anchor="middle" x="503.97" y="-78.7" font-family="Microsoft YaHei" font-size="11.00">AI 问题配置</text>
+</g>
+<!-- exam&#45;&gt;ai -->
+<g id="edge12" class="edge">
+<title>exam-&gt;ai</title>
+<path fill="none" stroke="#333333" d="M503.97,-131.35C503.97,-131.35 503.97,-106.43 503.97,-106.43"/>
+<polygon fill="#333333" stroke="#333333" points="506.24,-106.43 503.97,-99.93 501.69,-106.43 506.24,-106.43"/>
+</g>
+<!-- ai&#45;&gt;exit -->
+<g id="edge14" class="edge">
+<title>ai-&gt;exit</title>
+<path fill="none" stroke="#333333" d="M440.4,-82C394.58,-82 340.77,-82 340.77,-82 340.77,-82 340.77,-39.99 340.77,-39.99"/>
+<polygon fill="#333333" stroke="#333333" points="343.04,-39.99 340.77,-33.49 338.49,-39.99 343.04,-39.99"/>
+</g>
+</g>
+</svg>

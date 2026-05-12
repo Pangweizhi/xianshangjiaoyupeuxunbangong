@@ -1,0 +1,56 @@
+digraph G {
+  graph [charset="UTF-8", bgcolor="white", labelloc="t", label="总数据库E-R图", fontname="Microsoft YaHei", fontsize=22, rankdir="TB", splines=ortho, nodesep=0.35, ranksep=0.50, pad=0.18, margin=0.12, size="8,8!"];
+  node [fontname="Microsoft YaHei", fontsize=10, color="#444444", penwidth=1.25];
+  edge [fontname="Microsoft YaHei", fontsize=9, color="#333333", penwidth=1.0, arrowsize=0.7];
+
+  admin [label="管理员\nusers", shape=box, style="rounded,filled", fillcolor="#f8fbff"];
+  teacher [label="教师\njiaoshi", shape=box, style="rounded,filled", fillcolor="#f8fbff"];
+  student [label="学生\nyonghu", shape=box, style="rounded,filled", fillcolor="#f8fbff"];
+  course [label="课程\nkecheng", shape=box, style="rounded,filled", fillcolor="#f8fbff"];
+  chapter [label="章节\ncourse_chapter", shape=box, style="rounded,filled", fillcolor="#f8fbff"];
+  resource [label="资源\ncourse_resource", shape=box, style="rounded,filled", fillcolor="#f8fbff"];
+  enroll [label="选课\ncourse_enroll", shape=box, style="rounded,filled", fillcolor="#f8fbff"];
+  progress [label="进度\nstudy_progress", shape=box, style="rounded,filled", fillcolor="#f8fbff"];
+  credit [label="学分记录\ncourse_credit_record", shape=box, style="rounded,filled", fillcolor="#f8fbff"];
+  homework [label="作业\nzuoye", shape=box, style="rounded,filled", fillcolor="#f8fbff"];
+  submit [label="作业提交\nzuoye_submit", shape=box, style="rounded,filled", fillcolor="#f8fbff"];
+  exam [label="考试\nexam", shape=box, style="rounded,filled", fillcolor="#f8fbff"];
+  question [label="题目\nexam_question", shape=box, style="rounded,filled", fillcolor="#f8fbff"];
+  record [label="考试记录\nexam_record", shape=box, style="rounded,filled", fillcolor="#f8fbff"];
+  ai_session [label="AI 会话\nai_chat_session", shape=box, style="rounded,filled", fillcolor="#fff5e8"];
+  ai_msg [label="AI 消息\nai_chat_message", shape=box, style="rounded,filled", fillcolor="#fff5e8"];
+
+  d1 [label="审核", shape=diamond, style="filled", fillcolor="white"];
+  d2 [label="创建", shape=diamond, style="filled", fillcolor="white"];
+  d3 [label="包含", shape=diamond, style="filled", fillcolor="white"];
+  d4 [label="选课", shape=diamond, style="filled", fillcolor="white"];
+  d5 [label="学习", shape=diamond, style="filled", fillcolor="white"];
+  d6 [label="发放", shape=diamond, style="filled", fillcolor="white"];
+  d7 [label="发布", shape=diamond, style="filled", fillcolor="white"];
+  d8 [label="提交", shape=diamond, style="filled", fillcolor="white"];
+  d9 [label="参加", shape=diamond, style="filled", fillcolor="white"];
+  d10 [label="生成", shape=diamond, style="filled", fillcolor="white"];
+  d11 [label="会话", shape=diamond, style="filled", fillcolor="white"];
+
+  admin -> d1 -> course;
+  teacher -> d2 -> course;
+  course -> d3 -> chapter;
+  chapter -> d3 -> resource;
+  student -> d4 -> enroll;
+  enroll -> d5 -> progress;
+  course -> d4 -> enroll;
+  course -> d5 -> progress;
+  course -> d6 -> credit;
+  course -> d7 -> homework;
+  homework -> d8 -> submit;
+  course -> d9 -> exam;
+  exam -> d10 -> question;
+  exam -> d9 -> record;
+  student -> d11 -> ai_session;
+  ai_session -> d3 -> ai_msg;
+
+  { rank=same; admin; teacher; student; }
+  { rank=same; course; }
+  { rank=same; chapter; resource; homework; exam; ai_session; }
+  { rank=same; enroll; progress; credit; submit; question; record; ai_msg; }
+}

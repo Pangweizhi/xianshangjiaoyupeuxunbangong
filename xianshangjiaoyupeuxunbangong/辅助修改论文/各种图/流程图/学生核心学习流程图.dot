@@ -1,0 +1,108 @@
+digraph G {
+  graph [
+    charset="UTF-8",
+    bgcolor="white",
+    fontname="Microsoft YaHei",
+    fontsize=22,
+    rankdir="TB",
+    splines=ortho,
+    nodesep=0.34,
+    ranksep=0.46,
+    pad=0.18,
+    margin=0.10,
+    size="7.2,7.2!",
+    ratio=fill
+  ];
+
+  node [
+    fontname="Microsoft YaHei",
+    fontsize=11,
+    shape=box,
+    style="rounded,filled",
+    fillcolor="white",
+    color="#444444",
+    penwidth=1.25,
+    width=1.75,
+    height=0.45,
+    fixedsize=false,
+    margin="0.10,0.07"
+  ];
+
+  edge [
+    fontname="Microsoft YaHei",
+    fontsize=9,
+    color="#333333",
+    penwidth=1.0,
+    arrowsize=0.65
+  ];
+
+  start [
+    label="开始",
+    shape=ellipse,
+    fillcolor="#f7f7f7",
+    width=1.15,
+    height=0.42
+  ];
+
+  login [label="用户登录"];
+
+  check [
+    label="用户\n是否存在",
+    shape=diamond,
+    style="filled",
+    fillcolor="white",
+    width=1.55,
+    height=0.85,
+    margin="0.04,0.04"
+  ];
+
+  home [label="学生系统"];
+  select [label="选课 / 进入我的课程"];
+  study [label="查看章节\n学习视频与资源"];
+  progress [label="记录学习进度"];
+  homework [label="查看并提交作业"];
+  exam [label="参加考试"];
+  result [label="查看成绩与学分"];
+
+  exit [
+    label="退出系统",
+    shape=ellipse,
+    fillcolor="#f7f7f7",
+    width=1.15,
+    height=0.42
+  ];
+
+  {
+    rank=same;
+    homework;
+    exam;
+  }
+
+  start -> login;
+  login -> check;
+
+  check -> home [
+    xlabel="存在",
+    labeldistance=1.15,
+    labelangle=-18
+  ];
+
+  check -> login [
+    xlabel="不存在",
+    constraint=false,
+    labeldistance=1.45,
+    labelangle=24
+  ];
+
+  home -> select;
+  select -> study;
+  study -> progress;
+
+  progress -> homework;
+  progress -> exam;
+
+  homework -> result;
+  exam -> result;
+
+  result -> exit;
+}

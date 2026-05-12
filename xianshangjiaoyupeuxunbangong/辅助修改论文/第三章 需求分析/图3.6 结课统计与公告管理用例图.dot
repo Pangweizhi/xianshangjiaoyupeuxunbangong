@@ -1,0 +1,24 @@
+digraph G {
+  graph [charset="UTF-8", bgcolor="white", labelloc="t", fontname="Microsoft YaHei", fontsize=22, rankdir="LR", splines=line, nodesep=0.35, ranksep=0.70, pad=0.2, margin=0.15];
+  node [fontname="Microsoft YaHei", fontsize=12, color="#444444", penwidth=1.2];
+  edge [fontname="Microsoft YaHei", fontsize=9, color="#666666", penwidth=1.0, arrowsize=0.7];
+
+  actor1 [label="管理员", shape=box, style="rounded,filled", fillcolor="#FFFFFF"];
+  actor2 [label="教师", shape=box, style="rounded,filled", fillcolor="#FFFFFF"];
+  actor3 [label="学生", shape=box, style="rounded,filled", fillcolor="#FFFFFF"];
+  uc1 [label="结课判定", shape=ellipse, style="filled", fillcolor="#FFFFFF"];
+  uc2 [label="学分发放", shape=ellipse, style="filled", fillcolor="#FFFFFF"];
+  uc3 [label="课程统计概览", shape=ellipse, style="filled", fillcolor="#FFFFFF"];
+  uc4 [label="公告发布", shape=ellipse, style="filled", fillcolor="#FFFFFF"];
+  uc5 [label="公告浏览", shape=ellipse, style="filled", fillcolor="#FFFFFF"];
+  uc6 [label="成绩与学分查看", shape=ellipse, style="filled", fillcolor="#FFFFFF"];
+
+  actor1 -> uc1;
+  actor1 -> uc2;
+  actor1 -> uc3;
+  actor1 -> uc4;
+  actor2 -> uc3;
+  actor2 -> uc4;
+  actor3 -> uc5;
+  actor3 -> uc6;
+}

@@ -1,0 +1,79 @@
+digraph G {
+  graph [charset="UTF-8", bgcolor="white", labelloc="t", label="系统功能结构设计图", fontname="Microsoft YaHei", fontsize=22, rankdir="TB", splines=ortho, nodesep=0.35, ranksep=0.42, pad=0.18, margin=0.12, size="8,8!"];
+  node [fontname="Microsoft YaHei", fontsize=11, shape=box, style="rounded,filled", fillcolor="white", color="#4d4d4d", penwidth=1.35, margin="0.10,0.08"];
+  edge [fontname="Microsoft YaHei", fontsize=9, color="#3f3f3f", penwidth=1.05, arrowsize=0.7];
+
+  root [label="线上教育培训办公系统", fillcolor="#f6f9ff", fontsize=12];
+
+  base [label="基础支撑模块", fillcolor="#eef5ff", color="#5d7db3"];
+  core [label="核心教学模块", fillcolor="#eef9f1", color="#5b9b6d"];
+  ai [label="智能AI模块", fillcolor="#fff5e8", color="#d78b29"];
+
+  login [label="账号登录"];
+  center [label="个人中心"];
+  dict [label="字典管理"];
+  config [label="系统配置"];
+  notice [label="公告管理"];
+  forum [label="论坛交流"];
+
+  course [label="课程管理"];
+  chapter [label="章节管理"];
+  resource [label="资源管理"];
+  enroll [label="选课管理"];
+  progress [label="学习进度"];
+  homework [label="作业管理"];
+  submit [label="作业提交"];
+  exam [label="考试管理"];
+  question [label="题库管理"];
+  record [label="考试记录"];
+  score [label="成绩统计"];
+  settlement [label="结课与学分"];
+
+  chat [label="AI会话"];
+  message [label="AI消息记录"];
+  generate [label="AI题目生成"];
+  assistant [label="问答助手"];
+
+  root -> base;
+  root -> core;
+  root -> ai;
+
+  base -> login;
+  base -> center;
+  base -> dict;
+  base -> config;
+  base -> notice;
+  base -> forum;
+
+  core -> course;
+  course -> chapter;
+  chapter -> resource;
+  resource -> enroll;
+  enroll -> progress;
+  progress -> homework;
+  homework -> submit;
+  submit -> exam;
+  exam -> question;
+  question -> record;
+  record -> score;
+  score -> settlement;
+
+  ai -> chat;
+  chat -> message;
+  message -> generate;
+  generate -> assistant;
+
+  { rank = same; base; core; ai; }
+  { rank = same; login; course; chat; }
+  { rank = same; center; chapter; message; }
+  { rank = same; dict; resource; generate; }
+  { rank = same; config; enroll; assistant; }
+  { rank = same; notice; progress; }
+  { rank = same; forum; homework; }
+  { rank = same; submit; }
+  { rank = same; exam; }
+  { rank = same; question; }
+  { rank = same; record; }
+  { rank = same; score; }
+  { rank = same; settlement; }
+}

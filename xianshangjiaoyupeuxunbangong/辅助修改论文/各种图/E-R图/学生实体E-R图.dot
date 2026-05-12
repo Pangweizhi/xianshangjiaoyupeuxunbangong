@@ -1,0 +1,27 @@
+digraph G {
+  graph [charset="UTF-8", bgcolor="white", labelloc="t", label="学生实体E-R图", fontname="Microsoft YaHei", fontsize=22, rankdir="TB", splines=ortho, nodesep=0.35, ranksep=0.48, pad=0.18, margin=0.12, size="8,8!"];
+  node [fontname="Microsoft YaHei", fontsize=10, color="#444444", penwidth=1.25];
+  edge [fontname="Microsoft YaHei", fontsize=9, color="#333333", penwidth=1.0, arrowsize=0.7];
+
+  student [label="学生\nyonghu\nid, username, yonghu_name", shape=box, style="rounded,filled", fillcolor="#f8fbff"];
+  enroll [label="选课\ncourse_enroll", shape=box, style="rounded,filled", fillcolor="#ffffff"];
+  progress [label="学习进度\nstudy_progress", shape=box, style="rounded,filled", fillcolor="#ffffff"];
+  submit [label="作业提交\nzuoye_submit", shape=box, style="rounded,filled", fillcolor="#ffffff"];
+  record [label="考试记录\nexam_record", shape=box, style="rounded,filled", fillcolor="#ffffff"];
+  credit [label="学分记录\ncourse_credit_record", shape=box, style="rounded,filled", fillcolor="#ffffff"];
+  ai [label="AI 会话\nai_chat_session", shape=box, style="rounded,filled", fillcolor="#fff5e8"];
+
+  e1 [label="选课", shape=diamond, style="filled", fillcolor="white"];
+  e2 [label="学习", shape=diamond, style="filled", fillcolor="white"];
+  e3 [label="提交", shape=diamond, style="filled", fillcolor="white"];
+  e4 [label="参加", shape=diamond, style="filled", fillcolor="white"];
+  e5 [label="获得", shape=diamond, style="filled", fillcolor="white"];
+  e6 [label="会话", shape=diamond, style="filled", fillcolor="white"];
+
+  student -> e1 -> enroll;
+  student -> e2 -> progress;
+  student -> e3 -> submit;
+  student -> e4 -> record;
+  student -> e5 -> credit;
+  student -> e6 -> ai;
+}

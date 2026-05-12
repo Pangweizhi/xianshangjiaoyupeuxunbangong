@@ -1,0 +1,21 @@
+digraph G {
+  graph [charset="UTF-8", bgcolor="white", labelloc="t", fontname="Microsoft YaHei", fontsize=22, rankdir="LR", splines=line, nodesep=0.35, ranksep=0.70, pad=0.2, margin=0.15];
+  node [fontname="Microsoft YaHei", fontsize=12, color="#444444", penwidth=1.2];
+  edge [fontname="Microsoft YaHei", fontsize=9, color="#666666", penwidth=1.0, arrowsize=0.7];
+
+  actor1 [label="教师", shape=box, style="rounded,filled", fillcolor="#FFFFFF"];
+  actor2 [label="学生", shape=box, style="rounded,filled", fillcolor="#FFFFFF"];
+  uc1 [label="题库管理", shape=ellipse, style="filled", fillcolor="#FFFFFF"];
+  uc2 [label="AI 生成题目草稿", shape=ellipse, style="filled", fillcolor="#FFFFFF"];
+  uc3 [label="发布考试", shape=ellipse, style="filled", fillcolor="#FFFFFF"];
+  uc4 [label="在线答题", shape=ellipse, style="filled", fillcolor="#FFFFFF"];
+  uc5 [label="自动判分", shape=ellipse, style="filled", fillcolor="#FFFFFF"];
+  uc6 [label="阅卷与成绩汇总", shape=ellipse, style="filled", fillcolor="#FFFFFF"];
+
+  actor1 -> uc1;
+  actor1 -> uc2;
+  actor1 -> uc3;
+  actor1 -> uc6;
+  actor2 -> uc4;
+  actor2 -> uc5;
+}

@@ -205,7 +205,14 @@ export async function fetchMeetingPage(params?: Record<string, unknown>) {
       ...params
     }
   });
-  return unwrap<PagePayload<MeetingItem>>(data);
+  const page = unwrap<PagePayload<MeetingItem>>(data);
+  return {
+    totalCount: Number(page?.totalCount || 0),
+    pageSize: Number(page?.pageSize || 0),
+    totalPage: Number(page?.totalPage || 0),
+    currPage: Number(page?.currPage || 1),
+    list: Array.isArray(page?.list) ? page.list : []
+  };
 }
 
 export async function fetchHomeworkDetail(id: number | string) {
@@ -288,7 +295,14 @@ export async function fetchMyHomeworkSubmissions(params?: Record<string, unknown
   const { data } = await http.get("/zuoyeSubmit/myPage", {
     params: { page: 1, limit: 10, sort: "id", order: "desc", ...params }
   });
-  return unwrap<PagePayload<HomeworkSubmissionItem>>(data);
+  const page = unwrap<PagePayload<HomeworkSubmissionItem>>(data);
+  return {
+    totalCount: Number(page?.totalCount || 0),
+    pageSize: Number(page?.pageSize || 0),
+    totalPage: Number(page?.totalPage || 0),
+    currPage: Number(page?.currPage || 1),
+    list: Array.isArray(page?.list) ? page.list : []
+  };
 }
 
 export async function fetchStudentProfile() {

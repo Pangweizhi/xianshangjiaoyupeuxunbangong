@@ -26,8 +26,7 @@
         zuoye.zuoye_name as zuoyeName,
         yonghu.yonghu_name as yonghuName,
         yonghu.yonghu_photo as yonghuPhoto,
-        jiaoshi.jiaoshi_name as jiaoshiName,
-        jiaoshi.jiaoshi_uuid_number as jiaoshiUuidNumber
+        jiaoshi.jiaoshi_name as jiaoshiName
         FROM zuoye_submit a
         LEFT JOIN zuoye zuoye ON a.zuoye_id = zuoye.id
         LEFT JOIN yonghu yonghu ON a.yonghu_id = yonghu.id

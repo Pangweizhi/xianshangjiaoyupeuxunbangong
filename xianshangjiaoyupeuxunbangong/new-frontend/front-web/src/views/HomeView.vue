@@ -286,7 +286,7 @@ onMounted(async () => {
     notices.value = noticePage.list;
     homeworks.value = homeworkPage.list;
     forums.value = forumPage.list;
-    meetings.value = meetingPage.list;
+    meetings.value = Array.isArray(meetingPage?.list) ? meetingPage.list : [];
     startBannerLoop();
   } catch (error) {
     console.error(error);

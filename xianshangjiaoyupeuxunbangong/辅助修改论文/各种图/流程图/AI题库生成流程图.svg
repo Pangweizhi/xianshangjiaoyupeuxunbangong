@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="532pt" height="532pt" viewBox="7.00 7.00 525.00 525.00">
+<g id="graph0" class="graph" transform="scale(0.825675 0.825675) rotate(0) translate(21.68 623.13)">
+<title>G</title>
+<polygon fill="white" stroke="none" points="-12.96,12.96 -12.96,-614.41 614.41,-614.41 614.41,12.96 -12.96,12.96"/>
+<!-- start -->
+<g id="node1" class="node">
+<title>start</title>
+<ellipse fill="#f7f7f7" stroke="#444444" stroke-width="1.25" cx="299.89" cy="-585" rx="41.4" ry="16.46"/>
+<text xml:space="preserve" text-anchor="middle" x="299.89" y="-581.7" font-family="Microsoft YaHei" font-size="11.00">开始</text>
+</g>
+<!-- select -->
+<g id="node2" class="node">
+<title>select</title>
+<path fill="white" stroke="#444444" stroke-width="1.25" d="M352.09,-533.2C352.09,-533.2 247.69,-533.2 247.69,-533.2 242.29,-533.2 236.89,-527.8 236.89,-522.4 236.89,-522.4 236.89,-511.6 236.89,-511.6 236.89,-506.2 242.29,-500.8 247.69,-500.8 247.69,-500.8 352.09,-500.8 352.09,-500.8 357.49,-500.8 362.89,-506.2 362.89,-511.6 362.89,-511.6 362.89,-522.4 362.89,-522.4 362.89,-527.8 357.49,-533.2 352.09,-533.2"/>
+<text xml:space="preserve" text-anchor="middle" x="299.89" y="-513.7" font-family="Microsoft YaHei" font-size="11.00">选择课程 / 章节 / 题型</text>
+</g>
+<!-- start&#45;&gt;select -->
+<g id="edge1" class="edge">
+<title>start-&gt;select</title>
+<path fill="none" stroke="#333333" d="M299.89,-568.19C299.89,-568.19 299.89,-541.63 299.89,-541.63"/>
+<polygon fill="#333333" stroke="#333333" points="302.17,-541.63 299.89,-535.13 297.62,-541.63 302.17,-541.63"/>
+</g>
+<!-- prompt -->
+<g id="node3" class="node">
+<title>prompt</title>
+<path fill="white" stroke="#444444" stroke-width="1.25" d="M352.09,-466.2C352.09,-466.2 247.69,-466.2 247.69,-466.2 242.29,-466.2 236.89,-460.8 236.89,-455.4 236.89,-455.4 236.89,-444.6 236.89,-444.6 236.89,-439.2 242.29,-433.8 247.69,-433.8 247.69,-433.8 352.09,-433.8 352.09,-433.8 357.49,-433.8 362.89,-439.2 362.89,-444.6 362.89,-444.6 362.89,-455.4 362.89,-455.4 362.89,-460.8 357.49,-466.2 352.09,-466.2"/>
+<text xml:space="preserve" text-anchor="middle" x="299.89" y="-446.7" font-family="Microsoft YaHei" font-size="11.00">组装题目生成参数</text>
+</g>
+<!-- select&#45;&gt;prompt -->
+<g id="edge2" class="edge">
+<title>select-&gt;prompt</title>
+<path fill="none" stroke="#333333" d="M299.89,-500.44C299.89,-500.44 299.89,-474.38 299.89,-474.38"/>
+<polygon fill="#333333" stroke="#333333" points="302.17,-474.38 299.89,-467.88 297.62,-474.38 302.17,-474.38"/>
+</g>
+<!-- check -->
+<g id="node4" class="node">
+<title>check</title>
+<polygon fill="white" stroke="#444444" stroke-width="1.25" points="299.89,-398.6 240.49,-368 299.89,-337.4 359.29,-368 299.89,-398.6"/>
+<text xml:space="preserve" text-anchor="middle" x="299.89" y="-371.3" font-family="Microsoft YaHei" font-size="11.00">AI 配置</text>
+<text xml:space="preserve" text-anchor="middle" x="299.89" y="-358.1" font-family="Microsoft YaHei" font-size="11.00">是否启用</text>
+</g>
+<!-- prompt&#45;&gt;check -->
+<g id="edge3" class="edge">
+<title>prompt-&gt;check</title>
+<path fill="none" stroke="#333333" d="M299.89,-433.41C299.89,-433.41 299.89,-407.18 299.89,-407.18"/>
+<polygon fill="#333333" stroke="#333333" points="302.17,-407.18 299.89,-400.68 297.62,-407.18 302.17,-407.18"/>
+</g>
+<!-- call -->
+<g id="node5" class="node">
+<title>call</title>
+<path fill="white" stroke="#444444" stroke-width="1.25" d="M190.09,-302.2C190.09,-302.2 85.69,-302.2 85.69,-302.2 80.29,-302.2 74.89,-296.8 74.89,-291.4 74.89,-291.4 74.89,-280.6 74.89,-280.6 74.89,-275.2 80.29,-269.8 85.69,-269.8 85.69,-269.8 190.09,-269.8 190.09,-269.8 195.49,-269.8 200.89,-275.2 200.89,-280.6 200.89,-280.6 200.89,-291.4 200.89,-291.4 200.89,-296.8 195.49,-302.2 190.09,-302.2"/>
+<text xml:space="preserve" text-anchor="middle" x="137.89" y="-282.7" font-family="Microsoft YaHei" font-size="11.00">调用 AI 服务</text>
+</g>
+<!-- check&#45;&gt;call -->
+<g id="edge4" class="edge">
+<title>check-&gt;call</title>
+<path fill="none" stroke="#333333" d="M264.25,-355.19C264.25,-332.12 264.25,-286 264.25,-286 264.25,-286 209.46,-286 209.46,-286"/>
+<polygon fill="#333333" stroke="#333333" points="209.46,-283.73 202.96,-286 209.46,-288.28 209.46,-283.73"/>
+<text xml:space="preserve" text-anchor="middle" x="257.5" y="-295.9" font-family="Microsoft YaHei" font-size="9.00">启用</text>
+</g>
+<!-- fallback -->
+<g id="node6" class="node">
+<title>fallback</title>
+<path fill="white" stroke="#444444" stroke-width="1.25" d="M516.09,-302.2C516.09,-302.2 411.69,-302.2 411.69,-302.2 406.29,-302.2 400.89,-296.8 400.89,-291.4 400.89,-291.4 400.89,-280.6 400.89,-280.6 400.89,-275.2 406.29,-269.8 411.69,-269.8 411.69,-269.8 516.09,-269.8 516.09,-269.8 521.49,-269.8 526.89,-275.2 526.89,-280.6 526.89,-280.6 526.89,-291.4 526.89,-291.4 526.89,-296.8 521.49,-302.2 516.09,-302.2"/>
+<text xml:space="preserve" text-anchor="middle" x="463.89" y="-282.7" font-family="Microsoft YaHei" font-size="11.00">降级为规则草稿</text>
+</g>
+<!-- check&#45;&gt;fallback -->
+<g id="edge5" class="edge">
+<title>check-&gt;fallback</title>
+<path fill="none" stroke="#333333" d="M288.01,-342.95C288.01,-321.48 288.01,-294 288.01,-294 288.01,-294 392.38,-294 392.38,-294"/>
+<polygon fill="#333333" stroke="#333333" points="392.38,-296.28 398.88,-294 392.38,-291.73 392.38,-296.28"/>
+<text xml:space="preserve" text-anchor="middle" x="305.6" y="-296.7" font-family="Microsoft YaHei" font-size="9.00">未启用</text>
+</g>
+<!-- draft -->
+<g id="node7" class="node">
+<title>draft</title>
+<path fill="white" stroke="#444444" stroke-width="1.25" d="M218.09,-235.2C218.09,-235.2 113.69,-235.2 113.69,-235.2 108.29,-235.2 102.89,-229.8 102.89,-224.4 102.89,-224.4 102.89,-213.6 102.89,-213.6 102.89,-208.2 108.29,-202.8 113.69,-202.8 113.69,-202.8 218.09,-202.8 218.09,-202.8 223.49,-202.8 228.89,-208.2 228.89,-213.6 228.89,-213.6 228.89,-224.4 228.89,-224.4 228.89,-229.8 223.49,-235.2 218.09,-235.2"/>
+<text xml:space="preserve" text-anchor="middle" x="165.89" y="-215.7" font-family="Microsoft YaHei" font-size="11.00">生成题目草稿</text>
+</g>
+<!-- call&#45;&gt;draft -->
+<g id="edge6" class="edge">
+<title>call-&gt;draft</title>
+<path fill="none" stroke="#333333" d="M151.89,-269.44C151.89,-269.44 151.89,-243.38 151.89,-243.38"/>
+<polygon fill="#333333" stroke="#333333" points="154.17,-243.38 151.89,-236.88 149.62,-243.38 154.17,-243.38"/>
+</g>
+<!-- review -->
+<g id="node8" class="node">
+<title>review</title>
+<path fill="white" stroke="#444444" stroke-width="1.25" d="M352.09,-168.2C352.09,-168.2 247.69,-168.2 247.69,-168.2 242.29,-168.2 236.89,-162.8 236.89,-157.4 236.89,-157.4 236.89,-146.6 236.89,-146.6 236.89,-141.2 242.29,-135.8 247.69,-135.8 247.69,-135.8 352.09,-135.8 352.09,-135.8 357.49,-135.8 362.89,-141.2 362.89,-146.6 362.89,-146.6 362.89,-157.4 362.89,-157.4 362.89,-162.8 357.49,-168.2 352.09,-168.2"/>
+<text xml:space="preserve" text-anchor="middle" x="299.89" y="-148.7" font-family="Microsoft YaHei" font-size="11.00">教师确认 / 编辑</text>
+</g>
+<!-- fallback&#45;&gt;review -->
+<g id="edge8" class="edge">
+<title>fallback-&gt;review</title>
+<path fill="none" stroke="#333333" d="M400.47,-278C368.13,-278 335.53,-278 335.53,-278 335.53,-278 335.53,-176.75 335.53,-176.75"/>
+<polygon fill="#333333" stroke="#333333" points="337.81,-176.75 335.53,-170.25 333.26,-176.75 337.81,-176.75"/>
+</g>
+<!-- draft&#45;&gt;review -->
+<g id="edge7" class="edge">
+<title>draft-&gt;review</title>
+<path fill="none" stroke="#333333" d="M229.46,-219C268.77,-219 311.77,-219 311.77,-219 311.77,-219 311.77,-176.58 311.77,-176.58"/>
+<polygon fill="#333333" stroke="#333333" points="314.05,-176.58 311.77,-170.08 309.5,-176.58 314.05,-176.58"/>
+</g>
+<!-- save -->
+<g id="node9" class="node">
+<title>save</title>
+<path fill="white" stroke="#444444" stroke-width="1.25" d="M352.09,-100.2C352.09,-100.2 247.69,-100.2 247.69,-100.2 242.29,-100.2 236.89,-94.8 236.89,-89.4 236.89,-89.4 236.89,-78.6 236.89,-78.6 236.89,-73.2 242.29,-67.8 247.69,-67.8 247.69,-67.8 352.09,-67.8 352.09,-67.8 357.49,-67.8 362.89,-73.2 362.89,-78.6 362.89,-78.6 362.89,-89.4 362.89,-89.4 362.89,-94.8 357.49,-100.2 352.09,-100.2"/>
+<text xml:space="preserve" text-anchor="middle" x="299.89" y="-80.7" font-family="Microsoft YaHei" font-size="11.00">保存到题库</text>
+</g>
+<!-- review&#45;&gt;save -->
+<g id="edge9" class="edge">
+<title>review-&gt;save</title>
+<path fill="none" stroke="#333333" d="M299.89,-135.19C299.89,-135.19 299.89,-108.63 299.89,-108.63"/>
+<polygon fill="#333333" stroke="#333333" points="302.17,-108.63 299.89,-102.13 297.62,-108.63 302.17,-108.63"/>
+</g>
+<!-- end -->
+<g id="node10" class="node">
+<title>end</title>
+<ellipse fill="#f7f7f7" stroke="#444444" stroke-width="1.25" cx="299.89" cy="-16" rx="41.4" ry="16.46"/>
+<text xml:space="preserve" text-anchor="middle" x="299.89" y="-12.7" font-family="Microsoft YaHei" font-size="11.00">结束</text>
+</g>
+<!-- save&#45;&gt;end -->
+<g id="edge10" class="edge">
+<title>save-&gt;end</title>
+<path fill="none" stroke="#333333" d="M299.89,-67.19C299.89,-67.19 299.89,-40.63 299.89,-40.63"/>
+<polygon fill="#333333" stroke="#333333" points="302.17,-40.63 299.89,-34.13 297.62,-40.63 302.17,-40.63"/>
+</g>
+</g>
+</svg>

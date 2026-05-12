@@ -1,0 +1,29 @@
+digraph G {
+  graph [rankdir=TB, splines=ortho, nodesep=0.25, ranksep=0.35];
+  node [shape=box, style="rounded,filled", fontname="Microsoft YaHei", fontsize=12, color="#D08A3C", fillcolor="#FFF6EA"];
+  edge [color="#8B7E6A", arrowsize=0.75];
+
+  start [shape=ellipse, label="开始", fillcolor="#FBE7CF"];
+  login [label="学生登录系统"];
+  browse [label="浏览课程并查看详情"];
+  enroll [label="选择已审核通过课程"];
+  study [label="按章节学习视频与资源"];
+  progress [label="系统保存学习进度"];
+  homework [label="进入作业并提交答案"];
+  examCheck [shape=diamond, label="学习进度达到 100%？", fillcolor="#FFF1DF", color="#D08A3C"];
+  exam [label="参加考试并提交试卷"];
+  settle [label="系统汇总进度、作业、考试结果"];
+  credit [shape=diamond, label="满足结课条件？", fillcolor="#FFF1DF", color="#D08A3C"];
+  finish [label="结课并发放学分"];
+  continueStudy [label="继续学习或补交作业"];
+  end [shape=ellipse, label="结束", fillcolor="#FBE7CF"];
+
+  start -> login -> browse -> enroll -> study -> progress -> homework -> examCheck;
+  examCheck -> continueStudy [label="否"];
+  continueStudy -> study;
+  examCheck -> exam [label="是"];
+  exam -> settle -> credit;
+  credit -> finish [label="是"];
+  credit -> continueStudy [label="否"];
+  finish -> end;
+}

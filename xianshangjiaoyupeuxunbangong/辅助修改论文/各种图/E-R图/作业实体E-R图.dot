@@ -1,0 +1,26 @@
+digraph G {
+  graph [charset="UTF-8", bgcolor="white", labelloc="t", label="作业实体E-R图", fontname="Microsoft YaHei", fontsize=22, rankdir="TB", splines=ortho, nodesep=0.35, ranksep=0.48, pad=0.18, margin=0.12, size="8,8!"];
+  node [fontname="Microsoft YaHei", fontsize=10, color="#444444", penwidth=1.25];
+  edge [fontname="Microsoft YaHei", fontsize=9, color="#333333", penwidth=1.0, arrowsize=0.7];
+
+  homework [label="作业\nzuoye\nid, zuoye_name, publish_status", shape=box, style="rounded,filled", fillcolor="#f8fbff"];
+  teacher [label="教师\njiaoshi", shape=box, style="rounded,filled", fillcolor="#ffffff"];
+  course [label="课程\nkecheng", shape=box, style="rounded,filled", fillcolor="#ffffff"];
+  chapter [label="章节\ncourse_chapter", shape=box, style="rounded,filled", fillcolor="#ffffff"];
+  submit [label="作业提交\nzuoye_submit", shape=box, style="rounded,filled", fillcolor="#ffffff"];
+  student [label="学生\nyonghu", shape=box, style="rounded,filled", fillcolor="#ffffff"];
+  question [label="题目\nexam_question", shape=box, style="rounded,filled", fillcolor="#ffffff"];
+
+  e1 [label="发布", shape=diamond, style="filled", fillcolor="white"];
+  e2 [label="归属", shape=diamond, style="filled", fillcolor="white"];
+  e3 [label="关联", shape=diamond, style="filled", fillcolor="white"];
+  e4 [label="提交", shape=diamond, style="filled", fillcolor="white"];
+  e5 [label="包含", shape=diamond, style="filled", fillcolor="white"];
+
+  homework -> e1 -> teacher;
+  homework -> e2 -> course;
+  homework -> e3 -> chapter;
+  homework -> e4 -> submit;
+  submit -> e5 -> student;
+  homework -> e5 -> question;
+}

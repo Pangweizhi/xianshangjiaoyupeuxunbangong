@@ -1,0 +1,22 @@
+digraph G {
+  graph [rankdir=LR, splines=true, nodesep=0.5, ranksep=1.0];
+  node [fontname="Microsoft YaHei", fontsize=12];
+  edge [color="#7A8A99"];
+
+  actor [shape=plaintext, label="管理员"];
+  subgraph cluster_sys {
+    label="线上教育培训管理系统";
+    color="#D8D8D8";
+    style="rounded";
+    uc1 [shape=ellipse, label="登录"];
+    uc2 [shape=ellipse, label="审核课程"];
+    uc3 [shape=ellipse, label="审核资源"];
+    uc4 [shape=ellipse, label="用户管理"];
+    uc5 [shape=ellipse, label="字典与类型管理"];
+    uc6 [shape=ellipse, label="公告、会议与论坛管理"];
+    uc7 [shape=ellipse, label="统计概览"];
+    uc8 [shape=ellipse, label="系统运行维护"];
+    uc9 [shape=ellipse, label="后台智能问答"];
+  }
+  actor -> {uc1 uc2 uc3 uc4 uc5 uc6 uc7 uc8 uc9};
+}

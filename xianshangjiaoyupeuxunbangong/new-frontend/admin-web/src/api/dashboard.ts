@@ -120,7 +120,14 @@ export async function fetchHomeworkSubmissionPage(params?: Record<string, unknow
   const { data } = await http.get("/zuoyeSubmit/page", {
     params: { page: 1, limit: 10, sort: "id", order: "desc", ...params }
   });
-  return unwrap<PagePayload<HomeworkSubmissionItem>>(data);
+  const page = unwrap<PagePayload<HomeworkSubmissionItem>>(data);
+  return {
+    totalCount: Number(page?.totalCount || 0),
+    pageSize: Number(page?.pageSize || 0),
+    totalPage: Number(page?.totalPage || 0),
+    currPage: Number(page?.currPage || 1),
+    list: Array.isArray(page?.list) ? page.list : []
+  };
 }
 
 export async function fetchCourseChapterPage(params?: Record<string, unknown>) {

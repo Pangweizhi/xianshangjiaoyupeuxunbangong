@@ -240,7 +240,7 @@ async function loadOptions() {
 
 async function loadQuestionPool() {
   const page = await fetchExamQuestionPage({ page: 1, limit: 500 });
-  questionPool.value = page.list;
+  questionPool.value = Array.isArray(page?.list) ? page.list : [];
 }
 
 async function handleCourseChange() {
@@ -258,8 +258,8 @@ async function loadItems() {
       kechengId: filters.kechengId,
       publishStatus: filters.publishStatus || undefined
     });
-    items.value = page.list;
-    pagination.total = page.totalCount;
+    items.value = Array.isArray(page?.list) ? page.list : [];
+    pagination.total = Number(page?.totalCount || 0);
   } finally {
     loading.value = false;
   }

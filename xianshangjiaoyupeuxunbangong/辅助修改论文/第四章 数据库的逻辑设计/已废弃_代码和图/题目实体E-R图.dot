@@ -1,0 +1,29 @@
+digraph G {
+  graph [charset="UTF-8", bgcolor="white", labelloc="t", label="题目实体E-R图", fontname="Microsoft YaHei", fontsize=22, rankdir="TB", splines=false, nodesep=0.45, ranksep=0.6, pad=0.18, margin=0.12, size="8,5!"];
+  node [fontname="Microsoft YaHei", fontsize=10, color="#333333", penwidth=1.35];
+  edge [fontname="Microsoft YaHei", fontsize=9, color="#333333", penwidth=1.0, arrowsize=0.7, dir=none];
+
+  entity [label="题目", shape=box, style="rounded,filled", fillcolor="#ffffff"];
+  a1 [label="编号", shape=ellipse, style="filled", fillcolor="#ffffff"];
+  entity -> a1;
+  a2 [label="考试编号", shape=ellipse, style="filled", fillcolor="#ffffff"];
+  entity -> a2;
+  a3 [label="课程编号", shape=ellipse, style="filled", fillcolor="#ffffff"];
+  entity -> a3;
+  a4 [label="题型", shape=ellipse, style="filled", fillcolor="#ffffff"];
+  entity -> a4;
+  a5 [label="题目内容", shape=ellipse, style="filled", fillcolor="#ffffff"];
+  entity -> a5;
+  a6 [label="选项A", shape=ellipse, style="filled", fillcolor="#ffffff"];
+  entity -> a6;
+  a7 [label="选项B", shape=ellipse, style="filled", fillcolor="#ffffff"];
+  entity -> a7;
+  a8 [label="选项C", shape=ellipse, style="filled", fillcolor="#ffffff"];
+  entity -> a8;
+  a9 [label="选项D", shape=ellipse, style="filled", fillcolor="#ffffff"];
+  entity -> a9;
+  a10 [label="答案", shape=ellipse, style="filled", fillcolor="#ffffff"];
+  entity -> a10;
+  a11 [label="题目分值", shape=ellipse, style="filled", fillcolor="#ffffff"];
+  entity -> a11;
+}

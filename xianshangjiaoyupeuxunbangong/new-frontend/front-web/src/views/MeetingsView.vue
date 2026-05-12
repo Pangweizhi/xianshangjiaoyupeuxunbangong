@@ -1,23 +1,23 @@
 <template>
   <section class="section section--tight">
     <div class="filter-bar filter-bar--surface filter-grid">
-      <input v-model="filters.keyword" class="field" placeholder="Search meeting title" />
+      <input v-model="filters.keyword" class="field" placeholder="搜索会议标题" />
       <select v-model="filters.type" class="field">
-        <option value="">All types</option>
+        <option value="">全部类型</option>
         <option v-for="item in typeOptions" :key="item" :value="item">{{ item }}</option>
       </select>
       <select v-model="filters.order" class="field">
-        <option value="desc">Newest first</option>
-        <option value="asc">Oldest first</option>
+        <option value="desc">最新优先</option>
+        <option value="asc">最早优先</option>
       </select>
-      <button class="primary-button" @click="loadMeetings">Search</button>
+      <button class="primary-button" @click="loadMeetings">查询</button>
     </div>
 
     <div class="notice-list">
       <article v-for="item in meetings" :key="item.id" class="notice-row notice-row--expanded">
         <div>
           <div class="stack-inline">
-            <span class="tag">{{ item.kaihuitongzhiValue || "Meeting" }}</span>
+            <span class="tag">{{ item.kaihuitongzhiValue || "会议" }}</span>
             <span class="meta">{{ formatDateTime(item.insertTime || item.createTime) }}</span>
           </div>
           <h3>{{ item.kaihuitongzhiName }}</h3>
@@ -50,14 +50,14 @@ const typeOptions = computed(() =>
 function stripHtml(value?: string) {
   const text = value?.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
   if (!text) {
-    return "No meeting content.";
+    return "暂无会议内容";
   }
   return text.length > 120 ? `${text.slice(0, 120)}...` : text;
 }
 
 function formatDateTime(value?: string) {
   if (!value) {
-    return "Pending";
+    return "待发布";
   }
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {
@@ -78,7 +78,8 @@ async function loadMeetings() {
     kaihuitongzhiName: filters.keyword || undefined,
     order: filters.order
   });
-  meetings.value = page.list.filter((item) => !filters.type || item.kaihuitongzhiValue === filters.type);
+  const list = Array.isArray(page?.list) ? page.list : [];
+  meetings.value = list.filter((item) => !filters.type || item.kaihuitongzhiValue === filters.type);
 }
 
 loadMeetings();

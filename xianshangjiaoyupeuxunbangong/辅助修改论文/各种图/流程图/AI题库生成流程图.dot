@@ -1,0 +1,101 @@
+digraph G {
+  graph [
+    charset="UTF-8",
+    bgcolor="white",
+    fontname="Microsoft YaHei",
+    fontsize=22,
+    rankdir="TB",
+    splines=ortho,
+    nodesep=0.32,
+    ranksep=0.48,
+    pad=0.18,
+    margin=0.10,
+    size="7.2,7.2!",
+    ratio=fill
+  ];
+
+  node [
+    fontname="Microsoft YaHei",
+    fontsize=11,
+    shape=box,
+    style="rounded,filled",
+    fillcolor="white",
+    color="#444444",
+    penwidth=1.25,
+    width=1.75,
+    height=0.45,
+    fixedsize=false,
+    margin="0.10,0.07"
+  ];
+
+  edge [
+    fontname="Microsoft YaHei",
+    fontsize=9,
+    color="#333333",
+    penwidth=1.0,
+    arrowsize=0.65
+  ];
+
+  start [
+    label="开始",
+    shape=ellipse,
+    fillcolor="#f7f7f7",
+    width=1.15,
+    height=0.42
+  ];
+
+  select [label="选择课程 / 章节 / 题型"];
+  prompt [label="组装题目生成参数"];
+
+  check [
+    label="AI 配置\n是否启用",
+    shape=diamond,
+    style="filled",
+    fillcolor="white",
+    width=1.65,
+    height=0.85,
+    margin="0.04,0.04"
+  ];
+
+  call [label="调用 AI 服务"];
+  fallback [label="降级为规则草稿"];
+  draft [label="生成题目草稿"];
+  review [label="教师确认 / 编辑"];
+  save [label="保存到题库"];
+
+  end [
+    label="结束",
+    shape=ellipse,
+    fillcolor="#f7f7f7",
+    width=1.15,
+    height=0.42
+  ];
+
+  {
+    rank=same;
+    call;
+    fallback;
+  }
+
+  start -> select;
+  select -> prompt;
+  prompt -> check;
+
+  check -> call [
+    xlabel="启用",
+    labeldistance=1.05,
+    labelangle=38
+  ];
+
+  check -> fallback [
+    xlabel="未启用",
+    labeldistance=1.7,
+    labelangle=-25
+  ];
+
+  call -> draft;
+  draft -> review;
+  fallback -> review;
+  review -> save;
+  save -> end;
+}

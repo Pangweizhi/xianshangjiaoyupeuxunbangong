@@ -215,8 +215,8 @@ async function loadTeacherDashboard() {
   ]);
 
   applyReport(report);
-  teacherCourses.value = coursePage.list;
-  teacherSubmissionRows.value = submissionPage.list;
+    teacherCourses.value = Array.isArray(coursePage?.list) ? coursePage.list : [];
+    teacherSubmissionRows.value = Array.isArray(submissionPage?.list) ? submissionPage.list : [];
 }
 
 async function loadAdminDashboard() {

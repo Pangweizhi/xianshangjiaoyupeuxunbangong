@@ -45,7 +45,8 @@ export async function fetchDictionaryOptions(dicCode: string) {
       dicCode
     }
   });
-  return data.data.list as Array<{ codeIndex: number; indexName: string }>;
+  const list = data?.data?.list;
+  return Array.isArray(list) ? (list as Array<{ codeIndex: number; indexName: string }>) : [];
 }
 
 export async function fetchTeachersForSelect() {
@@ -53,7 +54,8 @@ export async function fetchTeachersForSelect() {
   const { data } = await http.get("/jiaoshi/page", {
     params: { page: 1, limit: 200, sort: "id", order: "desc" }
   });
-  return data.data.list as Array<{ id: number; jiaoshiName: string }>;
+  const list = data?.data?.list;
+  return Array.isArray(list) ? (list as Array<{ id: number; jiaoshiName: string }>) : [];
 }
 
 export async function fetchStudentsForSelect() {
@@ -61,7 +63,8 @@ export async function fetchStudentsForSelect() {
   const { data } = await http.get("/yonghu/page", {
     params: { page: 1, limit: 200, sort: "id", order: "desc" }
   });
-  return data.data.list as Array<{ id: number; yonghuName: string }>;
+  const list = data?.data?.list;
+  return Array.isArray(list) ? (list as Array<{ id: number; yonghuName: string }>) : [];
 }
 
 export async function fetchCoursesForSelect() {
@@ -69,7 +72,8 @@ export async function fetchCoursesForSelect() {
   const { data } = await http.get("/kecheng/page", {
     params: { page: 1, limit: 200, sort: "id", order: "desc" }
   });
-  return data.data.list as Array<{ id: number; kechengName: string }>;
+  const list = data?.data?.list;
+  return Array.isArray(list) ? (list as Array<{ id: number; kechengName: string }>) : [];
 }
 
 export async function fetchCourseChaptersForSelect(kechengId?: number | string) {
@@ -77,7 +81,8 @@ export async function fetchCourseChaptersForSelect(kechengId?: number | string) 
   const { data } = await http.get("/courseChapter/page", {
     params: { page: 1, limit: 200, sort: "id", order: "desc", kechengId: kechengId || undefined }
   });
-  return data.data.list as Array<{ id: number; chapterName: string; kechengId: number }>;
+  const list = data?.data?.list;
+  return Array.isArray(list) ? (list as Array<{ id: number; chapterName: string; kechengId: number }>) : [];
 }
 
 export async function uploadAdminFile(file: File) {

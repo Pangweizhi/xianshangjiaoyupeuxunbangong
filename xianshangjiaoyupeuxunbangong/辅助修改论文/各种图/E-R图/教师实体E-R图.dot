@@ -1,0 +1,27 @@
+digraph G {
+  graph [charset="UTF-8", bgcolor="white", labelloc="t", label="教师实体E-R图", fontname="Microsoft YaHei", fontsize=22, rankdir="TB", splines=ortho, nodesep=0.35, ranksep=0.48, pad=0.18, margin=0.12, size="8,8!"];
+  node [fontname="Microsoft YaHei", fontsize=10, color="#444444", penwidth=1.25];
+  edge [fontname="Microsoft YaHei", fontsize=9, color="#333333", penwidth=1.0, arrowsize=0.7];
+
+  teacher [label="教师\njiaoshi\nid, username, jiaoshi_name", shape=box, style="rounded,filled", fillcolor="#f8fbff"];
+  course [label="课程\nkecheng", shape=box, style="rounded,filled", fillcolor="#ffffff"];
+  chapter [label="章节\ncourse_chapter", shape=box, style="rounded,filled", fillcolor="#ffffff"];
+  resource [label="资源\ncourse_resource", shape=box, style="rounded,filled", fillcolor="#ffffff"];
+  homework [label="作业\nzuoye", shape=box, style="rounded,filled", fillcolor="#ffffff"];
+  exam [label="考试\nexam", shape=box, style="rounded,filled", fillcolor="#ffffff"];
+  notice [label="公告\nnews", shape=box, style="rounded,filled", fillcolor="#ffffff"];
+
+  e1 [label="创建", shape=diamond, style="filled", fillcolor="white"];
+  e2 [label="维护", shape=diamond, style="filled", fillcolor="white"];
+  e3 [label="发布", shape=diamond, style="filled", fillcolor="white"];
+  e4 [label="管理", shape=diamond, style="filled", fillcolor="white"];
+  e5 [label="出题", shape=diamond, style="filled", fillcolor="white"];
+  e6 [label="公告", shape=diamond, style="filled", fillcolor="white"];
+
+  teacher -> e1 -> course;
+  teacher -> e2 -> chapter;
+  teacher -> e2 -> resource;
+  teacher -> e3 -> homework;
+  teacher -> e4 -> exam;
+  teacher -> e6 -> notice;
+}

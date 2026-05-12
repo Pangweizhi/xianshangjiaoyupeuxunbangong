@@ -1,6 +1,7 @@
 <template>
   <section class="section section--tight">
     <RouterLink class="paper-back" to="/homeworks">返回作业列表</RouterLink>
+
     <div v-if="detail" class="paper-layout">
       <section class="paper-main">
         <header class="paper-main__header">
@@ -50,8 +51,8 @@
               v-model="answers[String(question.id)]"
               class="field field--textarea answer-textarea"
               :disabled="!canEditAnswers"
-              placeholder="请输入你的答案"
-            ></textarea>
+              placeholder="请输入答案"
+            />
           </article>
         </div>
       </section>
@@ -67,7 +68,9 @@
             <span>总分：{{ detail.scoreTotal ?? 100 }}</span>
             <span>当前状态：{{ submissionRecord?.submitStatus || "未开始" }}</span>
           </div>
-          <a v-if="detail.zuoyeFile" class="paper-link" :href="downloadUrl(detail.zuoyeFile)" target="_blank">查看作业附件</a>
+          <a v-if="detail.zuoyeFile" class="paper-link" :href="downloadUrl(detail.zuoyeFile)" target="_blank">
+            查看作业附件
+          </a>
         </article>
 
         <article class="side-card">
@@ -85,7 +88,7 @@
           <p v-if="submissionMessage" :class="submissionMessageType === 'error' ? 'field-error' : 'field-help'">
             {{ submissionMessage }}
           </p>
-          <p v-if="submissionRecord && submissionRecord.submitStatus !== '作答中'" class="field-help">
+          <p v-if="submissionRecord && submissionRecord.submitStatus !== STATUS_STARTED" class="field-help">
             最近一次提交状态：{{ submissionRecord.submitStatus }}，得分 {{ submissionRecord.submitScore ?? submissionRecord.autoScore ?? "待评" }}
           </p>
         </article>
@@ -97,7 +100,7 @@
             class="field field--textarea"
             placeholder="补充本次作答说明，可不填"
             :disabled="expired || !session.isLoggedIn || !canEditAnswers"
-          ></textarea>
+          />
           <div class="side-actions">
             <button
               v-if="!recordId"
@@ -105,11 +108,11 @@
               :disabled="!canStartHomework || !session.isLoggedIn || starting"
               @click="startCurrentHomework"
             >
-              {{ starting ? "正在进入..." : "开始写作业" }}
+              {{ starting ? "正在进入..." : "开始作业" }}
             </button>
             <button
               class="primary-button primary-button--full"
-              :disabled="!recordId || !session.isLoggedIn || expired || submitting"
+              :disabled="!session.isLoggedIn || expired || submitting || (!recordId && !canStartHomework)"
               @click="submitCurrentHomework"
             >
               {{ submitting ? "提交中..." : "提交作业" }}
@@ -140,6 +143,8 @@ import {
 } from "@/api/content";
 import { useSessionStore } from "@/stores/session";
 
+const STATUS_STARTED = "作答中";
+
 const route = useRoute();
 const session = useSessionStore();
 const detail = ref<HomeworkItem | null>(null);
@@ -155,15 +160,21 @@ const answers = reactive<Record<string, string>>({});
 
 const expired = computed(() => {
   const endTime = detail.value?.endTime || detail.value?.deadlineTime;
-  if (!endTime) return false;
+  if (!endTime) {
+    return false;
+  }
   return new Date(endTime).getTime() < Date.now();
 });
+
 const notStarted = computed(() => {
-  if (!detail.value?.startTime) return false;
+  if (!detail.value?.startTime) {
+    return false;
+  }
   return new Date(detail.value.startTime).getTime() > Date.now();
 });
+
 const canStartHomework = computed(() => !notStarted.value && !expired.value);
-const canEditAnswers = computed(() => submissionRecord.value?.submitStatus === "作答中");
+const canEditAnswers = computed(() => submissionRecord.value?.submitStatus === STATUS_STARTED || !submissionRecord.value);
 const answeredCount = computed(() =>
   questions.value.filter((question) => {
     const value = answers[String(question.id)];
@@ -189,9 +200,15 @@ function parsedOptions(question: ExamQuestionItem) {
     }
     return [];
   }
+
   try {
-    const data = JSON.parse(question.optionJson) as Record<string, string>;
-    return Object.entries(data).map(([value, label]) => ({ value, label }));
+    const data = JSON.parse(question.optionJson);
+    if (Array.isArray(data)) {
+      return data
+        .map((item) => ({ value: String(item?.value ?? ""), label: String(item?.label ?? "") }))
+        .filter((item) => item.value);
+    }
+    return Object.entries(data as Record<string, string>).map(([value, label]) => ({ value, label }));
   } catch {
     return [];
   }
@@ -203,12 +220,12 @@ function questionTypeText(question: ExamQuestionItem) {
 
 function choiceQuestion(question: ExamQuestionItem) {
   const type = questionTypeText(question);
-  return type === "选择题" || type === "单选" || type === "单选题";
+  return type === "单选题" || type === "单选" || type === "单选项";
 }
 
 function multiChoiceQuestion(question: ExamQuestionItem) {
   const type = questionTypeText(question);
-  return type === "多选" || type === "多选题";
+  return type === "多选题" || type === "多选";
 }
 
 function judgementQuestion(question: ExamQuestionItem) {
@@ -242,7 +259,9 @@ function clearAnswers() {
 
 function restoreAnswers(snapshot?: string) {
   clearAnswers();
-  if (!snapshot) return;
+  if (!snapshot) {
+    return;
+  }
   try {
     const parsed = JSON.parse(snapshot) as Record<string, string>;
     Object.entries(parsed).forEach(([key, value]) => {
@@ -255,8 +274,8 @@ function restoreAnswers(snapshot?: string) {
 
 function applySubmission(record: HomeworkSubmissionItem | null) {
   submissionRecord.value = record;
-  recordId.value = record?.submitStatus === "作答中" ? record.id : null;
-  if (record?.submitStatus === "作答中") {
+  recordId.value = record?.submitStatus === STATUS_STARTED ? record.id : null;
+  if (record?.submitStatus === STATUS_STARTED) {
     restoreAnswers(record.answerSnapshot);
     submissionContent.value = record.submitContent || "";
   } else {
@@ -274,7 +293,20 @@ async function loadLatestSubmission() {
     zuoyeId: route.params.id,
     limit: 1
   });
-  applySubmission(page.list[0] || null);
+  const list = Array.isArray(page?.list) ? page.list : [];
+  applySubmission(list[0] || null);
+}
+
+async function ensureStartedRecord() {
+  if (recordId.value) {
+    return recordId.value;
+  }
+  const result = await startHomework({ zuoyeId: Number(route.params.id) });
+  if (result.code !== 0) {
+    throw new Error(result.msg || "开始作业失败");
+  }
+  applySubmission(result.data);
+  return recordId.value;
 }
 
 async function startCurrentHomework() {
@@ -293,14 +325,13 @@ async function startCurrentHomework() {
     submissionMessage.value = "请先登录后再开始作业。";
     return;
   }
+
   starting.value = true;
   submissionMessage.value = "";
   try {
-    const result = await startHomework({ zuoyeId: Number(route.params.id) });
-    if (result.code !== 0) throw new Error(result.msg || "开始作业失败");
-    applySubmission(result.data);
+    await ensureStartedRecord();
     submissionMessageType.value = "success";
-    submissionMessage.value = "已进入作答页面，可以开始完成题目。";
+    submissionMessage.value = "已进入作答状态，可以继续填写答案。";
   } catch (error) {
     submissionMessageType.value = "error";
     submissionMessage.value = error instanceof Error ? error.message : "开始作业失败";
@@ -310,20 +341,34 @@ async function startCurrentHomework() {
 }
 
 async function submitCurrentHomework() {
-  if (!recordId.value) {
+  if (!session.isLoggedIn) {
     submissionMessageType.value = "error";
-    submissionMessage.value = "请先开始写作业。";
+    submissionMessage.value = "请先登录后再提交。";
     return;
   }
+  if (notStarted.value) {
+    submissionMessageType.value = "error";
+    submissionMessage.value = "该作业尚未开始，不能提交。";
+    return;
+  }
+  if (expired.value) {
+    submissionMessageType.value = "error";
+    submissionMessage.value = "该作业已截止，不能提交。";
+    return;
+  }
+
   submitting.value = true;
   submissionMessage.value = "";
   try {
+    const activeRecordId = await ensureStartedRecord();
     const result = await submitHomework({
-      id: recordId.value,
+      id: activeRecordId,
       answerSnapshot: JSON.stringify(answers),
       submitContent: submissionContent.value.trim()
     });
-    if (result.code !== 0) throw new Error(result.msg || "提交作业失败");
+    if (result.code !== 0) {
+      throw new Error(result.msg || "提交作业失败");
+    }
     await loadLatestSubmission();
     submissionMessageType.value = "success";
     submissionMessage.value = `提交成功，当前得分 ${result.data.submitScore ?? result.data.autoScore ?? 0} 分。`;

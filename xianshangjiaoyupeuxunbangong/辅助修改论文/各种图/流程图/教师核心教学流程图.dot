@@ -1,0 +1,121 @@
+digraph G {
+  graph [
+    charset="UTF-8",
+    bgcolor="white",
+    fontname="Microsoft YaHei",
+    fontsize=22,
+    rankdir="TB",
+    splines=ortho,
+    nodesep=0.36,
+    ranksep=0.42,
+    pad=0.18,
+    margin=0.10,
+    size="7.2,7.2!",
+    ratio=fill
+  ];
+
+  node [
+    fontname="Microsoft YaHei",
+    fontsize=11,
+    shape=box,
+    style="rounded,filled",
+    fillcolor="white",
+    color="#444444",
+    penwidth=1.25,
+    width=1.75,
+    height=0.45,
+    fixedsize=false,
+    margin="0.10,0.07"
+  ];
+
+  edge [
+    fontname="Microsoft YaHei",
+    fontsize=9,
+    color="#333333",
+    penwidth=1.0,
+    arrowsize=0.65
+  ];
+
+  start [
+    label="开始",
+    shape=ellipse,
+    fillcolor="#f7f7f7",
+    width=1.15,
+    height=0.42
+  ];
+
+  login [label="教师登录"];
+
+  check [
+    label="教师\n是否存在",
+    shape=diamond,
+    style="filled",
+    fillcolor="white",
+    width=1.55,
+    height=0.85,
+    margin="0.04,0.04"
+  ];
+
+  home [label="后台教学系统"];
+
+  course [label="创建 / 维护课程"];
+  homework [label="发布作业"];
+  exam [label="配置考试与题库"];
+
+  chapter [label="维护章节目录"];
+  resource [label="维护课程资源"];
+  review [label="审核与发布"];
+
+  stat [label="查看学生进度\n成绩与学分统计"];
+
+  exit [
+    label="退出系统",
+    shape=ellipse,
+    fillcolor="#f7f7f7",
+    width=1.15,
+    height=0.42
+  ];
+
+  {
+    rank=same;
+    course;
+    homework;
+    exam;
+  }
+
+  start -> login;
+  login -> check;
+
+  check -> home [
+    xlabel="存在",
+    labeldistance=1.15,
+    labelangle=-18
+  ];
+
+  check -> login [
+    xlabel="不存在",
+    constraint=false,
+    labeldistance=1.45,
+    labelangle=24
+  ];
+
+  home -> course;
+  home -> homework;
+  home -> exam;
+
+  course -> chapter;
+  chapter -> resource;
+  resource -> review;
+
+  homework -> stat;
+  exam -> stat;
+  review -> stat;
+
+  stat -> exit;
+
+  {
+    rank=same;
+    review;
+    stat;
+  }
+}

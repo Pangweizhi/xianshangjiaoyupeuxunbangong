@@ -1,0 +1,130 @@
+digraph G {
+  graph [
+    charset="UTF-8",
+    layout=neato,
+    bgcolor="white",
+    splines=ortho,
+    outputorder=edgesfirst,
+    pad=0.12,
+    margin=0.04
+  ];
+
+  node [
+    shape=box,
+    fontname="Microsoft YaHei",
+    fontsize=15,
+    color="#26313A",
+    penwidth=1.7,
+    margin="0.08,0.06",
+    pin=true
+  ];
+
+  edge [
+    color="#26313A",
+    penwidth=1.5,
+    arrowsize=0.75
+  ];
+
+  root [label="线上教育培训管理系统", pos="0,540!", width=3.0, height=0.52, fontsize=18];
+
+  split [shape=point, pos="0,498!", width=0.01, height=0.01, label="", color="#FFFFFF"];
+  top_left [shape=point, pos="-250,498!", width=0.01, height=0.01, label="", color="#FFFFFF"];
+  top_right [shape=point, pos="250,498!", width=0.01, height=0.01, label="", color="#FFFFFF"];
+
+  sp1 [shape=point, pos="-432,398!", width=0.01, height=0.01, label="", color="#FFFFFF"];
+  sp2 [shape=point, pos="-380.16,398!", width=0.01, height=0.01, label="", color="#FFFFFF"];
+  sp3 [shape=point, pos="-328.32,398!", width=0.01, height=0.01, label="", color="#FFFFFF"];
+  sp4 [shape=point, pos="-276.48,398!", width=0.01, height=0.01, label="", color="#FFFFFF"];
+  sdrop [shape=point, pos="-250,398!", width=0.01, height=0.01, label="", color="#FFFFFF"];
+  sp5 [shape=point, pos="-224.64,398!", width=0.01, height=0.01, label="", color="#FFFFFF"];
+  sp6 [shape=point, pos="-172.8,398!", width=0.01, height=0.01, label="", color="#FFFFFF"];
+  sp7 [shape=point, pos="-120.96,398!", width=0.01, height=0.01, label="", color="#FFFFFF"];
+  sp8 [shape=point, pos="-69.12,398!", width=0.01, height=0.01, label="", color="#FFFFFF"];
+
+  tp1 [shape=point, pos="69.12,398!", width=0.01, height=0.01, label="", color="#FFFFFF"];
+  tp2 [shape=point, pos="120.96,398!", width=0.01, height=0.01, label="", color="#FFFFFF"];
+  tp3 [shape=point, pos="172.8,398!", width=0.01, height=0.01, label="", color="#FFFFFF"];
+  tp4 [shape=point, pos="224.64,398!", width=0.01, height=0.01, label="", color="#FFFFFF"];
+  tdrop [shape=point, pos="250,398!", width=0.01, height=0.01, label="", color="#FFFFFF"];
+  tp5 [shape=point, pos="276.48,398!", width=0.01, height=0.01, label="", color="#FFFFFF"];
+  tp6 [shape=point, pos="328.32,398!", width=0.01, height=0.01, label="", color="#FFFFFF"];
+  tp7 [shape=point, pos="380.16,398!", width=0.01, height=0.01, label="", color="#FFFFFF"];
+  tp8 [shape=point, pos="432,398!", width=0.01, height=0.01, label="", color="#FFFFFF"];
+
+  ap1 [shape=point, pos="-155.52,155!", width=0.01, height=0.01, label="", color="#FFFFFF"];
+  ap2 [shape=point, pos="-103.68,155!", width=0.01, height=0.01, label="", color="#FFFFFF"];
+  ap3 [shape=point, pos="-51.84,155!", width=0.01, height=0.01, label="", color="#FFFFFF"];
+  ap4 [shape=point, pos="0,155!", width=0.01, height=0.01, label="", color="#FFFFFF"];
+  ap5 [shape=point, pos="51.84,155!", width=0.01, height=0.01, label="", color="#FFFFFF"];
+  ap6 [shape=point, pos="103.68,155!", width=0.01, height=0.01, label="", color="#FFFFFF"];
+  ap7 [shape=point, pos="155.52,155!", width=0.01, height=0.01, label="", color="#FFFFFF"];
+
+  student [label="学生", pos="-250,450!", width=1.0, height=0.48, fontsize=16];
+  teacher [label="教师", pos="250,450!", width=1.0, height=0.48, fontsize=16];
+  admin [label="管理员", pos="0,200!", width=1.28, height=0.48, fontsize=16];
+
+  s1 [label="注\n册\n登\n录", pos="-432,340!", width=0.42, height=1.35];
+  s2 [label="课\n程\n浏\n览", pos="-380.16,340!", width=0.42, height=1.35];
+  s3 [label="章\n节\n学\n习", pos="-328.32,340!", width=0.42, height=1.35];
+  s4 [label="作\n业\n提\n交", pos="-276.48,340!", width=0.42, height=1.35];
+  s5 [label="在\n线\n考\n试", pos="-224.64,340!", width=0.42, height=1.35];
+  s6 [label="论\n坛\n交\n流", pos="-172.8,340!", width=0.42, height=1.35];
+  s7 [label="智\n能\n问\n答", pos="-120.96,340!", width=0.42, height=1.35];
+  s8 [label="个\n人\n中\n心", pos="-69.12,340!", width=0.42, height=1.35];
+
+  t1 [label="注\n册\n登\n录", pos="69.12,340!", width=0.42, height=1.35];
+  t2 [label="课\n程\n管\n理", pos="120.96,340!", width=0.42, height=1.35];
+  t3 [label="章\n节\n管\n理", pos="172.8,340!", width=0.42, height=1.35];
+  t4 [label="资\n源\n管\n理", pos="224.64,340!", width=0.42, height=1.35];
+  t5 [label="作\n业\n管\n理", pos="276.48,340!", width=0.42, height=1.35];
+  t6 [label="题\n库\n管\n理", pos="328.32,340!", width=0.42, height=1.35];
+  t7 [label="考\n试\n管\n理", pos="380.16,340!", width=0.42, height=1.35];
+  t8 [label="成\n绩\n统\n计", pos="432,340!", width=0.42, height=1.35];
+
+  a1 [label="用\n户\n管\n理", pos="-155.52,95!", width=0.42, height=1.35];
+  a2 [label="课\n程\n审\n核", pos="-103.68,95!", width=0.42, height=1.35];
+  a3 [label="资\n源\n审\n核", pos="-51.84,95!", width=0.42, height=1.35];
+  a4 [label="公\n告\n管\n理", pos="0,95!", width=0.42, height=1.35];
+  a5 [label="论\n坛\n管\n理", pos="51.84,95!", width=0.42, height=1.35];
+  a6 [label="数\n据\n字\n典", pos="103.68,95!", width=0.42, height=1.35];
+  a7 [label="系\n统\n配\n置", pos="155.52,95!", width=0.42, height=1.35];
+
+  root -> split [arrowhead=none];
+  split -> top_left [arrowhead=none];
+  split -> top_right [arrowhead=none];
+  top_left -> student;
+  top_right -> teacher;
+  split -> admin;
+
+  student -> sdrop [arrowhead=none];
+  sp1 -> sp2 -> sp3 -> sp4 -> sdrop -> sp5 -> sp6 -> sp7 -> sp8 [arrowhead=none];
+  sp1 -> s1;
+  sp2 -> s2;
+  sp3 -> s3;
+  sp4 -> s4;
+  sp5 -> s5;
+  sp6 -> s6;
+  sp7 -> s7;
+  sp8 -> s8;
+
+  teacher -> tdrop [arrowhead=none];
+  tp1 -> tp2 -> tp3 -> tp4 -> tdrop -> tp5 -> tp6 -> tp7 -> tp8 [arrowhead=none];
+  tp1 -> t1;
+  tp2 -> t2;
+  tp3 -> t3;
+  tp4 -> t4;
+  tp5 -> t5;
+  tp6 -> t6;
+  tp7 -> t7;
+  tp8 -> t8;
+
+  admin -> ap4 [arrowhead=none];
+  ap1 -> ap2 -> ap3 -> ap4 -> ap5 -> ap6 -> ap7 [arrowhead=none];
+  ap1 -> a1;
+  ap2 -> a2;
+  ap3 -> a3;
+  ap4 -> a4;
+  ap5 -> a5;
+  ap6 -> a6;
+  ap7 -> a7;
+}

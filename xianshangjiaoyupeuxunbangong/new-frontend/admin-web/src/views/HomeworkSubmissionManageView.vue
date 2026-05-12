@@ -162,8 +162,8 @@ async function loadItems() {
       yonghuName: filters.yonghuName || undefined,
       submitStatus: filters.submitStatus || undefined
     });
-    items.value = page.list;
-    pagination.total = page.totalCount;
+    items.value = Array.isArray(page?.list) ? page.list : [];
+    pagination.total = Number(page?.totalCount || 0);
   } finally {
     loading.value = false;
   }

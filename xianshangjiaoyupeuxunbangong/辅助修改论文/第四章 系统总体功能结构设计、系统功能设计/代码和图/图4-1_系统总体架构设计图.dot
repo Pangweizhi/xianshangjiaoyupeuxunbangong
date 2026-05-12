@@ -1,0 +1,158 @@
+digraph G {
+  graph [
+    charset="UTF-8",
+    rankdir="TB",
+    labelloc="t",
+    label="线上教育培训管理系统总体架构",
+    fontname="Microsoft YaHei",
+    fontsize=24,
+    bgcolor="white",
+    splines=ortho,
+    nodesep=0.18,
+    ranksep=0.32,
+    pad=0.16,
+    margin=0.06
+  ];
+
+  node [
+    shape=plain,
+    fontname="Microsoft YaHei",
+    fontsize=12
+  ];
+
+  edge [
+    color="#3F4D5F",
+    penwidth=1.15,
+    arrowsize=0.75
+  ];
+
+  access [
+    label=<
+      <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7" COLOR="#A9B8C8" BGCOLOR="#F8FBFF">
+        <TR>
+          <TD ALIGN="LEFT" WIDTH="800"><FONT POINT-SIZE="13"><B>用户与访问层</B></FONT></TD>
+        </TR>
+        <TR>
+          <TD>
+            <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="6" CELLPADDING="6" COLOR="#46617A">
+              <TR>
+                <TD WIDTH="760" BGCOLOR="white">学生 / 教师 / 管理员</TD>
+              </TR>
+            </TABLE>
+          </TD>
+        </TR>
+      </TABLE>
+    >
+  ];
+
+  ui [
+    label=<
+      <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7" COLOR="#A9B8C8" BGCOLOR="#F8FBFF">
+        <TR>
+          <TD ALIGN="LEFT" WIDTH="800"><FONT POINT-SIZE="13"><B>表现层：Web 前端</B></FONT></TD>
+        </TR>
+        <TR>
+          <TD>
+            <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="8" CELLPADDING="6" COLOR="#3B82F6">
+              <TR>
+                <TD WIDTH="370" BGCOLOR="#EEF5FF">前台用户端 Web<BR/>首页、课程、章节、作业、考试、论坛、问AI</TD>
+                <TD WIDTH="370" BGCOLOR="#EEF5FF">后台管理端 Web<BR/>用户、课程、审核、公告、题库、系统配置</TD>
+              </TR>
+            </TABLE>
+          </TD>
+        </TR>
+      </TABLE>
+    >
+  ];
+
+  api [
+    label=<
+      <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7" COLOR="#A9B8C8" BGCOLOR="#F8FBFF">
+        <TR>
+          <TD ALIGN="LEFT" WIDTH="800"><FONT POINT-SIZE="13"><B>接口层：Spring Boot Controller</B></FONT></TD>
+        </TR>
+        <TR>
+          <TD>
+            <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="6" CELLPADDING="6" COLOR="#3B82F6">
+              <TR>
+                <TD WIDTH="142" BGCOLOR="white">认证授权接口<BR/>登录、Token、角色校验</TD>
+                <TD WIDTH="142" BGCOLOR="white">课程教学接口<BR/>课程、章节、资源、选课</TD>
+                <TD WIDTH="142" BGCOLOR="white">作业考试接口<BR/>作业、题库、考试、成绩</TD>
+                <TD WIDTH="142" BGCOLOR="white">内容互动接口<BR/>公告、论坛、会议、评论</TD>
+                <TD WIDTH="142" BGCOLOR="white">智能问答接口<BR/>会话、消息、推荐问题</TD>
+              </TR>
+            </TABLE>
+          </TD>
+        </TR>
+      </TABLE>
+    >
+  ];
+
+  service [
+    label=<
+      <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7" COLOR="#A9B8C8" BGCOLOR="#F8FBFF">
+        <TR>
+          <TD ALIGN="LEFT" WIDTH="800"><FONT POINT-SIZE="13"><B>业务层：Service</B></FONT></TD>
+        </TR>
+        <TR>
+          <TD>
+            <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="8" CELLPADDING="6" COLOR="#4F8F62">
+              <TR>
+                <TD WIDTH="180" BGCOLOR="#EFFAF2">课程资源管理<BR/>课程审核、章节编排、资源维护</TD>
+                <TD WIDTH="180" BGCOLOR="#EFFAF2">学习过程管理<BR/>选课学习、进度记录、结课学分</TD>
+                <TD WIDTH="180" BGCOLOR="#EFFAF2">作业考试服务<BR/>提交批阅、自动判分、成绩汇总</TD>
+                <TD WIDTH="180" BGCOLOR="#EFFAF2">智能问答编排<BR/>上下文整理、模型调用、问题推荐</TD>
+              </TR>
+            </TABLE>
+          </TD>
+        </TR>
+      </TABLE>
+    >
+  ];
+
+  dao [
+    label=<
+      <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7" COLOR="#A9B8C8" BGCOLOR="#F8FBFF">
+        <TR>
+          <TD ALIGN="LEFT" WIDTH="800"><FONT POINT-SIZE="13"><B>数据访问层：MyBatis-Plus Mapper / DAO</B></FONT></TD>
+        </TR>
+        <TR>
+          <TD>
+            <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="6" CELLPADDING="6" COLOR="#46617A">
+              <TR>
+                <TD WIDTH="760" BGCOLOR="white">实体映射、分页查询、条件筛选、增删改查</TD>
+              </TR>
+            </TABLE>
+          </TD>
+        </TR>
+      </TABLE>
+    >
+  ];
+
+  data [
+    label=<
+      <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="7" COLOR="#A9B8C8" BGCOLOR="#F8FBFF">
+        <TR>
+          <TD ALIGN="LEFT" WIDTH="800"><FONT POINT-SIZE="13"><B>数据与外部能力层</B></FONT></TD>
+        </TR>
+        <TR>
+          <TD>
+            <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="8" CELLPADDING="6" COLOR="#E28A1F">
+              <TR>
+                <TD WIDTH="245" BGCOLOR="#FFF7EA">MySQL 数据库<BR/>用户、课程、章节、资源、作业、考试、公告、AI会话</TD>
+                <TD WIDTH="245" BGCOLOR="#FFF7EA">静态资源 / 上传文件<BR/>视频、封面、附件、公告图片</TD>
+                <TD WIDTH="245" BGCOLOR="#FFF7EA">外部智能能力<BR/>大模型问答、AI 题目生成</TD>
+              </TR>
+            </TABLE>
+          </TD>
+        </TR>
+      </TABLE>
+    >
+  ];
+
+  access -> ui;
+  ui -> api;
+  api -> service;
+  service -> dao;
+  dao -> data;
+}

@@ -1,10 +1,10 @@
 <template>
   <section class="section section--tight">
-    <RouterLink class="text-link" to="/meetings">Back to meetings</RouterLink>
+    <RouterLink class="text-link" to="/meetings">返回会议列表</RouterLink>
     <div v-if="detail" class="detail-shell">
       <article class="detail-article">
         <div class="stack-inline">
-          <span class="tag">{{ detail.kaihuitongzhiValue || "Meeting" }}</span>
+          <span class="tag">{{ detail.kaihuitongzhiValue || "会议" }}</span>
           <span class="meta">{{ formatDateTime(detail.insertTime || detail.createTime) }}</span>
         </div>
         <h1>{{ detail.kaihuitongzhiName }}</h1>
@@ -37,7 +37,7 @@ function splitContent(value?: string) {
     .trim();
 
   if (!normalized) {
-    return ["No meeting details"];
+    return ["暂无会议详情"];
   }
 
   return normalized
@@ -49,7 +49,7 @@ function splitContent(value?: string) {
 
 function formatDateTime(value?: string) {
   if (!value) {
-    return "Pending";
+    return "待发布";
   }
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {

@@ -1,0 +1,166 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="532pt" height="532pt" viewBox="7.00 7.00 525.00 525.00">
+<g id="graph0" class="graph" transform="scale(0.87582 0.87582) rotate(0) translate(21.18 586.71)">
+<title>G</title>
+<polygon fill="white" stroke="none" points="-12.96,12.96 -12.96,-578.49 578.49,-578.49 578.49,12.96 -12.96,12.96"/>
+<!-- start -->
+<g id="node1" class="node">
+<title>start</title>
+<ellipse fill="#f7f7f7" stroke="#444444" stroke-width="1.25" cx="282.74" cy="-549" rx="41.4" ry="16.46"/>
+<text xml:space="preserve" text-anchor="middle" x="282.74" y="-545.7" font-family="Microsoft YaHei" font-size="11.00">开始</text>
+</g>
+<!-- login -->
+<g id="node2" class="node">
+<title>login</title>
+<path fill="white" stroke="#444444" stroke-width="1.25" d="M334.94,-502.2C334.94,-502.2 230.54,-502.2 230.54,-502.2 225.14,-502.2 219.74,-496.8 219.74,-491.4 219.74,-491.4 219.74,-480.6 219.74,-480.6 219.74,-475.2 225.14,-469.8 230.54,-469.8 230.54,-469.8 334.94,-469.8 334.94,-469.8 340.34,-469.8 345.74,-475.2 345.74,-480.6 345.74,-480.6 345.74,-491.4 345.74,-491.4 345.74,-496.8 340.34,-502.2 334.94,-502.2"/>
+<text xml:space="preserve" text-anchor="middle" x="282.74" y="-482.7" font-family="Microsoft YaHei" font-size="11.00">教师登录</text>
+</g>
+<!-- start&#45;&gt;login -->
+<g id="edge1" class="edge">
+<title>start-&gt;login</title>
+<path fill="none" stroke="#333333" d="M282.74,-532.12C282.74,-532.12 282.74,-510.51 282.74,-510.51"/>
+<polygon fill="#333333" stroke="#333333" points="285.02,-510.51 282.74,-504.01 280.47,-510.51 285.02,-510.51"/>
+</g>
+<!-- check -->
+<g id="node3" class="node">
+<title>check</title>
+<polygon fill="white" stroke="#444444" stroke-width="1.25" points="282.74,-440.6 226.94,-410 282.74,-379.4 338.54,-410 282.74,-440.6"/>
+<text xml:space="preserve" text-anchor="middle" x="282.74" y="-413.3" font-family="Microsoft YaHei" font-size="11.00">教师</text>
+<text xml:space="preserve" text-anchor="middle" x="282.74" y="-400.1" font-family="Microsoft YaHei" font-size="11.00">是否存在</text>
+</g>
+<!-- login&#45;&gt;check -->
+<g id="edge2" class="edge">
+<title>login-&gt;check</title>
+<path fill="none" stroke="#333333" d="M264.14,-469.51C264.14,-469.51 264.14,-439.1 264.14,-439.1"/>
+<polygon fill="#333333" stroke="#333333" points="266.42,-439.1 264.14,-432.6 261.87,-439.1 266.42,-439.1"/>
+</g>
+<!-- check&#45;&gt;login -->
+<g id="edge4" class="edge">
+<title>check-&gt;login</title>
+<path fill="none" stroke="#333333" d="M301.34,-430.77C301.34,-430.77 301.34,-461.33 301.34,-461.33"/>
+<polygon fill="#333333" stroke="#333333" points="299.07,-461.33 301.34,-467.83 303.62,-461.33 299.07,-461.33"/>
+<text xml:space="preserve" text-anchor="middle" x="291.22" y="-448.75" font-family="Microsoft YaHei" font-size="9.00">不存在</text>
+</g>
+<!-- home -->
+<g id="node4" class="node">
+<title>home</title>
+<path fill="white" stroke="#444444" stroke-width="1.25" d="M334.94,-349.2C334.94,-349.2 230.54,-349.2 230.54,-349.2 225.14,-349.2 219.74,-343.8 219.74,-338.4 219.74,-338.4 219.74,-327.6 219.74,-327.6 219.74,-322.2 225.14,-316.8 230.54,-316.8 230.54,-316.8 334.94,-316.8 334.94,-316.8 340.34,-316.8 345.74,-322.2 345.74,-327.6 345.74,-327.6 345.74,-338.4 345.74,-338.4 345.74,-343.8 340.34,-349.2 334.94,-349.2"/>
+<text xml:space="preserve" text-anchor="middle" x="282.74" y="-329.7" font-family="Microsoft YaHei" font-size="11.00">后台教学系统</text>
+</g>
+<!-- check&#45;&gt;home -->
+<g id="edge3" class="edge">
+<title>check-&gt;home</title>
+<path fill="none" stroke="#333333" d="M282.74,-379.12C282.74,-379.12 282.74,-357.73 282.74,-357.73"/>
+<polygon fill="#333333" stroke="#333333" points="285.02,-357.73 282.74,-351.23 280.47,-357.73 285.02,-357.73"/>
+<text xml:space="preserve" text-anchor="middle" x="275.99" y="-371.13" font-family="Microsoft YaHei" font-size="9.00">存在</text>
+</g>
+<!-- course -->
+<g id="node5" class="node">
+<title>course</title>
+<path fill="white" stroke="#444444" stroke-width="1.25" d="M134.94,-286.2C134.94,-286.2 30.54,-286.2 30.54,-286.2 25.14,-286.2 19.74,-280.8 19.74,-275.4 19.74,-275.4 19.74,-264.6 19.74,-264.6 19.74,-259.2 25.14,-253.8 30.54,-253.8 30.54,-253.8 134.94,-253.8 134.94,-253.8 140.34,-253.8 145.74,-259.2 145.74,-264.6 145.74,-264.6 145.74,-275.4 145.74,-275.4 145.74,-280.8 140.34,-286.2 134.94,-286.2"/>
+<text xml:space="preserve" text-anchor="middle" x="82.74" y="-266.7" font-family="Microsoft YaHei" font-size="11.00">创建 / 维护课程</text>
+</g>
+<!-- home&#45;&gt;course -->
+<g id="edge5" class="edge">
+<title>home-&gt;course</title>
+<path fill="none" stroke="#333333" d="M219.19,-333C160.62,-333 82.74,-333 82.74,-333 82.74,-333 82.74,-294.57 82.74,-294.57"/>
+<polygon fill="#333333" stroke="#333333" points="85.02,-294.57 82.74,-288.07 80.47,-294.57 85.02,-294.57"/>
+</g>
+<!-- homework -->
+<g id="node6" class="node">
+<title>homework</title>
+<path fill="white" stroke="#444444" stroke-width="1.25" d="M334.94,-286.2C334.94,-286.2 230.54,-286.2 230.54,-286.2 225.14,-286.2 219.74,-280.8 219.74,-275.4 219.74,-275.4 219.74,-264.6 219.74,-264.6 219.74,-259.2 225.14,-253.8 230.54,-253.8 230.54,-253.8 334.94,-253.8 334.94,-253.8 340.34,-253.8 345.74,-259.2 345.74,-264.6 345.74,-264.6 345.74,-275.4 345.74,-275.4 345.74,-280.8 340.34,-286.2 334.94,-286.2"/>
+<text xml:space="preserve" text-anchor="middle" x="282.74" y="-266.7" font-family="Microsoft YaHei" font-size="11.00">发布作业</text>
+</g>
+<!-- home&#45;&gt;homework -->
+<g id="edge6" class="edge">
+<title>home-&gt;homework</title>
+<path fill="none" stroke="#333333" d="M282.74,-316.45C282.74,-316.45 282.74,-294.67 282.74,-294.67"/>
+<polygon fill="#333333" stroke="#333333" points="285.02,-294.67 282.74,-288.17 280.47,-294.67 285.02,-294.67"/>
+</g>
+<!-- exam -->
+<g id="node7" class="node">
+<title>exam</title>
+<path fill="white" stroke="#444444" stroke-width="1.25" d="M534.94,-286.2C534.94,-286.2 430.54,-286.2 430.54,-286.2 425.14,-286.2 419.74,-280.8 419.74,-275.4 419.74,-275.4 419.74,-264.6 419.74,-264.6 419.74,-259.2 425.14,-253.8 430.54,-253.8 430.54,-253.8 534.94,-253.8 534.94,-253.8 540.34,-253.8 545.74,-259.2 545.74,-264.6 545.74,-264.6 545.74,-275.4 545.74,-275.4 545.74,-280.8 540.34,-286.2 534.94,-286.2"/>
+<text xml:space="preserve" text-anchor="middle" x="482.74" y="-266.7" font-family="Microsoft YaHei" font-size="11.00">配置考试与题库</text>
+</g>
+<!-- home&#45;&gt;exam -->
+<g id="edge7" class="edge">
+<title>home-&gt;exam</title>
+<path fill="none" stroke="#333333" d="M346.3,-333C404.86,-333 482.74,-333 482.74,-333 482.74,-333 482.74,-294.57 482.74,-294.57"/>
+<polygon fill="#333333" stroke="#333333" points="485.02,-294.57 482.74,-288.07 480.47,-294.57 485.02,-294.57"/>
+</g>
+<!-- chapter -->
+<g id="node8" class="node">
+<title>chapter</title>
+<path fill="white" stroke="#444444" stroke-width="1.25" d="M134.94,-224.2C134.94,-224.2 30.54,-224.2 30.54,-224.2 25.14,-224.2 19.74,-218.8 19.74,-213.4 19.74,-213.4 19.74,-202.6 19.74,-202.6 19.74,-197.2 25.14,-191.8 30.54,-191.8 30.54,-191.8 134.94,-191.8 134.94,-191.8 140.34,-191.8 145.74,-197.2 145.74,-202.6 145.74,-202.6 145.74,-213.4 145.74,-213.4 145.74,-218.8 140.34,-224.2 134.94,-224.2"/>
+<text xml:space="preserve" text-anchor="middle" x="82.74" y="-204.7" font-family="Microsoft YaHei" font-size="11.00">维护章节目录</text>
+</g>
+<!-- course&#45;&gt;chapter -->
+<g id="edge8" class="edge">
+<title>course-&gt;chapter</title>
+<path fill="none" stroke="#333333" d="M82.74,-253.39C82.74,-253.39 82.74,-232.67 82.74,-232.67"/>
+<polygon fill="#333333" stroke="#333333" points="85.02,-232.67 82.74,-226.17 80.47,-232.67 85.02,-232.67"/>
+</g>
+<!-- stat -->
+<g id="node11" class="node">
+<title>stat</title>
+<path fill="white" stroke="#444444" stroke-width="1.25" d="M333.74,-99.24C333.74,-99.24 231.74,-99.24 231.74,-99.24 225.74,-99.24 219.74,-93.24 219.74,-87.24 219.74,-87.24 219.74,-74.76 219.74,-74.76 219.74,-68.76 225.74,-62.76 231.74,-62.76 231.74,-62.76 333.74,-62.76 333.74,-62.76 339.74,-62.76 345.74,-68.76 345.74,-74.76 345.74,-74.76 345.74,-87.24 345.74,-87.24 345.74,-93.24 339.74,-99.24 333.74,-99.24"/>
+<text xml:space="preserve" text-anchor="middle" x="282.74" y="-84.3" font-family="Microsoft YaHei" font-size="11.00">查看学生进度</text>
+<text xml:space="preserve" text-anchor="middle" x="282.74" y="-71.1" font-family="Microsoft YaHei" font-size="11.00">成绩与学分统计</text>
+</g>
+<!-- homework&#45;&gt;stat -->
+<g id="edge11" class="edge">
+<title>homework-&gt;stat</title>
+<path fill="none" stroke="#333333" d="M282.74,-253.23C282.74,-253.23 282.74,-107.69 282.74,-107.69"/>
+<polygon fill="#333333" stroke="#333333" points="285.02,-107.69 282.74,-101.19 280.47,-107.69 285.02,-107.69"/>
+</g>
+<!-- exam&#45;&gt;stat -->
+<g id="edge12" class="edge">
+<title>exam-&gt;stat</title>
+<path fill="none" stroke="#333333" d="M482.74,-253.23C482.74,-206.97 482.74,-81 482.74,-81 482.74,-81 354.31,-81 354.31,-81"/>
+<polygon fill="#333333" stroke="#333333" points="354.31,-78.73 347.81,-81 354.31,-83.28 354.31,-78.73"/>
+</g>
+<!-- resource -->
+<g id="node9" class="node">
+<title>resource</title>
+<path fill="white" stroke="#444444" stroke-width="1.25" d="M134.94,-162.2C134.94,-162.2 30.54,-162.2 30.54,-162.2 25.14,-162.2 19.74,-156.8 19.74,-151.4 19.74,-151.4 19.74,-140.6 19.74,-140.6 19.74,-135.2 25.14,-129.8 30.54,-129.8 30.54,-129.8 134.94,-129.8 134.94,-129.8 140.34,-129.8 145.74,-135.2 145.74,-140.6 145.74,-140.6 145.74,-151.4 145.74,-151.4 145.74,-156.8 140.34,-162.2 134.94,-162.2"/>
+<text xml:space="preserve" text-anchor="middle" x="82.74" y="-142.7" font-family="Microsoft YaHei" font-size="11.00">维护课程资源</text>
+</g>
+<!-- chapter&#45;&gt;resource -->
+<g id="edge9" class="edge">
+<title>chapter-&gt;resource</title>
+<path fill="none" stroke="#333333" d="M82.74,-191.39C82.74,-191.39 82.74,-170.67 82.74,-170.67"/>
+<polygon fill="#333333" stroke="#333333" points="85.02,-170.67 82.74,-164.17 80.47,-170.67 85.02,-170.67"/>
+</g>
+<!-- review -->
+<g id="node10" class="node">
+<title>review</title>
+<path fill="white" stroke="#444444" stroke-width="1.25" d="M134.94,-97.2C134.94,-97.2 30.54,-97.2 30.54,-97.2 25.14,-97.2 19.74,-91.8 19.74,-86.4 19.74,-86.4 19.74,-75.6 19.74,-75.6 19.74,-70.2 25.14,-64.8 30.54,-64.8 30.54,-64.8 134.94,-64.8 134.94,-64.8 140.34,-64.8 145.74,-70.2 145.74,-75.6 145.74,-75.6 145.74,-86.4 145.74,-86.4 145.74,-91.8 140.34,-97.2 134.94,-97.2"/>
+<text xml:space="preserve" text-anchor="middle" x="82.74" y="-77.7" font-family="Microsoft YaHei" font-size="11.00">审核与发布</text>
+</g>
+<!-- resource&#45;&gt;review -->
+<g id="edge10" class="edge">
+<title>resource-&gt;review</title>
+<path fill="none" stroke="#333333" d="M82.74,-129.26C82.74,-129.26 82.74,-105.47 82.74,-105.47"/>
+<polygon fill="#333333" stroke="#333333" points="85.02,-105.47 82.74,-98.97 80.47,-105.47 85.02,-105.47"/>
+</g>
+<!-- review&#45;&gt;stat -->
+<g id="edge13" class="edge">
+<title>review-&gt;stat</title>
+<path fill="none" stroke="#333333" d="M146.3,-81C146.3,-81 211.34,-81 211.34,-81"/>
+<polygon fill="#333333" stroke="#333333" points="211.34,-83.28 217.84,-81 211.34,-78.73 211.34,-83.28"/>
+</g>
+<!-- exit -->
+<g id="node12" class="node">
+<title>exit</title>
+<ellipse fill="#f7f7f7" stroke="#444444" stroke-width="1.25" cx="282.74" cy="-16" rx="41.4" ry="16.46"/>
+<text xml:space="preserve" text-anchor="middle" x="282.74" y="-12.7" font-family="Microsoft YaHei" font-size="11.00">退出系统</text>
+</g>
+<!-- stat&#45;&gt;exit -->
+<g id="edge14" class="edge">
+<title>stat-&gt;exit</title>
+<path fill="none" stroke="#333333" d="M282.74,-62.2C282.74,-62.2 282.74,-40.78 282.74,-40.78"/>
+<polygon fill="#333333" stroke="#333333" points="285.02,-40.78 282.74,-34.28 280.47,-40.78 285.02,-40.78"/>
+</g>
+</g>
+</svg>

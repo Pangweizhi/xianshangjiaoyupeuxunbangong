@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="244pt" height="391pt" viewBox="11.00 11.00 233.00 381.00">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(25.2 366.2)">
+<title>G</title>
+<polygon fill="white" stroke="none" points="-14.4,14.4 -14.4,-355.4 207.82,-355.4 207.82,14.4 -14.4,14.4"/>
+<!-- actor1 -->
+<g id="node1" class="node">
+<title>actor1</title>
+<path fill="#ffffff" stroke="#444444" stroke-width="1.2" d="M42,-158C42,-158 12,-158 12,-158 6,-158 0,-152 0,-146 0,-146 0,-134 0,-134 0,-128 6,-122 12,-122 12,-122 42,-122 42,-122 48,-122 54,-128 54,-134 54,-134 54,-146 54,-146 54,-152 48,-158 42,-158"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-136.4" font-family="Microsoft YaHei" font-size="12.00">学生</text>
+</g>
+<!-- uc1 -->
+<g id="node3" class="node">
+<title>uc1</title>
+<ellipse fill="#ffffff" stroke="#444444" stroke-width="1.2" cx="148.71" cy="-262" rx="27" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="148.71" y="-258.4" font-family="Microsoft YaHei" font-size="12.00">选课</text>
+</g>
+<!-- actor1&#45;&gt;uc1 -->
+<g id="edge1" class="edge">
+<title>actor1-&gt;uc1</title>
+<path fill="none" stroke="#666666" d="M46.18,-158.53C68.04,-180.8 104.61,-218.07 127.38,-241.28"/>
+<polygon fill="#666666" stroke="#666666" points="125.42,-242.78 132.07,-246.06 128.92,-239.35 125.42,-242.78"/>
+</g>
+<!-- uc2 -->
+<g id="node4" class="node">
+<title>uc2</title>
+<ellipse fill="#ffffff" stroke="#444444" stroke-width="1.2" cx="148.71" cy="-201" rx="33.21" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="148.71" y="-197.4" font-family="Microsoft YaHei" font-size="12.00">视频学习</text>
+</g>
+<!-- actor1&#45;&gt;uc2 -->
+<g id="edge2" class="edge">
+<title>actor1-&gt;uc2</title>
+<path fill="none" stroke="#666666" d="M54.57,-153.54C72.81,-162.83 97.1,-175.21 116.3,-185"/>
+<polygon fill="#666666" stroke="#666666" points="114.96,-187.06 122.31,-188.06 117.18,-182.69 114.96,-187.06"/>
+</g>
+<!-- uc3 -->
+<g id="node5" class="node">
+<title>uc3</title>
+<ellipse fill="#ffffff" stroke="#444444" stroke-width="1.2" cx="148.71" cy="-140" rx="44.71" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="148.71" y="-136.4" font-family="Microsoft YaHei" font-size="12.00">记录学习进度</text>
+</g>
+<!-- actor1&#45;&gt;uc3 -->
+<g id="edge3" class="edge">
+<title>actor1-&gt;uc3</title>
+<path fill="none" stroke="#666666" d="M54.57,-140C66.66,-140 81.41,-140 95.57,-140"/>
+<polygon fill="#666666" stroke="#666666" points="95.31,-142.45 102.31,-140 95.31,-137.55 95.31,-142.45"/>
+</g>
+<!-- uc4 -->
+<g id="node6" class="node">
+<title>uc4</title>
+<ellipse fill="#ffffff" stroke="#444444" stroke-width="1.2" cx="148.71" cy="-79" rx="33.21" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="148.71" y="-75.4" font-family="Microsoft YaHei" font-size="12.00">提交作业</text>
+</g>
+<!-- actor1&#45;&gt;uc4 -->
+<g id="edge4" class="edge">
+<title>actor1-&gt;uc4</title>
+<path fill="none" stroke="#666666" d="M54.57,-126.46C72.81,-117.17 97.1,-104.79 116.3,-95"/>
+<polygon fill="#666666" stroke="#666666" points="117.18,-97.31 122.31,-91.94 114.96,-92.94 117.18,-97.31"/>
+</g>
+<!-- uc6 -->
+<g id="node8" class="node">
+<title>uc6</title>
+<ellipse fill="#ffffff" stroke="#444444" stroke-width="1.2" cx="148.71" cy="-18" rx="44.71" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="148.71" y="-14.4" font-family="Microsoft YaHei" font-size="12.00">查看成绩反馈</text>
+</g>
+<!-- actor1&#45;&gt;uc6 -->
+<g id="edge5" class="edge">
+<title>actor1-&gt;uc6</title>
+<path fill="none" stroke="#666666" d="M46.18,-121.47C67.44,-99.81 102.61,-63.96 125.47,-40.66"/>
+<polygon fill="#666666" stroke="#666666" points="127.07,-42.53 130.23,-35.82 123.57,-39.1 127.07,-42.53"/>
+</g>
+<!-- actor2 -->
+<g id="node2" class="node">
+<title>actor2</title>
+<path fill="#ffffff" stroke="#444444" stroke-width="1.2" d="M42,-341C42,-341 12,-341 12,-341 6,-341 0,-335 0,-329 0,-329 0,-317 0,-317 0,-311 6,-305 12,-305 12,-305 42,-305 42,-305 48,-305 54,-311 54,-317 54,-317 54,-329 54,-329 54,-335 48,-341 42,-341"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-319.4" font-family="Microsoft YaHei" font-size="12.00">教师</text>
+</g>
+<!-- uc5 -->
+<g id="node7" class="node">
+<title>uc5</title>
+<ellipse fill="#ffffff" stroke="#444444" stroke-width="1.2" cx="148.71" cy="-323" rx="33.21" ry="18"/>
+<text xml:space="preserve" text-anchor="middle" x="148.71" y="-319.4" font-family="Microsoft YaHei" font-size="12.00">批改作业</text>
+</g>
+<!-- actor2&#45;&gt;uc5 -->
+<g id="edge6" class="edge">
+<title>actor2-&gt;uc5</title>
+<path fill="none" stroke="#666666" d="M54.57,-323C69.96,-323 89.65,-323 106.97,-323"/>
+<polygon fill="#666666" stroke="#666666" points="106.73,-325.45 113.73,-323 106.73,-320.55 106.73,-325.45"/>
+</g>
+</g>
+</svg>
